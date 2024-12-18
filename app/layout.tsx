@@ -25,15 +25,10 @@ export default function RootLayout({
         className={cn("bg-background", urbanist.className)}
       >
          
-         <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
+        
             {children}
             <Toaster/>
-          </ThemeProvider>
+          
           
 
       </body>

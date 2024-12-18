@@ -70,8 +70,8 @@ export function AdminSideBar() {
                                                 <a
                                                     className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-md transition ${
                                                         isActive
-                                                            ? "bg-gray-600 text-white" // Active styles
-                                                            : "hover:bg-gray-600 text-gray-300" // Hover styles
+                                                            ? "bg-primary text-white" // Active styles
+                                                            : "hover:bg-primary text-black" // Hover styles
                                                     }`}
                                                 >
                                                     <item.icon className="w-6 h-6" />

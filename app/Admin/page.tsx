@@ -3,6 +3,7 @@
 import React from 'react'; 
 import { AdminSideBar } from './_components/sidebar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { SmallCard } from './_components/smallCard';
 
 const AdminPage = () => {
  
@@ -10,7 +11,7 @@ const AdminPage = () => {
 
   return (
     <div >
-       <h1>Home Page</h1>
+        <SmallCard/>
     </div>
   );
 };
