@@ -1,9 +1,12 @@
-import React from 'react'
+import React from 'react';
+import { SmallCard } from '../_components/smallCard';
 
-const dashboardHomePage = () => {
+const DashboardHomePage = () => {
   return (
-    <div>dashboardHomePage</div>
-  )
-}
+    <div>
+      <SmallCard />
+    </div>
+  );
+};
 
-export default dashboardHomePage
+export default DashboardHomePage;
