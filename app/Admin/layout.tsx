@@ -8,7 +8,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="flex h-screen">
             <SidebarProvider>
                 <AdminSideBar />
-                <SidebarTrigger/>
+                <SidebarTrigger size='lg'/>
                 <main className="flex-1 p-4">{children}
                     
                 </main>

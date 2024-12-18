@@ -1,5 +1,7 @@
+'use client'
 import { Calendar, ChevronUp, Currency, Home, Inbox, PersonStanding, Settings, Subtitles, User2, UserRoundCheck } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation"; // Import the hook
 
 import {
     Sidebar,
@@ -18,7 +20,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 const items = [
     {
         title: "Home",
-        url: "/Admin/Home",
+        url: "/Admin",
         icon: Home,
     },
     {
@@ -33,22 +35,20 @@ const items = [
     },
     {
         title: "Plans",
-        url: "/Admin/plans",
+        url: "/Admin/Plan",
         icon: Subtitles,
     },
     {
         title: "Price",
-        url: "/Admin/price",
+        url: "/Admin/Price",
         icon: Currency,
     },
-    {
-        title: "Setting",
-        url: "/Admin/settings",
-        icon: Settings,
-    },
+    
 ];
 
 export function AdminSideBar() {
+    const pathname = usePathname(); // Get the current route
+
     return (
         <Sidebar className="h-screen">
             <SidebarContent>
@@ -58,24 +58,35 @@ export function AdminSideBar() {
                     </SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu className="flex flex-col gap-6">
-                            {items.map((item) => (
-                                <SidebarMenuItem key={item.title} className="w-full">
-                                    <SidebarMenuButton asChild>
-                                        <Link href={item.url} legacyBehavior>
-                                            <a
-                                                className="flex items-center gap-3 px-4 py-3 text-base font-medium rounded-md hover:bg-gray-600 transition"
+                            {items.map((item) => {
+                                const isActive = pathname === item.url; // Check if the current route matches the item's URL
+                                return (
+                                    <SidebarMenuItem key={item.title} className="w-full">
+                                        <SidebarMenuButton asChild>
+                                            <Link
+                                                href={item.url}
+                                                legacyBehavior
                                             >
-                                                <item.icon className="w-6 h-6" />
-                                                <span>{item.title}</span>
-                                            </a>
-                                        </Link>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
+                                                <a
+                                                    className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-md transition ${
+                                                        isActive
+                                                            ? "bg-gray-600 text-white" // Active styles
+                                                            : "hover:bg-gray-600 text-gray-300" // Hover styles
+                                                    }`}
+                                                >
+                                                    <item.icon className="w-6 h-6" />
+                                                    <span>{item.title}</span>
+                                                </a>
+                                            </Link>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                );
+                            })}
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
+
             <SidebarFooter className="mt-auto mb-4 px-4">
                 <SidebarMenu>
                     <SidebarMenuItem>
@@ -101,3 +112,4 @@ export function AdminSideBar() {
         </Sidebar>
     );
 }
+

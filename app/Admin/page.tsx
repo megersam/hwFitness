@@ -9,14 +9,8 @@ const AdminPage = () => {
 
 
   return (
-    <div className="flex h-screen">
-      {/* <SidebarProvider>
-        <AdminSideBar />
-        <main className="flex-1 p-4">
-          <SidebarTrigger />
-           
-        </main>
-      </SidebarProvider> */}
+    <div >
+       <h1>Home Page</h1>
     </div>
   );
 };
