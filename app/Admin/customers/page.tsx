@@ -1,10 +1,17 @@
+'use client'
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus } from 'lucide-react';
-import React from 'react';
+import React, { useState } from 'react';
 import { CustomersTable } from '../_components/customersTable';
+import { AddCustomerDialog } from '../_components/addCustomers';
 
 const CustomersPage = () => {
+  const [dialogVisible, setDialogVisible] = useState(false);
+
+
+  const handleAddCustomerClick = () => setDialogVisible(true);
+  const closeDialog = () => setDialogVisible(false);
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       {/* Search Input */}
@@ -17,11 +24,14 @@ const CustomersPage = () => {
         
         {/* Button for adding customers */}
         <div className="mt-4 sm:mt-0 sm:ml-4">
-          <Button className="flex items-center space-x-2">
+          <Button 
+          onClick={handleAddCustomerClick}
+          className="flex items-center space-x-2">
             <Plus size={16} />
             <span>Add Customer</span>
           </Button>
         </div>
+        <AddCustomerDialog visible={dialogVisible} onClose={closeDialog}/>
       </div>
 
       {/* Table for users data display */}
