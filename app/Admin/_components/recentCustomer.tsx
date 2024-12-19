@@ -40,7 +40,7 @@ import {
   
   export function RecentSales() {
     return (
-      <Card className="h-[400px] p-4 overflow-y-auto">
+      <Card className="h-[400px] p-4 overflow-y-auto w-[450px]">
         {recentData.map((item, index) => {
           // Extract initials
           const initials = item.name
