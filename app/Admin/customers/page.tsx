@@ -2,10 +2,10 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus } from 'lucide-react';
-import React, { useState } from 'react';
-import { CustomersTable } from '../_components/customersTable';
+import React, { useState } from 'react'; 
 import { AddCustomerDialog } from '../_components/addCustomers';
-
+import CustomerTable from './_components/CustomerTable';
+import {customers} from './_components/customer';
 const CustomersPage = () => {
   const [dialogVisible, setDialogVisible] = useState(false);
 
@@ -36,7 +36,9 @@ const CustomersPage = () => {
 
       {/* Table for users data display */}
       <div className="relative overflow-x-auto py-6">
-        <CustomersTable />
+        
+          <CustomerTable/>
+        
       </div>
     </div>
   );
