@@ -12,11 +12,10 @@ interface Customer {
     subscriptionEndDate: string;
 }
 
-
-
 const CustomerTable: React.FC = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [filteredStatus, setFilteredStatus] = useState<string>("All");
+    const [searchQuery, setSearchQuery] = useState<string>(""); // State for search query
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5; // Number of items per page
 
@@ -26,9 +25,19 @@ const CustomerTable: React.FC = () => {
         return customer.status === filteredStatus;
     });
 
+    // Further filter customers based on the search query (case-insensitive search)
+    const searchedCustomers = filteredCustomers.filter((customer) => {
+        const fullName = `${customer.firstName} ${customer.lastName}`.toLowerCase();
+        const phone = customer.phoneNumber.toLowerCase();
+        return (
+            fullName.includes(searchQuery.toLowerCase()) ||
+            phone.includes(searchQuery.toLowerCase())
+        );
+    });
+
     // Calculate pagination
-    const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
-    const paginatedCustomers = filteredCustomers.slice(
+    const totalPages = Math.ceil(searchedCustomers.length / itemsPerPage);
+    const paginatedCustomers = searchedCustomers.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
     );
@@ -56,11 +65,13 @@ const CustomerTable: React.FC = () => {
                 return "text-gray-500";
         }
     };
+
     const statusColors: Record<Customer["status"], string> = {
         Pending: "bg-yellow-500 text-white",
         Active: "bg-green-500 text-white",
         Expired: "bg-red-500 text-white",
     };
+
     return (
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
             {/* Header */}
@@ -161,6 +172,8 @@ const CustomerTable: React.FC = () => {
                     <input
                         type="text"
                         id="table-search-customers"
+                        value={searchQuery} // Bind input value to state
+                        onChange={(e) => setSearchQuery(e.target.value)} // Update search query on input change
                         className="block p-2 pl-10 text-sm text-gray-900 border border-primary rounded-lg w-80 bg-white focus:ring-primary focus:border-primary dark:border-gray-600 dark:placeholder-primary dark:text-white dark:focus:ring-primary dark:focus:border-blue-500"
                         placeholder="Search for customers"
                     />
@@ -234,7 +247,6 @@ const CustomerTable: React.FC = () => {
                                         {customer.status}
                                     </span>
                                 </div>
-
                             </td>
                         </tr>
                     ))}
@@ -252,20 +264,9 @@ const CustomerTable: React.FC = () => {
                 >
                     Previous
                 </button>
-
-                <div className="flex items-center space-x-3">
-                    <span className="text-sm font-medium text-gray-700">
-                        Page <span className="font-semibold">{currentPage}</span> of{" "}
-                        <span className="font-semibold">{totalPages}</span>
-                    </span>
-                    <span className="hidden sm:inline-block text-sm text-gray-500">
-                        Showing results{" "}
-                        {(currentPage - 1) * itemsPerPage + 1}–
-                        {Math.min(currentPage * itemsPerPage, filteredCustomers.length)} of{" "}
-                        {filteredCustomers.length}
-                    </span>
+                <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Page {currentPage} of {totalPages}
                 </div>
-
                 <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
@@ -277,9 +278,6 @@ const CustomerTable: React.FC = () => {
                     Next
                 </button>
             </div>
-
-
-
         </div>
     );
 };
