@@ -12,6 +12,8 @@ interface Customer {
     subscriptionEndDate: string;
 }
 
+
+
 const CustomerTable: React.FC = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [filteredStatus, setFilteredStatus] = useState<string>("All");
@@ -57,7 +59,7 @@ const CustomerTable: React.FC = () => {
     const statusColors: Record<Customer["status"], string> = {
         Pending: "bg-yellow-500 text-white",
         Active: "bg-green-500 text-white",
-        Expired: "bg-red-500 text-white", 
+        Expired: "bg-red-500 text-white",
     };
     return (
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -224,16 +226,15 @@ const CustomerTable: React.FC = () => {
                             </th>
                             <td className="px-6 py-4">{customer.subscriptionEndDate}</td>
                             <td className="px-6 py-4">
-                                <div className="flex items-center"> 
+                                <div className="flex items-center">
                                     <span
-                                className={`px-3 py-1 rounded-full text-sm font-medium ${
-                                    statusColors[customer.status]
-                                }`}
-                            >
-                                    {customer.status}
+                                        className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[customer.status]
+                                            }`}
+                                    >
+                                        {customer.status}
                                     </span>
                                 </div>
-                                
+
                             </td>
                         </tr>
                     ))}
@@ -258,8 +259,10 @@ const CustomerTable: React.FC = () => {
                         <span className="font-semibold">{totalPages}</span>
                     </span>
                     <span className="hidden sm:inline-block text-sm text-gray-500">
-                        Showing results {(currentPage - 1) * itemsPerPage + 1}–
-                        {Math.min(currentPage * itemsPerPage, totalPages)} of {totalPages}
+                        Showing results{" "}
+                        {(currentPage - 1) * itemsPerPage + 1}–
+                        {Math.min(currentPage * itemsPerPage, filteredCustomers.length)} of{" "}
+                        {filteredCustomers.length}
                     </span>
                 </div>
 
@@ -274,6 +277,8 @@ const CustomerTable: React.FC = () => {
                     Next
                 </button>
             </div>
+
+
 
         </div>
     );
