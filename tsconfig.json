@@ -22,6 +22,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/Admin/_components/card.tsx", "lib/db.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/Admin/_components/card.tsx", "lib/db.ts", "Models/priceModel.ts"],
   "exclude": ["node_modules"]
 }
