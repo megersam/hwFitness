@@ -1,33 +1,53 @@
 'use client'
-import React, { useState } from "react";
-import { Price } from "./price"; 
+import { CheckCircleIcon, XCircleIcon } from "lucide-react";
+import React, { useEffect, useState } from "react";
+
 
 interface Price {
     id: number;
     price: string;
-    status: string;
-    date: string; 
+    status: boolean;
+    createdAt: string;
 }
 
 const PriceTable: React.FC = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [filteredStatus, setFilteredStatus] = useState<string>("All");
-    const [searchQuery, setSearchQuery] = useState<string>(""); // State for search query
+    const [prices, setPrices] = useState<Price[]>([]);
+    const [filteredStatus, setFilteredStatus] = useState<boolean | null>(null); // null for 'All', true/false for active/inactive
+    const [searchQuery, setSearchQuery] = useState<string>("");
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5; // Number of items per page
+    const itemsPerPage = 5;
 
-    // Filter customers based on the selected status
-    const filteredPrice = Price.filter((price) => {
-        if (filteredStatus === "All") return true;
-        return price.status === filteredStatus;
+    // Fetch prices from the API
+    useEffect(() => {
+        const fetchPrices = async () => {
+            try {
+                const response = await fetch("/api/price");
+                const data = await response.json();
+                console.log(data); // Ensure this shows the expected structure
+                if (Array.isArray(data.prices)) {
+                    setPrices(data.prices); // Set the 'prices' state
+                } else {
+                    console.error("Expected an array under 'prices', but got:", data.prices);
+                }
+            } catch (error) {
+                console.error("Error fetching prices:", error);
+            }
+        };
+
+        fetchPrices();
+    }, []);
+
+    // Filter prices based on the selected status
+    const filteredPrices = prices.filter((price) => {
+        if (filteredStatus === null) return true; // Return all if status is null (i.e., 'All' selected)
+        return price.status === filteredStatus; // Filter by the boolean status
     });
 
-    // Further filter customers based on the search query (case-insensitive search)
-    const searchedPrices = filteredPrice.filter((Price) => {
-        const PriceName = `${Price.price}`.toLowerCase();
-        return (
-            PriceName.includes(searchQuery.toLowerCase())
-        );
+    // Further filter prices based on the search query (case-insensitive search)
+    const searchedPrices = filteredPrices.filter((price) => {
+        const priceName = `${price.price}`.toLowerCase();
+        return priceName.includes(searchQuery.toLowerCase());
     });
 
     // Calculate pagination
@@ -39,10 +59,15 @@ const PriceTable: React.FC = () => {
 
     // Function to handle the status change and close the dropdown
     const handleStatusChange = (status: string) => {
-        setFilteredStatus(status);
+        if (status === "All") {
+            setFilteredStatus(null); // 'All' sets status to null
+        } else {
+            setFilteredStatus(status === "Active"); // Converts "Active" to true, "Not Active" to false
+        }
         setCurrentPage(1); // Reset to the first page when the filter changes
         setDropdownOpen(false);
     };
+
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
@@ -59,11 +84,7 @@ const PriceTable: React.FC = () => {
         }
     };
 
-    const statusColors: Record<Price["status"], string> = {
-        Pending: "bg-yellow-500 text-white",
-        Active: "bg-green-500 text-white",
-        "Not Active": "bg-red-500 text-white",
-    };
+
 
     return (
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -78,7 +99,9 @@ const PriceTable: React.FC = () => {
                         type="button"
                     >
                         <span className="sr-only">Status button</span>
-                        <span className={getStatusColor(filteredStatus)}>{filteredStatus}</span>
+                        <span className={getStatusColor(filteredStatus)}>
+                            {filteredStatus === null ? "None" : filteredStatus ? "Active" : "Not Active"}
+                        </span>
                         <svg
                             className="w-2.5 h-2.5 ml-2.5"
                             xmlns="http://www.w3.org/2000/svg"
@@ -190,12 +213,17 @@ const PriceTable: React.FC = () => {
                         <th scope="col" className="px-6 py-3">
                             Status
                         </th>
-                         
+
                     </tr>
                 </thead>
+
+
                 <tbody>
-                    {paginatedPrices.map((price) => (
-                        <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    {paginatedPrices.map((price, index) => (
+                        <tr
+                            key={price.id || index}  
+                            className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                        >
                             <td className="w-4 p-4">
                                 <div className="flex items-center">
                                     <input
@@ -212,27 +240,29 @@ const PriceTable: React.FC = () => {
                                 scope="row"
                                 className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
                             >
-
                                 <div className="pl-3">
                                     <div className="text-base font-semibold">{price.price}</div>
-
                                 </div>
                             </th>
-                            <td className="px-6 py-4">{price.date}</td>
+                            <td className="px-6 py-4">{price.createdAt}</td>
                             <td className="px-6 py-4">
                                 <div className="flex items-center">
-                                    <span
-                                        className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[price.status]
-                                            }`}
-                                    >
-                                        {price.status}
-                                    </span>
+                                    {price.status === true ? (
+                                        <CheckCircleIcon className="h-6 w-6 text-green-500" />
+                                    ) : (
+                                        <XCircleIcon className="h-6 w-6 text-red-500" />
+                                    )}
                                 </div>
                             </td>
                         </tr>
                     ))}
                 </tbody>
+
             </table>
+
+
+
+
             {/* Pagination Controls */}
             <div className="flex justify-between items-center mt-4 px-4 py-3 bg-gray-50 border-t border-gray-200 rounded-lg shadow-md">
                 <button

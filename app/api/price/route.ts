@@ -34,4 +34,23 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       { status: 500 }
     );
   }
+};
+
+export async function GET(req: NextRequest): Promise<NextResponse> {
+  try {
+    // Get all prices from the database
+    const prices = await PriceModel.find();
+
+    if (!prices) {
+      return NextResponse.json({ error: 'No prices found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ prices });
+  } catch (error) {
+    console.error('Error fetching prices:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch prices' },
+      { status: 500 }
+    );
+  }
 }
