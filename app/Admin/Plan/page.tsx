@@ -1,11 +1,18 @@
-import React from 'react'
+'use client'
+import React, { useState } from 'react'
 import SeachBar from './_components/serchBar'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import PlansTable from './_components/plansTable'
 import { Input } from '@/components/ui/input'
+import { AddPlanDialog } from './_components/addPlan'
 
 const PlansPage = () => {
+   const [dialogVisible, setDialogVisible] = useState(false);
+  
+  
+    const handleAddPlanClick = () => setDialogVisible(true);
+    const closeDialog = () => setDialogVisible(false);
   return (
     <div className="px-4 sm:px-6 lg:px-8">
     {/* Search Input */}
@@ -19,13 +26,13 @@ const PlansPage = () => {
       {/* Button for adding customers */}
       <div className="mt-4 sm:mt-0 sm:ml-4">
         <Button 
-         
+         onClick={handleAddPlanClick}
         className="flex items-center space-x-2">
           <Plus size={16} />
           <span>Add Plan</span>
         </Button>
       </div>
-      {/* <AddCustomerDialog visible={dialogVisible} onClose={closeDialog}/> */}
+      <AddPlanDialog visible={dialogVisible} onClose={closeDialog}/>
     </div>
 
     {/* Table for users data display */}
