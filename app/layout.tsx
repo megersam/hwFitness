@@ -3,7 +3,7 @@ import {Urbanist} from 'next/font/google'
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/context/theme-provider";
-import { Toaster } from "@/components/ui/toaster";
+import { ToastContainer, toast } from 'react-toastify';
 // import QueryProvider from "@/context/query-provider";
 
  
@@ -27,7 +27,7 @@ export default function RootLayout({
          
         
             {children}
-            <Toaster/>
+            <ToastContainer />
           
           
 
