@@ -2,6 +2,7 @@ import React from 'react'
 import SeachBar from './_components/serchBar'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
+import PlansTable from './_components/plansTable'
 
 const PlansPage = () => {
   return (
@@ -16,6 +17,7 @@ const PlansPage = () => {
             <span>Add Plans</span>
           </Button>
         </div>
+        <PlansTable/>
       </div>
    
   </div>
