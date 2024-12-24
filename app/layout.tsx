@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import {Urbanist} from 'next/font/google'
+import { Urbanist } from 'next/font/google'
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/context/theme-provider";
-import { ToastContainer, toast } from 'react-toastify';
+import { Bounce, ToastContainer, toast } from 'react-toastify';
 // import QueryProvider from "@/context/query-provider";
 
- 
-const urbanist = Urbanist({subsets: ['latin']})
+
+const urbanist = Urbanist({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: "HW Fitness",
@@ -24,12 +24,24 @@ export default function RootLayout({
       <body
         className={cn("bg-background", urbanist.className)}
       >
-         
-        
-            {children}
-            <ToastContainer />
-          
-          
+
+
+        {children}
+        <ToastContainer
+          position="bottom-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick={false}
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+          transition={Bounce}
+        />
+
+
 
       </body>
     </html>
