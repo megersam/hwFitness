@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import React, { useState } from 'react'
 import { AddPriceDialog } from './_components/addPrice';
+import PriceTable from './_components/priceTable';
 
 const PriceingPage = () => {
   const [dialogVisible, setDialogVisible] = useState(false);
@@ -35,7 +36,7 @@ const PriceingPage = () => {
     {/* Table for users data display */}
     <div className="relative overflow-x-auto py-6">
       
-        {/* <PlansTable/> */}
+        <PriceTable/>
       
     </div>
   </div>
