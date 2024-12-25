@@ -35,7 +35,8 @@ export const ViewPlanDialog: React.FC<ViewPlanProps> = ({ plan, onClose, refresh
     const [total, setTotal] = useState<number>(plan?.total || 0);  // Initial total value
 
     const [loading, setLoading] = useState<boolean>(false); // Track loading state
-
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
     // Calculate total price
     const calculateTotal = (
         selectedPlan: string,
@@ -66,21 +67,21 @@ export const ViewPlanDialog: React.FC<ViewPlanProps> = ({ plan, onClose, refresh
 
     const handleSave = async () => {
         if (!plan) return;
-    
-        setLoading(true);
+
+        setIsSaving(true)
         try {
             // Make sure to include planName and total in the updatedPlan object
-            const updatedPlan = { 
-                ...plan, 
+            const updatedPlan = {
+                ...plan,
                 planName, // Update planName
-               
-                period: duration, 
-                discount, 
-                percentage, 
+
+                period: duration,
+                discount,
+                percentage,
                 total // Update total as well
             };
             console.log(updatedPlan);
-    
+
             const response = await axios.put(`/api/plan/${plan._id}`, updatedPlan);
             if (response.status === 200) {
                 toast.success("Plan updated successfully!");
@@ -91,10 +92,28 @@ export const ViewPlanDialog: React.FC<ViewPlanProps> = ({ plan, onClose, refresh
             console.error("Error updating plan", error);
             toast.error("Failed to update plan.");
         } finally {
-            setLoading(false);
+            setIsSaving(false)
         }
     };
-    
+    const handleDelete = async () => {
+        if (!plan) return;
+
+        setIsDeleting(true);
+        try {
+            const response = await axios.delete(`/api/plan/${plan._id}`);
+            if (response.status === 200) {
+                toast.success("Plan deleted successfully!");
+                refreshPlans(); // Refresh the list of plans after successful deletion
+                onClose(); // Close the dialog or modal
+            }
+        } catch (error) {
+            console.error("Error deleting plan", error);
+            toast.error("Failed to delete plan.");
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
 
     return (
         <Dialog open={Boolean(plan)} onOpenChange={(open) => !open && onClose()}>
@@ -189,12 +208,24 @@ export const ViewPlanDialog: React.FC<ViewPlanProps> = ({ plan, onClose, refresh
 
                 {/* Dialog Footer */}
                 <DialogFooter>
-                    <Button variant="outline" onClick={onClose} className="mr-2">
-                        Cancel
-                    </Button>
-                    <Button onClick={handleSave} disabled={loading} className={loading ? "bg-gray-300" : "bg-blue-500"}>
-                        {loading ? <Loader className="animate-spin w-4 h-4" /> : "Save Changes"}
-                    </Button>
+                <Button 
+                variant="outline"
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className={`bg-red-500 ${
+                    isDeleting ? "cursor-not-allowed opacity-75" : ""
+                } w-32 h-12 flex items-center justify-center`}>
+                {isDeleting ? <Loader className="animate-spin w-4 h-4" /> : "Delete"}
+            </Button>
+            <Button 
+                onClick={handleSave}
+                disabled={isSaving}
+                className={`bg-blue-500 ${
+                    isSaving ? "cursor-not-allowed opacity-75" : ""
+                } w-32 h-12 flex items-center justify-center`}>
+                {isSaving ? <Loader className="animate-spin w-4 h-4" /> : "Update"}
+            </Button>
+
                 </DialogFooter>
             </DialogContent>
         </Dialog>

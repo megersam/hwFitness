@@ -55,7 +55,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 // Delete a plan by ID
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }): Promise<NextResponse> {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ error: "Invalid plan ID" }, { status: 400 });
