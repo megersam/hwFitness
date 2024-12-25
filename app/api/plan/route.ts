@@ -35,7 +35,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       discount,
       percentage,
       price,
-      total,
+      total, 
     });
     await newPlan.save();
 

@@ -8,6 +8,9 @@ interface Plan {
     name: string;
     duration: boolean;
     date: string;
+    discount: boolean;
+    price: number,
+    total: number
     percent: string;
     status: string;
 }
@@ -18,6 +21,22 @@ const PlansTable: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState<string>(""); // State for search query
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5; // Number of items per page
+    const [isLoading, setIsLoading] = useState(true);
+    const [plan, setPlan] = useState<Plan[]>([]);
+    const fetchPrices = async () => {
+        setIsLoading(true);
+        try {
+          const response = await fetch('/api/price');
+          const data = await response.json();
+          if (data.prices) {
+            setPlan(data.prices);
+          }
+        } catch (error) {
+          console.error('Error fetching prices:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
 
     // Filter customers based on the selected status
     const filteredPlans = plans.filter((plan) => {
@@ -230,7 +249,7 @@ const PlansTable: React.FC = () => {
                             <td className="px-6 py-4">{plan.duration}</td>
                             <td className="px-6 py-4">
                                 {plan.discount === true ? (
-                                    <CheckCircleIcon className="h-6 w-6 text-green-500" />
+                                     <CheckCircleIcon className="h-6 w-6 text-green-500" />
                                 ) : (
                                     <XCircleIcon className="h-6 w-6 text-red-500" />
                                 )}

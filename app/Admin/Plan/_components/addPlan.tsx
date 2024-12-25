@@ -115,6 +115,7 @@ export function AddPlanDialog({ visible, onClose }: AddPlanProps) {
             percentage,
             price,
             total,
+            
         };
     
         try {

@@ -7,7 +7,7 @@ export interface IPlan extends Document {
     discount?: boolean;
     percentage?: number;
     price?: number;
-    total?: number;
+    total?: number; 
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -37,6 +37,7 @@ const planSchema: Schema<IPlan> = new Schema(
         total: {
             type: Number,
         },
+        
 
         createdAt: {
             type: Date,
