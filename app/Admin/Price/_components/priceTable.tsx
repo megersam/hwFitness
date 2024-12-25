@@ -181,49 +181,55 @@ const PriceTable: React.FC = () => {
                 <tbody>
                     {isLoading
                         ? Array.from({ length: itemsPerPage }).map((_, index) => (
-                              <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                  <td className="p-4">
-                                      <Skeleton className="h-4 w-4 rounded-md" />
-                                  </td>
-                                  <td className="px-6 py-4">
-                                      <Skeleton className="h-4 w-20" />
-                                  </td>
-                                  <td className="px-6 py-4">
-                                      <Skeleton className="h-4 w-32" />
-                                  </td>
-                                  <td className="px-6 py-4">
-                                      <Skeleton className="h-4 w-16" />
-                                  </td>
-                              </tr>
-                          ))
+                            <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                <td className="p-4">
+                                    <Skeleton className="h-4 w-4 rounded-md" />
+                                </td>
+                                <td className="px-6 py-4">
+                                    <Skeleton className="h-4 w-20" />
+                                </td>
+                                <td className="px-6 py-4">
+                                    <Skeleton className="h-4 w-32" />
+                                </td>
+                                <td className="px-6 py-4">
+                                    <Skeleton className="h-4 w-16" />
+                                </td>
+                            </tr>
+                        ))
                         : paginatedPrices.map((price, index) => (
-                              <tr
-                                  key={price.id || index}
-                                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-                              >
-                                  <td className="p-4">
-                                      <input
-                                          type="checkbox"
-                                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                                      />
-                                  </td>
-                                  <td className="px-6 py-4">{price.price}</td>
-                                  <td className="px-6 py-4">{price.createdAt}</td>
-                                  <td className="px-6 py-4">
-                                      {price.status ? (
-                                          <CheckCircleIcon className="h-6 w-6 text-green-500" />
-                                      ) : (
-                                          <XCircleIcon className="h-6 w-6 text-red-500" />
-                                      )}
-                                  </td>
-                              </tr>
-                          ))}
+                            <tr
+                                key={price.id || index}
+                                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                            >
+                                <td className="p-4">
+                                    <input
+                                        type="checkbox"
+                                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                    />
+                                </td>
+                                <td className="px-6 py-4">{price.price}</td>
+                                <td className="px-6 py-4">
+                                    {new Date(price.createdAt).toLocaleDateString("en-US", {
+                                        year: "numeric",
+                                        month: "short",
+                                        day: "2-digit",
+                                    })}
+                                </td>
+                                <td className="px-6 py-4">
+                                    {price.status ? (
+                                        <CheckCircleIcon className="h-6 w-6 text-green-500" />
+                                    ) : (
+                                        <XCircleIcon className="h-6 w-6 text-red-500" />
+                                    )}
+                                </td>
+                            </tr>
+                        ))}
                 </tbody>
             </table>
 
-             
-             {/* Pagination Controls */}
-             <div className="flex justify-between items-center mt-4 px-4 py-3 bg-gray-50 border-t border-gray-200 rounded-lg shadow-md">
+
+            {/* Pagination Controls */}
+            <div className="flex justify-between items-center mt-4 px-4 py-3 bg-gray-50 border-t border-gray-200 rounded-lg shadow-md">
                 <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}

@@ -39,7 +39,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
     // Get all prices from the database
-    const prices = await PriceModel.find();
+    const prices = await PriceModel.find()
+    .sort({ createdAt: -1 });
 
     if (!prices) {
       return NextResponse.json({ error: 'No prices found' }, { status: 404 });
