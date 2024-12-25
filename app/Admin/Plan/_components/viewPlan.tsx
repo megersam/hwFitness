@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from 'axios';
 import { toast } from 'react-toastify';  // Importing toast for notifications
 import { Loader } from 'lucide-react'; // Importing spinner icon from lucide-react
@@ -28,13 +28,41 @@ interface ViewPlanProps {
 
 export const ViewPlanDialog: React.FC<ViewPlanProps> = ({ plan, onClose, refreshPlans }) => {
     const [price] = useState<number>(plan?.price || 0);
-    const [duration] = useState<number>(plan?.period || 1);
-    const [discount] = useState<boolean>(plan?.discount || false);
-    const [planName] = useState<string>(plan?.planName || '');
-    const [percentage] = useState<number>(plan?.percentage || 0);
-    const [total] = useState<number>(plan?.total || 0);  // Directly use initial total, no calculation
+    const [duration, setDuration] = useState<number>(plan?.period || 1);
+    const [discount, setDiscount] = useState<boolean>(plan?.discount || false);
+    const [planName, setPlanName] = useState<string>(plan?.planName || 'Daily');
+    const [percentage, setPercentage] = useState<number>(plan?.percentage || 0);
+    const [total, setTotal] = useState<number>(plan?.total || 0);  // Initial total value
 
     const [loading, setLoading] = useState<boolean>(false); // Track loading state
+
+    // Calculate total price
+    const calculateTotal = (
+        selectedPlan: string,
+        selectedDuration: number,
+        hasDiscount: boolean,
+        discountPercent: number
+    ) => {
+        let totalPrice = 0;
+
+        if (selectedPlan === "Daily") {
+            totalPrice = price * selectedDuration; // Daily total
+        } else if (selectedPlan === "Monthly") {
+            totalPrice = price * 30 * selectedDuration; // Monthly total (30 days per month)
+        }
+
+        // Apply discount if applicable
+        if (hasDiscount && discountPercent > 0) {
+            totalPrice -= (totalPrice * discountPercent) / 100;
+        }
+
+        setTotal(totalPrice); // Update the total
+    };
+
+    // Recalculate total whenever relevant fields change
+    useEffect(() => {
+        calculateTotal(planName, duration, discount, percentage);
+    }, [planName, duration, discount, percentage]);
 
     const handleSave = async () => {
         if (!plan) return;
@@ -71,7 +99,7 @@ export const ViewPlanDialog: React.FC<ViewPlanProps> = ({ plan, onClose, refresh
                         <select
                             id="plan-name"
                             value={planName}
-                             
+                            onChange={(e) => setPlanName(e.target.value)}
                             className="w-full border rounded px-2 py-1"
                         >
                             <option value="Daily">Daily</option>
@@ -86,7 +114,7 @@ export const ViewPlanDialog: React.FC<ViewPlanProps> = ({ plan, onClose, refresh
                             id="duration"
                             type="number"
                             value={duration}
-                            readOnly
+                            onChange={(e) => setDuration(Number(e.target.value))}
                         />
                     </div>
 
@@ -107,7 +135,7 @@ export const ViewPlanDialog: React.FC<ViewPlanProps> = ({ plan, onClose, refresh
                         <select
                             id="discount"
                             value={discount ? "true" : "false"}
-                             
+                            onChange={(e) => setDiscount(e.target.value === "true")}
                             className="w-full border rounded px-2 py-1"
                         >
                             <option value="true">True</option>
@@ -123,7 +151,7 @@ export const ViewPlanDialog: React.FC<ViewPlanProps> = ({ plan, onClose, refresh
                                 id="percentage"
                                 type="number"
                                 value={percentage}
-                                readOnly
+                                onChange={(e) => setPercentage(Number(e.target.value))}
                             />
                         </div>
                     )}
