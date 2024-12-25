@@ -3,18 +3,31 @@ import React, { useEffect, useState } from "react";
 import { plans } from "./plans";
 import { CheckCircleIcon, XCircleIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ViewPlanDialog } from "./viewPlan";
 
 interface Plan {
     _id: string;
     planName: string;
-    period: boolean;
-    date: string;
+    period: number;
     discount: boolean;
     price: number,
-    total: number
-    percentage: string;
-    status: string;
+    total: number,
+    percentage: number,
+    status:string;
+
+  
 }
+interface Row {
+    _id: string;
+    planName: string;
+    period: number;
+    discount: boolean;
+    price: number,
+    total: number,
+    percentage: number,
+    status:string;  // Or Date, depending on how you store the date
+    // Add any other properties your row has
+  }
 
 const PlansTable: React.FC = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -24,7 +37,9 @@ const PlansTable: React.FC = () => {
     const itemsPerPage = 5; // Number of items per page
     const [isLoading, setIsLoading] = useState(true);
     const [plans, setPlans] = useState<Plan[]>([]);
-
+    
+        const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null); 
+const [isDialogOpen, setIsDialogOpen] = useState(false);
     const fetchPlans = async () => {
         setIsLoading(true);
         try {
@@ -46,6 +61,15 @@ const PlansTable: React.FC = () => {
               fetchPlans();
             }, []);
             // shouldRefresh
+
+
+            const handleRowSelect = (row: Row) => {
+                setSelectedPlan(row); // Set the selected price
+                setIsDialogOpen(true); // Open the dialog
+            };
+
+
+
     // Filter customers based on the selected status
     const filteredPlans = plans.filter((plan) => {
         if (filteredStatus === "All") return true;
@@ -93,6 +117,11 @@ const PlansTable: React.FC = () => {
         Pending: "bg-yellow-500 text-white",
         Active: "bg-green-500 text-white",
         "Not Active": "bg-red-500 text-white",
+    };
+
+    const closeDialog = () => {
+        setIsDialogOpen(false);
+        
     };
 
     return (
@@ -197,6 +226,7 @@ const PlansTable: React.FC = () => {
                         
                         <tr
                            key={plan._id || index}
+                           onClick={() => handleRowSelect(plan)}
                          className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                             <td className="w-4 p-4">
                                 <div className="flex items-center">
@@ -273,6 +303,16 @@ const PlansTable: React.FC = () => {
                     Next
                 </button>
             </div>
+
+
+             {/* Dialog */}
+                          {isDialogOpen && selectedPlan && (
+                            <ViewPlanDialog
+                            plan={selectedPlan}  // Pass the selected row to the dialog
+                                onClose={closeDialog}  // Close dialog function
+                                refreshPlans={fetchPlans} // Pass refresh function to EditPriceDialog
+                            />
+                        )}
         </div>
     );
 };
