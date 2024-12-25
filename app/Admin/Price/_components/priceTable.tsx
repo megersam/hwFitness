@@ -27,22 +27,25 @@ const PriceTable: React.FC = () => {
     const [isDialogOpen, setIsDialogOpen] = useState(false); // Manage dialog visibility
     const itemsPerPage = 5;
 
+      // Fetch prices
+  const fetchPrices = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/price');
+      const data = await response.json();
+      if (data.prices) {
+        setPrices(data.prices);
+      }
+    } catch (error) {
+      console.error('Error fetching prices:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
     // Fetch prices from the API
     useEffect(() => {
-        const fetchPrices = async () => {
-            try {
-                const response = await fetch("/api/price");
-                const data = await response.json();
-                setPrices(data.prices || []);
-            } catch (error) {
-                console.error("Error fetching prices:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
         fetchPrices();
-    }, []);
+      }, []);
 
     const filteredPrices = prices.filter((price) => {
         if (filteredStatus === null) return true;
@@ -272,6 +275,7 @@ const PriceTable: React.FC = () => {
                 <EditPriceDialog
                 price={selectedPrice}  // Pass the selected row to the dialog
                     onClose={closeDialog}  // Close dialog function
+                    refreshPrices={fetchPrices} // Pass refresh function to EditPriceDialog
                 />
             )}
         </div>

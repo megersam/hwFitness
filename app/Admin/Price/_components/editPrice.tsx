@@ -19,9 +19,10 @@ interface Row {
 interface EditPriceDialogProps {
     price: Row | null;
     onClose: () => void;
+    refreshPrices: () => void; // Function to refresh the price list
 }
 
-export const EditPriceDialog: React.FC<EditPriceDialogProps> = ({ price, onClose }) => {
+export const EditPriceDialog: React.FC<EditPriceDialogProps> = ({ price, onClose, refreshPrices  }) => {
     const [priceValue, setPriceValue] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
     const [priceStatus, setPriceStatus] = useState(price?.status || false);
@@ -37,23 +38,53 @@ export const EditPriceDialog: React.FC<EditPriceDialogProps> = ({ price, onClose
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true); // Start loading spinner
-
+    
+        if (!price) {
+            // Handle the case where `price` is null or undefined
+            toast.error('Price data is missing');
+            setLoading(false);
+            return;
+        }
+    
+        // Prepare the data to be sent to the API
+        const dataToUpdate = {
+            price: priceValue,
+            status: priceStatus, // status is boolean, so we send it directly (true or false)
+            createdAt: price.createdAt ? new Date(price.createdAt).toISOString() : new Date().toISOString(), // Fallback to current date if createdAt is undefined
+        };
+    
+        // Log the data to be updated
+        console.log('Data to update:', dataToUpdate);
+    
         try {
-            const response = await axios.put(`/api/price/${price?._id}`, {
-                price: priceValue,
-                status: priceStatus, // Include status in the update
+            // Make the PUT request to the API to update the price status
+            const response = await fetch(`/api/price/${price._id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(dataToUpdate),
             });
-
-            // Show success toast
-            toast.success('Price updated successfully!');
-            onClose(); // Close dialog
+    
+            const responseData = await response.json();
+            if (response.ok) {
+                // Show success toast
+                toast.success('Price updated successfully!');
+                refreshPrices();
+            } else {
+                // Handle error if the response is not successful
+                toast.error(`Failed to update price: ${responseData.error}`);
+            }
         } catch (error) {
-            // Show error toast if update fails
-            toast.error('Failed to update price. Please try again.');
+            // Handle any unexpected errors
+            console.error('Error updating price:', error);
+            toast.error('Failed to update price');
         } finally {
             setLoading(false); // Stop loading spinner
+            onClose(); // Close dialog
         }
     };
+    
 
     return (
         <Dialog open={true} onOpenChange={onClose}>
@@ -145,7 +176,7 @@ export const EditPriceDialog: React.FC<EditPriceDialogProps> = ({ price, onClose
                         className="relative"
                     >
                         {loading && <Loader size="35px" className="animate-spin" />}
-                        {loading ? 'Saving...' : 'Save'}
+                        {loading ? 'Updating...' : 'Update'}
                     </Button>
                 </DialogFooter>
             </DialogContent>
