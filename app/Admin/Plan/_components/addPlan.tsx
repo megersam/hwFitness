@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { Loader } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface AddPlanProps {
     visible: boolean;
@@ -23,8 +24,33 @@ export function AddPlanDialog({ visible, onClose }: AddPlanProps) {
     const [discount, setDiscount] = useState(""); // Track discount (true/false)
     const [percentage, setPercentage] = useState(0); // Track discount percentage
     const [total, setTotal] = useState(0); // Track calculated total
+    const [price, setPrice] = useState(0); // Price fetched from the API
+    
+  const [loading, setLoading] = useState<boolean>(false); // Track loading state
 
-    const price = 30; // Base price per day
+    // Fetch the price when the dialog opens
+    useEffect(() => {
+        if (visible) {
+            fetchPrice();
+        }
+    }, [visible]);
+
+    // Fetch price from the API
+    const fetchPrice = async () => {
+        try {
+            const response = await fetch('/api/price/status'); // Adjust the endpoint as needed
+            const data = await response.json();
+
+            if (data.prices && data.prices.length > 0) {
+                // Assume we use the first price if multiple are returned
+                setPrice(data.prices[0].price);
+            } else {
+                console.warn("No active prices found.");
+            }
+        } catch (error) {
+            console.error("Error fetching price:", error);
+        }
+    };
 
     // Handle plan change
     const handlePlanChange = (event: any) => {
@@ -74,6 +100,21 @@ export function AddPlanDialog({ visible, onClose }: AddPlanProps) {
         }
 
         setTotal(totalPrice);
+    };
+
+    // Handle Save button click
+    const handleSave = () => {
+        setLoading(true);
+        const data = {
+            plan,
+            duration,
+            discount,
+            percentage,
+            price,
+            total,
+        };
+        console.log("Inputted Data:", data);
+        setLoading(false);
     };
 
     return (
@@ -170,7 +211,15 @@ export function AddPlanDialog({ visible, onClose }: AddPlanProps) {
                 </div>
 
                 <DialogFooter>
-                    <Button type="submit">Save</Button>
+                    <Button
+                        onClick={handleSave}
+                        disabled={loading}
+                        type="submit">
+                        {loading && (
+                            <Loader size="35px" className="animate-spin" />
+                        )}
+                        {loading ? 'Saving...' : 'Save'}
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

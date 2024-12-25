@@ -66,6 +66,8 @@ export function AdminSideBar() {
                                             <Link
                                                 href={item.url}
                                                 legacyBehavior
+                                                shallow={true}
+
                                             >
                                                 <a
                                                     className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-md transition ${

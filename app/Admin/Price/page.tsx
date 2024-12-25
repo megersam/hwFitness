@@ -32,7 +32,7 @@ const PriceingPage = () => {
          onClick={handleAddPriceClick}
         className="flex items-center space-x-2">
           <Plus size={16} />
-          <span>Add Plan</span>
+          <span>Add Price</span>
         </Button>
       </div>
       <AddPriceDialog
