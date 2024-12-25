@@ -1,17 +1,18 @@
 'use client'
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { plans } from "./plans";
 import { CheckCircleIcon, XCircleIcon } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Plan {
-    id: number;
-    name: string;
-    duration: boolean;
+    _id: string;
+    planName: string;
+    period: boolean;
     date: string;
     discount: boolean;
     price: number,
     total: number
-    percent: string;
+    percentage: string;
     status: string;
 }
 
@@ -22,15 +23,17 @@ const PlansTable: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5; // Number of items per page
     const [isLoading, setIsLoading] = useState(true);
-    const [plan, setPlan] = useState<Plan[]>([]);
-    const fetchPrices = async () => {
+    const [plans, setPlans] = useState<Plan[]>([]);
+
+    const fetchPlans = async () => {
         setIsLoading(true);
         try {
-          const response = await fetch('/api/price');
+          const response = await fetch('/api/plan');
           const data = await response.json();
-          if (data.prices) {
-            setPlan(data.prices);
+          if (data.plans) {
+            setPlans(data.plans);
           }
+          console.log(data.plans);
         } catch (error) {
           console.error('Error fetching prices:', error);
         } finally {
@@ -38,6 +41,11 @@ const PlansTable: React.FC = () => {
         }
       };
 
+       // Fetch prices from the API
+          useEffect(() => {
+              fetchPlans();
+            }, []);
+            // shouldRefresh
     // Filter customers based on the selected status
     const filteredPlans = plans.filter((plan) => {
         if (filteredStatus === "All") return true;
@@ -46,7 +54,7 @@ const PlansTable: React.FC = () => {
 
     // Further filter customers based on the search query (case-insensitive search)
     const searchedPlans = filteredPlans.filter((Plan) => {
-        const name = `${Plan.name}`.toLowerCase();
+        const name = `${Plan.planName}`.toLowerCase();
         return (
             name.includes(searchQuery.toLowerCase())
         );
@@ -91,68 +99,7 @@ const PlansTable: React.FC = () => {
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
             {/* Header */}
             <div className="flex items-center justify-between flex-col md:flex-row flex-wrap space-y-4 md:space-y-0 py-4 bg-white dark:bg-gray-900">
-                {/* Dropdown Button */}
-                <div>
-                    <button
-                        id="dropdownActionButton"
-                        onClick={() => setDropdownOpen(!dropdownOpen)}
-                        className="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700 dark:focus:ring-gray-700"
-                        type="button"
-                    >
-                        <span className="sr-only">Status button</span>
-                        <span className={getStatusColor(filteredStatus)}>{filteredStatus}</span>
-                        <svg
-                            className="w-2.5 h-2.5 ml-2.5"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 10 6"
-                            aria-hidden="true"
-                        >
-                            <path
-                                stroke="currentColor"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M1 1l4 4 4-4"
-                            />
-                        </svg>
-                    </button>
-                    {/* Dropdown Menu */}
-                    {dropdownOpen && (
-                        <div className="absolute mt-2 z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
-                            <ul className="py-1 text-sm text-gray-700 dark:text-gray-200">
-                                <li>
-                                    <a
-                                        onClick={() => handleStatusChange("All")}
-                                        href="#"
-                                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                    >
-                                        Recent Plans
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                        onClick={() => handleStatusChange("Active")}
-                                        href="#"
-                                        className="block px-4 py-2 text-green-500 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                    >
-                                        Activate Plans
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                        onClick={() => handleStatusChange("Not Active")}
-                                        href="#"
-                                        className="block px-4 py-2 text-red-500 hover:bg-gray-100 dark:hover:bg-gray-600"
-                                    >
-                                        Not Active
-                                    </a>
-                                </li>
-
-                            </ul>
-                        </div>
-                    )}
-                </div>
+                 
 
                 {/* Search Input */}
                 <div className="relative">
@@ -217,13 +164,40 @@ const PlansTable: React.FC = () => {
                         </th>
 
                         <th scope="col" className="px-6 py-3">
-                            Status
+                            Total
                         </th>
                     </tr>
                 </thead>
+
                 <tbody>
-                    {paginatedPlans.map((plan) => (
-                        <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    {isLoading
+                        ? Array.from({ length: itemsPerPage }).map((_, index) => (
+                            <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                <td className="p-4">
+                                    <Skeleton className="h-4 w-4 rounded-md" />
+                                </td>
+                                <td className="px-6 py-4">
+                                    <Skeleton className="h-4 w-20" />
+                                </td>
+                                <td className="px-6 py-4">
+                                    <Skeleton className="h-4 w-32" />
+                                </td>
+                                <td className="px-6 py-4">
+                                    <Skeleton className="h-4 w-16" />
+                                </td>
+                                <td className="px-6 py-4">
+                                    <Skeleton className="h-4 w-16" />
+                                </td>
+                                <td className="px-6 py-4">
+                                    <Skeleton className="h-4 w-16" />
+                                </td>
+                            </tr>
+                        ))
+                    : paginatedPlans.map((plan, index) => (
+                        
+                        <tr
+                           key={plan._id || index}
+                         className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                             <td className="w-4 p-4">
                                 <div className="flex items-center">
                                     <input
@@ -242,33 +216,37 @@ const PlansTable: React.FC = () => {
                             >
 
                                 <div className="pl-3">
-                                    <div className="text-base font-semibold">{plan.name}</div>
+                                    <div className="text-base font-semibold">{plan.planName}</div>
 
                                 </div>
                             </th>
-                            <td className="px-6 py-4">{plan.duration}</td>
-                            <td className="px-6 py-4">
+                            <td className="px-6 py-4 text-base font-semibold">{plan.period}</td>
+                            <td className="px-6 py-4 text-base font-semibold">
                                 {plan.discount === true ? (
                                      <CheckCircleIcon className="h-6 w-6 text-green-500" />
                                 ) : (
                                     <XCircleIcon className="h-6 w-6 text-red-500" />
                                 )}
                             </td>
-                            <td className="px-6 py-4">{plan.percent}</td>
-                            <td className="px-6 py-4">
-                                <div className="flex items-center">
-                                    <span
-                                        className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[plan.status]
-                                            }`}
-                                    >
-                                        {plan.status}
-                                    </span>
+                            <td className="px-6 py-4 text-base font-semibold">{plan.percentage || 'N/A'}</td>
+                            <div className="pl-3">
+                                    <div className="text-base font-semibold">{plan.total}</div>
+
                                 </div>
-                            </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
+
+
+
+
+
+
+
+
+
+
             {/* Pagination Controls */}
             <div className="flex justify-between items-center mt-4 px-4 py-3 bg-gray-50 border-t border-gray-200 rounded-lg shadow-md">
                 <button
