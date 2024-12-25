@@ -1,7 +1,7 @@
 'use client'
 import { CheckCircleIcon, XCircleIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
-
+import { Skeleton } from "@/components/ui/skeleton"; // Assuming you've installed ShadCN and have this component
 
 interface Price {
     id: number;
@@ -13,7 +13,8 @@ interface Price {
 const PriceTable: React.FC = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [prices, setPrices] = useState<Price[]>([]);
-    const [filteredStatus, setFilteredStatus] = useState<boolean | null>(null); // null for 'All', true/false for active/inactive
+    const [isLoading, setIsLoading] = useState(true); // Track loading state
+    const [filteredStatus, setFilteredStatus] = useState<boolean | null>(null);
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
@@ -24,50 +25,38 @@ const PriceTable: React.FC = () => {
             try {
                 const response = await fetch("/api/price");
                 const data = await response.json();
-                console.log(data); // Ensure this shows the expected structure
-                if (Array.isArray(data.prices)) {
-                    setPrices(data.prices); // Set the 'prices' state
-                } else {
-                    console.error("Expected an array under 'prices', but got:", data.prices);
-                }
+                setPrices(data.prices || []);
             } catch (error) {
                 console.error("Error fetching prices:", error);
+            } finally {
+                setIsLoading(false); // Stop loading once the data is fetched
             }
         };
 
         fetchPrices();
     }, []);
 
-    // Filter prices based on the selected status
     const filteredPrices = prices.filter((price) => {
-        if (filteredStatus === null) return true; // Return all if status is null (i.e., 'All' selected)
-        return price.status === filteredStatus; // Filter by the boolean status
+        if (filteredStatus === null) return true;
+        return price.status === filteredStatus;
     });
 
-    // Further filter prices based on the search query (case-insensitive search)
     const searchedPrices = filteredPrices.filter((price) => {
         const priceName = `${price.price}`.toLowerCase();
         return priceName.includes(searchQuery.toLowerCase());
     });
 
-    // Calculate pagination
     const totalPages = Math.ceil(searchedPrices.length / itemsPerPage);
     const paginatedPrices = searchedPrices.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
     );
 
-    // Function to handle the status change and close the dropdown
     const handleStatusChange = (status: string) => {
-        if (status === "All") {
-            setFilteredStatus(null); // 'All' sets status to null
-        } else {
-            setFilteredStatus(status === "Active"); // Converts "Active" to true, "Not Active" to false
-        }
-        setCurrentPage(1); // Reset to the first page when the filter changes
+        setFilteredStatus(status === "All" ? null : status === "Active");
+        setCurrentPage(1);
         setDropdownOpen(false);
     };
-
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
@@ -83,8 +72,6 @@ const PriceTable: React.FC = () => {
                 return "text-gray-500";
         }
     };
-
-
 
     return (
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -149,7 +136,6 @@ const PriceTable: React.FC = () => {
                                         Not Active
                                     </a>
                                 </li>
-
                             </ul>
                         </div>
                     )}
@@ -160,28 +146,11 @@ const PriceTable: React.FC = () => {
                     <label htmlFor="table-search" className="sr-only">
                         Search
                     </label>
-                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <svg
-                            className="w-4 h-4 text-gray-500 dark:text-gray-400"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 20 20"
-                            aria-hidden="true"
-                        >
-                            <path
-                                stroke="currentColor"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M19 19l-4-4m0-7a7 7 0 11-14 0 7 7 0 0114 0z"
-                            />
-                        </svg>
-                    </div>
                     <input
                         type="text"
                         id="table-search-customers"
-                        value={searchQuery} // Bind input value to state
-                        onChange={(e) => setSearchQuery(e.target.value)} // Update search query on input change
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         className="block p-2 pl-10 text-sm text-gray-900 border border-primary rounded-lg w-80 bg-white focus:ring-primary focus:border-primary dark:border-gray-600 dark:placeholder-primary dark:text-white dark:focus:ring-primary dark:focus:border-blue-500"
                         placeholder="Search for Price"
                     />
@@ -204,67 +173,57 @@ const PriceTable: React.FC = () => {
                                 </label>
                             </div>
                         </th>
-                        <th scope="col" className="px-6 py-3">
-                            Price
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Date
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Status
-                        </th>
-
+                        <th scope="col" className="px-6 py-3">Price</th>
+                        <th scope="col" className="px-6 py-3">Date</th>
+                        <th scope="col" className="px-6 py-3">Status</th>
                     </tr>
                 </thead>
-
-
                 <tbody>
-                    {paginatedPrices.map((price, index) => (
-                        <tr
-                            key={price.id || index}  
-                            className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-                        >
-                            <td className="w-4 p-4">
-                                <div className="flex items-center">
-                                    <input
-                                        id="checkbox-table-search-1"
-                                        type="checkbox"
-                                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                                    />
-                                    <label htmlFor="checkbox-table-search-1" className="sr-only">
-                                        checkbox
-                                    </label>
-                                </div>
-                            </td>
-                            <th
-                                scope="row"
-                                className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
-                            >
-                                <div className="pl-3">
-                                    <div className="text-base font-semibold">{price.price}</div>
-                                </div>
-                            </th>
-                            <td className="px-6 py-4">{price.createdAt}</td>
-                            <td className="px-6 py-4">
-                                <div className="flex items-center">
-                                    {price.status === true ? (
-                                        <CheckCircleIcon className="h-6 w-6 text-green-500" />
-                                    ) : (
-                                        <XCircleIcon className="h-6 w-6 text-red-500" />
-                                    )}
-                                </div>
-                            </td>
-                        </tr>
-                    ))}
+                    {isLoading
+                        ? Array.from({ length: itemsPerPage }).map((_, index) => (
+                              <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                  <td className="p-4">
+                                      <Skeleton className="h-4 w-4 rounded-md" />
+                                  </td>
+                                  <td className="px-6 py-4">
+                                      <Skeleton className="h-4 w-20" />
+                                  </td>
+                                  <td className="px-6 py-4">
+                                      <Skeleton className="h-4 w-32" />
+                                  </td>
+                                  <td className="px-6 py-4">
+                                      <Skeleton className="h-4 w-16" />
+                                  </td>
+                              </tr>
+                          ))
+                        : paginatedPrices.map((price, index) => (
+                              <tr
+                                  key={price.id || index}
+                                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                              >
+                                  <td className="p-4">
+                                      <input
+                                          type="checkbox"
+                                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                      />
+                                  </td>
+                                  <td className="px-6 py-4">{price.price}</td>
+                                  <td className="px-6 py-4">{price.createdAt}</td>
+                                  <td className="px-6 py-4">
+                                      {price.status ? (
+                                          <CheckCircleIcon className="h-6 w-6 text-green-500" />
+                                      ) : (
+                                          <XCircleIcon className="h-6 w-6 text-red-500" />
+                                      )}
+                                  </td>
+                              </tr>
+                          ))}
                 </tbody>
-
             </table>
 
-
-
-
-            {/* Pagination Controls */}
-            <div className="flex justify-between items-center mt-4 px-4 py-3 bg-gray-50 border-t border-gray-200 rounded-lg shadow-md">
+             
+             {/* Pagination Controls */}
+             <div className="flex justify-between items-center mt-4 px-4 py-3 bg-gray-50 border-t border-gray-200 rounded-lg shadow-md">
                 <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
