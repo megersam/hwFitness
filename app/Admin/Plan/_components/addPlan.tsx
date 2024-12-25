@@ -10,8 +10,10 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import axios from "axios";
 import { Loader } from "lucide-react";
 import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 
 interface AddPlanProps {
     visible: boolean;
@@ -103,18 +105,39 @@ export function AddPlanDialog({ visible, onClose }: AddPlanProps) {
     };
 
     // Handle Save button click
-    const handleSave = () => {
+    const handleSave = async () => {
         setLoading(true);
+    
         const data = {
-            plan,
-            duration,
+            planName: plan, // Ensure the field names match your backend schema
+            period: duration,
             discount,
             percentage,
             price,
             total,
         };
-        console.log("Inputted Data:", data);
-        setLoading(false);
+    
+        try {
+            console.log("Inputted Data:", data);
+    
+            // Make a POST request to the API
+            const response = await axios.post("/api/plan", data);
+    
+            // Display a success toast
+            toast.success(response.data.message || "Plan saved successfully!");
+    
+            // Optionally, reset form fields here
+            // resetForm();
+        } catch (error:any) {
+            console.error("Error saving plan:", error);
+    
+            // Display an error toast
+            toast.error(
+                error.response?.data?.error || "Failed to save the plan. Please try again."
+            );
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
