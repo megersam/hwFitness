@@ -66,11 +66,21 @@ export const ViewPlanDialog: React.FC<ViewPlanProps> = ({ plan, onClose, refresh
 
     const handleSave = async () => {
         if (!plan) return;
-
+    
         setLoading(true);
         try {
-            const updatedPlan = { ...plan, price, period: duration, discount, percentage };
-
+            // Make sure to include planName and total in the updatedPlan object
+            const updatedPlan = { 
+                ...plan, 
+                planName, // Update planName
+                price, 
+                period: duration, 
+                discount, 
+                percentage, 
+                total // Update total as well
+            };
+            console.log(updatedPlan);
+    
             const response = await axios.put(`/api/plan/${plan._id}`, updatedPlan);
             if (response.status === 200) {
                 toast.success("Plan updated successfully!");
@@ -84,6 +94,7 @@ export const ViewPlanDialog: React.FC<ViewPlanProps> = ({ plan, onClose, refresh
             setLoading(false);
         }
     };
+    
 
     return (
         <Dialog open={Boolean(plan)} onOpenChange={(open) => !open && onClose()}>
@@ -135,7 +146,14 @@ export const ViewPlanDialog: React.FC<ViewPlanProps> = ({ plan, onClose, refresh
                         <select
                             id="discount"
                             value={discount ? "true" : "false"}
-                            onChange={(e) => setDiscount(e.target.value === "true")}
+                            onChange={(e) => {
+                                const newDiscount = e.target.value === "true";
+                                setDiscount(newDiscount);
+                                // Reset percentage to 0 if discount is set to false
+                                if (!newDiscount) {
+                                    setPercentage(0);
+                                }
+                            }}
                             className="w-full border rounded px-2 py-1"
                         >
                             <option value="true">True</option>
@@ -162,6 +180,7 @@ export const ViewPlanDialog: React.FC<ViewPlanProps> = ({ plan, onClose, refresh
                         <Input
                             id="total"
                             value={total.toFixed(2)} // Display total with 2 decimal places
+                            onChange={(e) => setTotal(Number(e.target.value))}
                             readOnly
                             className="bg-gray-100"
                         />
