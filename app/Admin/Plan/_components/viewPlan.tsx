@@ -73,7 +73,7 @@ export const ViewPlanDialog: React.FC<ViewPlanProps> = ({ plan, onClose, refresh
             const updatedPlan = { 
                 ...plan, 
                 planName, // Update planName
-                price, 
+               
                 period: duration, 
                 discount, 
                 percentage, 
