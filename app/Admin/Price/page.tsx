@@ -7,10 +7,15 @@ import PriceTable from './_components/priceTable';
 
 const PriceingPage = () => {
   const [dialogVisible, setDialogVisible] = useState(false);
-    
+  const [shouldRefresh, setShouldRefresh] = useState(false);
     
       const handleAddPriceClick = () => setDialogVisible(true);
       const closeDialog = () => setDialogVisible(false);
+
+
+        // Function to refresh prices in the table
+  const refreshPrices = () => setShouldRefresh((prev) => !prev); // Toggle to trigger re-fetch in PriceTable
+
   return (
     <div className="px-4 sm:px-6 lg:px-8">
     {/* Search Input */}
@@ -30,13 +35,16 @@ const PriceingPage = () => {
           <span>Add Plan</span>
         </Button>
       </div>
-      <AddPriceDialog visible={dialogVisible} onClose={closeDialog}/>
+      <AddPriceDialog
+       visible={dialogVisible}
+       onPriceAdded={refreshPrices}
+        onClose={closeDialog}/>
     </div>
 
     {/* Table for users data display */}
     <div className="relative overflow-x-auto py-6">
       
-        <PriceTable/>
+        <PriceTable shouldRefresh={shouldRefresh} />
       
     </div>
   </div>

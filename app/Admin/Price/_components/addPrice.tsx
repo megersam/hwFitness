@@ -11,10 +11,11 @@ import { Loader } from 'lucide-react'; // Importing spinner icon from lucide-rea
 
 interface AddPriceProps {
   visible: boolean;
-  onClose: () => void;
+  onClose: () => void; 
+  onPriceAdded: () => void;
 }
 
-export function AddPriceDialog({ visible, onClose }: AddPriceProps) {
+export function AddPriceDialog({ visible, onClose, onPriceAdded  }: AddPriceProps) {
   const [price, setPrice] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false); // Track loading state
 
@@ -28,6 +29,7 @@ export function AddPriceDialog({ visible, onClose }: AddPriceProps) {
       // Success: Show toast and reset price input
       toast.success('Price added successfully!');
       setPrice(0);  // Optionally reset price field
+      onPriceAdded();
       onClose(); // Close dialog
 
     } catch (error) {

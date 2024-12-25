@@ -16,7 +16,10 @@ interface Row {
     createdAt: string;  // Or Date, depending on how you store the date
     // Add any other properties your row has
   }
-const PriceTable: React.FC = () => {
+  interface PriceTableProps {
+    shouldRefresh: boolean; // Prop to trigger the refresh
+  }
+const PriceTable: React.FC<PriceTableProps> = ({ shouldRefresh }) => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [prices, setPrices] = useState<Price[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -45,7 +48,7 @@ const PriceTable: React.FC = () => {
     // Fetch prices from the API
     useEffect(() => {
         fetchPrices();
-      }, []);
+      }, [shouldRefresh]);
 
     const filteredPrices = prices.filter((price) => {
         if (filteredStatus === null) return true;
