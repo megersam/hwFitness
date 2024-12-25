@@ -2,21 +2,29 @@
 import { CheckCircleIcon, XCircleIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton"; // Assuming you've installed ShadCN and have this component
-
+import { EditPriceDialog } from "./editPrice";
 interface Price {
-    id: number;
-    price: string;
+    _id: string;
+    price: number;
     status: boolean;
     createdAt: string;
 }
-
+interface Row {
+    _id: string;  
+    price: number       // or number depending on your data
+    status: boolean;
+    createdAt: string;  // Or Date, depending on how you store the date
+    // Add any other properties your row has
+  }
 const PriceTable: React.FC = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [prices, setPrices] = useState<Price[]>([]);
-    const [isLoading, setIsLoading] = useState(true); // Track loading state
+    const [isLoading, setIsLoading] = useState(true);
     const [filteredStatus, setFilteredStatus] = useState<boolean | null>(null);
-    const [searchQuery, setSearchQuery] = useState<string>("");
+    const [searchQuery, setSearchQuery] = useState<string>(""); 
     const [currentPage, setCurrentPage] = useState(1);
+    const [selectedPrice, setSelectedPrice] = useState<Price | null>(null); // Manage the selected price
+    const [isDialogOpen, setIsDialogOpen] = useState(false); // Manage dialog visibility
     const itemsPerPage = 5;
 
     // Fetch prices from the API
@@ -29,7 +37,7 @@ const PriceTable: React.FC = () => {
             } catch (error) {
                 console.error("Error fetching prices:", error);
             } finally {
-                setIsLoading(false); // Stop loading once the data is fetched
+                setIsLoading(false);
             }
         };
 
@@ -62,16 +70,20 @@ const PriceTable: React.FC = () => {
         setCurrentPage(page);
     };
 
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case "Active":
-                return "text-green-500";
-            case "Not Active":
-                return "text-red-500";
-            default:
-                return "text-gray-500";
-        }
+    const handleRowSelect = (row: Row) => {
+        setSelectedPrice(row); // Set the selected price
+        setIsDialogOpen(true); // Open the dialog
     };
+
+    const closeDialog = () => {
+        setIsDialogOpen(false);
+        setSelectedPrice(null);
+    };
+
+    // Define the getStatusColor function
+    const getStatusColor = (status: boolean) => {
+        return status ? "text-green-500" : "text-red-500"; // Active = green, Inactive = red
+    }; 
 
     return (
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -87,7 +99,7 @@ const PriceTable: React.FC = () => {
                     >
                         <span className="sr-only">Status button</span>
                         <span className={getStatusColor(filteredStatus)}>
-                            {filteredStatus === null ? "None" : filteredStatus ? "Active" : "Not Active"}
+                            {filteredStatus === null ? "All" : filteredStatus ? "Active" : "Inactive"}
                         </span>
                         <svg
                             className="w-2.5 h-2.5 ml-2.5"
@@ -115,7 +127,7 @@ const PriceTable: React.FC = () => {
                                         href="#"
                                         className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                                     >
-                                        Recent Plans
+                                        All
                                     </a>
                                 </li>
                                 <li>
@@ -124,7 +136,7 @@ const PriceTable: React.FC = () => {
                                         href="#"
                                         className="block px-4 py-2 text-green-500 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                                     >
-                                        Activate Plans
+                                        Activate  
                                     </a>
                                 </li>
                                 <li>
@@ -133,7 +145,7 @@ const PriceTable: React.FC = () => {
                                         href="#"
                                         className="block px-4 py-2 text-red-500 hover:bg-gray-100 dark:hover:bg-gray-600"
                                     >
-                                        Not Active
+                                        Inactive
                                     </a>
                                 </li>
                             </ul>
@@ -198,7 +210,8 @@ const PriceTable: React.FC = () => {
                         ))
                         : paginatedPrices.map((price, index) => (
                             <tr
-                                key={price.id || index}
+                                key={price._id || index}
+                                onClick={() => handleRowSelect(price)}
                                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                             >
                                 <td className="p-4">
@@ -254,6 +267,13 @@ const PriceTable: React.FC = () => {
                     Next
                 </button>
             </div>
+              {/* Dialog */}
+              {isDialogOpen && selectedPrice && (
+                <EditPriceDialog
+                price={selectedPrice}  // Pass the selected row to the dialog
+                    onClose={closeDialog}  // Close dialog function
+                />
+            )}
         </div>
     );
 };
