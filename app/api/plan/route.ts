@@ -20,10 +20,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
 
     // Check for existing plan with the same planName and period
-    const existingPlan = await PlanModel.findOne({ planName, period });
+    const existingPlan = await PlanModel.findOne({ planName, period, price });
     if (existingPlan) {
       return NextResponse.json(
-        { error: "A plan with the same planName and period already exists." },
+        { error: "A plan with the same planName, period and price already exists." },
         { status: 400 }
       );
     }
