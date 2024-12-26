@@ -104,7 +104,7 @@ const PriceTable: React.FC<PriceTableProps> = ({ shouldRefresh }) => {
                         type="button"
                     >
                         <span className="sr-only">Status button</span>
-                        <span className={getStatusColor(filteredStatus)}>
+                        <span className={filteredStatus !== null ? getStatusColor(filteredStatus) : ""}>
                             {filteredStatus === null ? "All" : filteredStatus ? "Active" : "Inactive"}
                         </span>
                         <svg

@@ -6,10 +6,10 @@ import { ObjectId } from "mongodb";
 // Connect to the database
 connectDB();
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }): Promise<NextResponse> {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }): Promise<NextResponse> {
   try {
-    // Wait for params to be available
-    const { id } = await params; // Await the params object to properly access the id
+    // Await the params object to properly access the id
+    const { id } = await params;
 
     const { price, status } = await req.json(); // Get price and status from the request body
 
