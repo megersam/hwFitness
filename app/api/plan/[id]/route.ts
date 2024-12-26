@@ -2,7 +2,13 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import PlanModel from '@/Models/planModel';
 
-export async function PUT(request: Request, context: { params: { id: string } }): Promise<NextResponse> {
+interface RouteContext {
+  params: {
+    id: string;
+  };
+}
+
+export async function PUT(request: Request, context: RouteContext): Promise<NextResponse> {
   const { id } = context.params;
   await connectDB();
 
