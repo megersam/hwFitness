@@ -13,7 +13,7 @@ interface Plan {
     price: number,
     total: number,
     percentage: number,
-    status: string;
+    status: boolean;
 
 
 }
@@ -25,7 +25,7 @@ interface Row {
     price: number,
     total: number,
     percentage: number,
-    status: string;  // Or Date, depending on how you store the date
+    status: boolean;  // Or Date, depending on how you store the date
     // Add any other properties your row has
 }
 
@@ -77,7 +77,7 @@ const PlansTable: React.FC<PlanTableProps> = ({ shouldRefresh }) => {
     // Filter customers based on the selected status
     const filteredPlans = plans.filter((plan) => {
         if (filteredStatus === "All") return true;
-        return plan.status === filteredStatus;
+       // return plan.status === filteredStatus;
     });
 
     // Further filter customers based on the search query (case-insensitive search)
@@ -272,7 +272,7 @@ const PlansTable: React.FC<PlanTableProps> = ({ shouldRefresh }) => {
                                 <td className="text-base font-semibold">{plan.total}</td>
                                 <div className="flex items-center">
                                     <span
-                                        className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[plan.status as keyof typeof statusColors]}`}
+                                        className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[plan.status as unknown as keyof typeof statusColors]}`}
                                     >
                                         {plan.status ? "Active" : "Inactive"}
                                     </span>

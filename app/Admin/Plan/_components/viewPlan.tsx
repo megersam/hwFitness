@@ -17,7 +17,7 @@ interface Row {
     price: number;
     total: number;
     percentage: number;
-    status: string;
+    status: boolean;
 }
 
 interface ViewPlanProps {
@@ -25,6 +25,7 @@ interface ViewPlanProps {
     onClose: () => void;
     refreshPlans: () => void; // Function to refresh the price list
 }
+ 
 
 export const ViewPlanDialog: React.FC<ViewPlanProps> = ({ plan, onClose, refreshPlans }) => {
     const [price] = useState<number>(plan?.price || 0);
@@ -32,12 +33,20 @@ export const ViewPlanDialog: React.FC<ViewPlanProps> = ({ plan, onClose, refresh
     const [discount, setDiscount] = useState<boolean>(plan?.discount || false);
     const [planName, setPlanName] = useState<string>(plan?.planName || 'Daily');
     const [percentage, setPercentage] = useState<number>(plan?.percentage || 0);
-    const [total, setTotal] = useState<number>(plan?.total || 0);  // Initial total value
-
-    const [loading, setLoading] = useState<boolean>(false); // Track loading state
+    const [total, setTotal] = useState<number>(plan?.total || 0);  
+    const [planStatus, setPlanStatus] = useState<boolean>(plan?.status || true); // Set the initial status as boolean
+    const [loading, setLoading] = useState<boolean>(false); 
     const [isDeleting, setIsDeleting] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-    // Calculate total price
+
+    useEffect(() => {
+        // Ensure that the planStatus is updated when `plan` changes
+        if (plan) {
+            setPlanStatus(plan.status); // Update planStatus with the boolean value from plan
+        }
+    }, [plan]); // This will run whenever the `plan` prop changes
+
+    // Calculate total price and update on planName, duration, discount, or percentage change
     const calculateTotal = (
         selectedPlan: string,
         selectedDuration: number,
@@ -68,33 +77,33 @@ export const ViewPlanDialog: React.FC<ViewPlanProps> = ({ plan, onClose, refresh
     const handleSave = async () => {
         if (!plan) return;
 
-        setIsSaving(true)
+        setIsSaving(true);
         try {
-            // Make sure to include planName and total in the updatedPlan object
+            // Prepare the updated plan, including the status field (as boolean)
             const updatedPlan = {
                 ...plan,
-                planName, // Update planName
-
+                planName, 
                 period: duration,
                 discount,
                 percentage,
-                total // Update total as well
+                total,
+                status: planStatus // Include status as boolean (true for Active, false for Inactive)
             };
-            console.log(updatedPlan);
 
             const response = await axios.put(`/api/plan/${plan._id}`, updatedPlan);
             if (response.status === 200) {
                 toast.success("Plan updated successfully!");
-                refreshPlans(); // Refresh the plans after successful update
-                onClose(); // Close the dialog
+                refreshPlans(); 
+                onClose(); 
             }
         } catch (error) {
             console.error("Error updating plan", error);
             toast.error("Failed to update plan.");
         } finally {
-            setIsSaving(false)
+            setIsSaving(false);
         }
     };
+
     const handleDelete = async () => {
         if (!plan) return;
 
@@ -103,8 +112,8 @@ export const ViewPlanDialog: React.FC<ViewPlanProps> = ({ plan, onClose, refresh
             const response = await axios.delete(`/api/plan/${plan._id}`);
             if (response.status === 200) {
                 toast.success("Plan deleted successfully!");
-                refreshPlans(); // Refresh the list of plans after successful deletion
-                onClose(); // Close the dialog or modal
+                refreshPlans();
+                onClose();
             }
         } catch (error) {
             console.error("Error deleting plan", error);
@@ -113,7 +122,6 @@ export const ViewPlanDialog: React.FC<ViewPlanProps> = ({ plan, onClose, refresh
             setIsDeleting(false);
         }
     };
-
 
     return (
         <Dialog open={Boolean(plan)} onOpenChange={(open) => !open && onClose()}>
@@ -168,7 +176,6 @@ export const ViewPlanDialog: React.FC<ViewPlanProps> = ({ plan, onClose, refresh
                             onChange={(e) => {
                                 const newDiscount = e.target.value === "true";
                                 setDiscount(newDiscount);
-                                // Reset percentage to 0 if discount is set to false
                                 if (!newDiscount) {
                                     setPercentage(0);
                                 }
@@ -204,30 +211,40 @@ export const ViewPlanDialog: React.FC<ViewPlanProps> = ({ plan, onClose, refresh
                             className="bg-gray-100"
                         />
                     </div>
+
+                    {/* Status Selector */}
+                    <div>
+                        <Label htmlFor="status">Status</Label>
+                        <select
+                            id="status"
+                            value={planStatus ? "true" : "false"} // Display as "true" or "false"
+                            onChange={(e) => setPlanStatus(e.target.value === "true")} // Convert back to boolean
+                            className="w-full border rounded px-2 py-1"
+                        >
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
                 </div>
 
                 {/* Dialog Footer */}
                 <DialogFooter>
-                <Button 
-                variant="outline"
-                onClick={handleDelete}
-                disabled={isDeleting}
-                className={`bg-red-500 ${
-                    isDeleting ? "cursor-not-allowed opacity-75" : ""
-                } w-32 h-12 flex items-center justify-center`}>
-                {isDeleting ? <Loader className="animate-spin w-4 h-4" /> : "Delete"}
-            </Button>
-            <Button 
-                onClick={handleSave}
-                disabled={isSaving}
-                className={`bg-blue-500 ${
-                    isSaving ? "cursor-not-allowed opacity-75" : ""
-                } w-32 h-12 flex items-center justify-center`}>
-                {isSaving ? <Loader className="animate-spin w-4 h-4" /> : "Update"}
-            </Button>
-
+                    {/* <Button
+                        variant="outline"
+                        onClick={handleDelete}
+                        disabled={isDeleting}
+                        className={`bg-red-500 ${isDeleting ? "cursor-not-allowed opacity-75" : ""} w-32 h-12 flex items-center justify-center`}>
+                        {isDeleting ? <Loader className="animate-spin w-4 h-4" /> : "Delete"}
+                    </Button> */}
+                    <Button 
+                        onClick={handleSave}
+                        disabled={isSaving}
+                        className={`bg-blue-500 ${isSaving ? "cursor-not-allowed opacity-75" : ""} w-32 h-12 flex items-center justify-center`}>
+                        {isSaving ? <Loader className="animate-spin w-4 h-4" /> : "Update"}
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
     );
 };
+
