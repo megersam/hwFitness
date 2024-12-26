@@ -1,20 +1,15 @@
 import connectDB from "@/lib/db";
-import PriceModel from "@/Models/priceModel";
+import PlanModel from "@/Models/planModel";
 import { NextRequest, NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
-import PlanModel from "@/Models/planModel";
 
 // Connect to the database
 connectDB();
 
-  
-
-// Connect to the database
-connectDB();
-
+// Update a plan by ID
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }): Promise<NextResponse> {
   try {
-    const { id } = await params;// Destructure `id` from `params` synchronously
+    const { id } = await params; // Extract `id` from `params`
 
     // Validate the ID
     if (!ObjectId.isValid(id)) {
@@ -22,7 +17,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     }
 
     // Parse the request body
-    const { planName, period, discount, percentage, total, status } = await req.json();
+    const { planName, period, discount, percentage, price, total, status } = await req.json();
 
     // Update the plan
     const updatedPlan = await PlanModel.findByIdAndUpdate(
@@ -32,8 +27,9 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         ...(period && { period }),
         ...(discount !== undefined && { discount }),
         ...(percentage !== undefined && { percentage }),
+        ...(price && { price }),
         ...(total && { total }),
-        ...(status && { status }),
+        ...(status !== undefined && { status }), // Ensure status can be explicitly set to `false`
         updatedAt: new Date(),
       },
       { new: true } // Return the updated document
@@ -50,17 +46,17 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-
-
 // Delete a plan by ID
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }): Promise<NextResponse> {
   try {
     const { id } = await params;
 
+    // Validate the ID
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({ error: "Invalid plan ID" }, { status: 400 });
     }
 
+    // Delete the plan
     const deletedPlan = await PlanModel.findByIdAndDelete(new ObjectId(id));
 
     if (!deletedPlan) {

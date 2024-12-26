@@ -8,6 +8,7 @@ export interface IPlan extends Document {
     percentage?: number;
     price?: number;
     total?: number; 
+    status?: boolean; // Add the status field to the interface
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -29,7 +30,6 @@ const planSchema: Schema<IPlan> = new Schema(
         },
         percentage: {
             type: Number,
-
         },
         price: {
             type: Number,
@@ -37,8 +37,10 @@ const planSchema: Schema<IPlan> = new Schema(
         total: {
             type: Number,
         },
-        
-
+        status: {
+            type: Boolean,
+            default: true, // Add the status field with default value true
+        },
         createdAt: {
             type: Date,
             default: Date.now,

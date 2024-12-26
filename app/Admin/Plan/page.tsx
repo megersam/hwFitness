@@ -9,10 +9,12 @@ import { AddPlanDialog } from './_components/addPlan'
 
 const PlansPage = () => {
    const [dialogVisible, setDialogVisible] = useState(false);
-  
+  const [shouldRefresh, setShouldRefresh] = useState(false);
   
     const handleAddPlanClick = () => setDialogVisible(true);
     const closeDialog = () => setDialogVisible(false);
+    const refreshPlan = () => setShouldRefresh((prev) => !prev); // Toggle to trigger re-fetch in PriceTable
+
   return (
     <div className="px-4 sm:px-6 lg:px-8">
     {/* Search Input */}
@@ -32,13 +34,17 @@ const PlansPage = () => {
           <span>Add Plan</span>
         </Button>
       </div>
-      <AddPlanDialog visible={dialogVisible} onClose={closeDialog}/>
+      <AddPlanDialog 
+      visible={dialogVisible}
+      onPlanAdded={refreshPlan}
+       onClose={closeDialog}
+      />
     </div>
 
     {/* Table for users data display */}
     <div className="relative overflow-x-auto py-6">
       
-        <PlansTable/>
+        <PlansTable shouldRefresh={shouldRefresh}/>
       
     </div>
   </div>

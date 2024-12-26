@@ -7,7 +7,7 @@ import PriceTable from './_components/priceTable';
 
 const PriceingPage = () => {
   const [dialogVisible, setDialogVisible] = useState(false);
-  const [shouldRefresh, setShouldRefresh] = useState(false);
+   const [shouldRefresh, setShouldRefresh] = useState(false);
     
       const handleAddPriceClick = () => setDialogVisible(true);
       const closeDialog = () => setDialogVisible(false);

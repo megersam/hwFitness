@@ -17,10 +17,11 @@ import { toast } from "react-toastify";
 
 interface AddPlanProps {
     visible: boolean;
+    onPlanAdded: () => void;
     onClose: () => void;
 }
 
-export function AddPlanDialog({ visible, onClose }: AddPlanProps) {
+export function AddPlanDialog({ visible, onClose, onPlanAdded }: AddPlanProps) {
     const [plan, setPlan] = useState(""); // Track selected plan (Daily/Monthly)
     const [duration, setDuration] = useState(1); // Track duration
     const [discount, setDiscount] = useState(""); // Track discount (true/false)
@@ -129,6 +130,8 @@ export function AddPlanDialog({ visible, onClose }: AddPlanProps) {
     
             // Optionally, reset form fields here
             // resetForm();
+            onPlanAdded();
+            onClose();
         } catch (error:any) {
             console.error("Error saving plan:", error);
     
@@ -246,6 +249,6 @@ export function AddPlanDialog({ visible, onClose }: AddPlanProps) {
                     </Button>
                 </DialogFooter>
             </DialogContent>
-        </Dialog>
+         </Dialog>
     );
 }

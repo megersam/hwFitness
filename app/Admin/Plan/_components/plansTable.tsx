@@ -13,9 +13,9 @@ interface Plan {
     price: number,
     total: number,
     percentage: number,
-    status:string;
+    status: string;
 
-  
+
 }
 interface Row {
     _id: string;
@@ -25,11 +25,15 @@ interface Row {
     price: number,
     total: number,
     percentage: number,
-    status:string;  // Or Date, depending on how you store the date
+    status: string;  // Or Date, depending on how you store the date
     // Add any other properties your row has
-  }
+}
 
-const PlansTable: React.FC = () => {
+interface PlanTableProps {
+    shouldRefresh: boolean; // Prop to trigger the refresh
+}
+
+const PlansTable: React.FC<PlanTableProps> = ({ shouldRefresh }) => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [filteredStatus, setFilteredStatus] = useState<string>("All");
     const [searchQuery, setSearchQuery] = useState<string>(""); // State for search query
@@ -37,36 +41,36 @@ const PlansTable: React.FC = () => {
     const itemsPerPage = 5; // Number of items per page
     const [isLoading, setIsLoading] = useState(true);
     const [plans, setPlans] = useState<Plan[]>([]);
-    
-        const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null); 
-const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
     const fetchPlans = async () => {
         setIsLoading(true);
         try {
-          const response = await fetch('/api/plan');
-          const data = await response.json();
-          if (data.plans) {
-            setPlans(data.plans);
-          }
-          console.log(data.plans);
+            const response = await fetch('/api/plan');
+            const data = await response.json();
+            if (data.plans) {
+                setPlans(data.plans);
+            }
+            console.log(data.plans);
         } catch (error) {
-          console.error('Error fetching prices:', error);
+            console.error('Error fetching prices:', error);
         } finally {
-          setIsLoading(false);
+            setIsLoading(false);
         }
-      };
+    };
 
-       // Fetch prices from the API
-          useEffect(() => {
-              fetchPlans();
-            }, []);
-            // shouldRefresh
+    // Fetch prices from the API
+    useEffect(() => {
+        fetchPlans();
+    }, [shouldRefresh]);
+    // shouldRefresh
 
 
-            const handleRowSelect = (row: Row) => {
-                setSelectedPlan(row); // Set the selected price
-                setIsDialogOpen(true); // Open the dialog
-            };
+    const handleRowSelect = (row: Row) => {
+        setSelectedPlan(row); // Set the selected price
+        setIsDialogOpen(true); // Open the dialog
+    };
 
 
 
@@ -113,22 +117,21 @@ const [isDialogOpen, setIsDialogOpen] = useState(false);
         }
     };
 
-    const statusColors: Record<Plan["status"], string> = {
-        Pending: "bg-yellow-500 text-white",
-        Active: "bg-green-500 text-white",
-        "Not Active": "bg-red-500 text-white",
+    const statusColors = {
+        true: "bg-green-500 text-white", // Active status
+        false: "bg-red-500 text-white",   // Inactive status
     };
 
     const closeDialog = () => {
         setIsDialogOpen(false);
-        
+
     };
 
     return (
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
             {/* Header */}
             <div className="flex items-center justify-between flex-col md:flex-row flex-wrap space-y-4 md:space-y-0 py-4 bg-white dark:bg-gray-900">
-                 
+
 
                 {/* Search Input */}
                 <div className="relative">
@@ -191,9 +194,12 @@ const [isDialogOpen, setIsDialogOpen] = useState(false);
                         <th scope="col" className="px-6 py-3">
                             Percentage
                         </th>
-
                         <th scope="col" className="px-6 py-3">
                             Total
+                        </th>
+
+                        <th scope="col" className="px-6 py-3">
+                            Status
                         </th>
                     </tr>
                 </thead>
@@ -220,51 +226,61 @@ const [isDialogOpen, setIsDialogOpen] = useState(false);
                                 <td className="px-6 py-4">
                                     <Skeleton className="h-4 w-16" />
                                 </td>
+                                <td className="px-6 py-4">
+                                    <Skeleton className="h-4 w-16" />
+                                </td>
                             </tr>
                         ))
-                    : paginatedPlans.map((plan, index) => (
-                        
-                        <tr
-                           key={plan._id || index}
-                           onClick={() => handleRowSelect(plan)}
-                         className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                            <td className="w-4 p-4">
+                        : paginatedPlans.map((plan, index) => (
+
+                            <tr
+                                key={plan._id || index}
+                                onClick={() => handleRowSelect(plan)}
+                                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                <td className="w-4 p-4">
+                                    <div className="flex items-center">
+                                        <input
+                                            id="checkbox-table-search-1"
+                                            type="checkbox"
+                                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                        />
+                                        <label htmlFor="checkbox-table-search-1" className="sr-only">
+                                            checkbox
+                                        </label>
+                                    </div>
+                                </td>
+                                <th
+                                    scope="row"
+                                    className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
+                                >
+
+                                    <div className="pl-3">
+                                        <div className="text-base font-semibold">{plan.planName}</div>
+
+                                    </div>
+                                </th>
+                                <td className="px-6 py-4 text-base font-semibold">{plan.period}</td>
+                                <td className="px-6 py-4 text-base font-semibold">
+                                    {plan.discount === true ? (
+                                        <CheckCircleIcon className="h-6 w-6 text-green-500" />
+                                    ) : (
+                                        <XCircleIcon className="h-6 w-6 text-red-500" />
+                                    )}
+                                </td>
+                                <td className="px-6 py-4 text-base font-semibold">{plan.percentage || 'N/A'}</td>
+
+                                <td className="text-base font-semibold">{plan.total}</td>
                                 <div className="flex items-center">
-                                    <input
-                                        id="checkbox-table-search-1"
-                                        type="checkbox"
-                                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                                    />
-                                    <label htmlFor="checkbox-table-search-1" className="sr-only">
-                                        checkbox
-                                    </label>
-                                </div>
-                            </td>
-                            <th
-                                scope="row"
-                                className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
-                            >
-
-                                <div className="pl-3">
-                                    <div className="text-base font-semibold">{plan.planName}</div>
+                                    <span
+                                        className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[plan.status as keyof typeof statusColors]}`}
+                                    >
+                                        {plan.status ? "Active" : "Inactive"}
+                                    </span>
 
                                 </div>
-                            </th>
-                            <td className="px-6 py-4 text-base font-semibold">{plan.period}</td>
-                            <td className="px-6 py-4 text-base font-semibold">
-                                {plan.discount === true ? (
-                                     <CheckCircleIcon className="h-6 w-6 text-green-500" />
-                                ) : (
-                                    <XCircleIcon className="h-6 w-6 text-red-500" />
-                                )}
-                            </td>
-                            <td className="px-6 py-4 text-base font-semibold">{plan.percentage || 'N/A'}</td>
-                            <div className="pl-3">
-                                    <div className="text-base font-semibold">{plan.total}</div>
 
-                                </div>
-                        </tr>
-                    ))}
+                            </tr>
+                        ))}
                 </tbody>
             </table>
 
@@ -305,14 +321,14 @@ const [isDialogOpen, setIsDialogOpen] = useState(false);
             </div>
 
 
-             {/* Dialog */}
-                          {isDialogOpen && selectedPlan && (
-                            <ViewPlanDialog
-                            plan={selectedPlan}  // Pass the selected row to the dialog
-                                onClose={closeDialog}  // Close dialog function
-                                refreshPlans={fetchPlans} // Pass refresh function to EditPriceDialog
-                            />
-                        )}
+            {/* Dialog */}
+            {isDialogOpen && selectedPlan && (
+                <ViewPlanDialog
+                    plan={selectedPlan}  // Pass the selected row to the dialog
+                    onClose={closeDialog}  // Close dialog function
+                    refreshPlans={fetchPlans} // Pass refresh function to EditPriceDialog
+                />
+            )}
         </div>
     );
 };
