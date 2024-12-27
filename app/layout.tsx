@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/context/theme-provider";
 import { Bounce, ToastContainer, toast } from 'react-toastify';
+import { ClerkProvider, SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 // import QueryProvider from "@/context/query-provider";
 
 
@@ -20,10 +21,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    <ClerkProvider>
     <html lang="en">
+
       <body
         className={cn("bg-background", urbanist.className)}
       >
+          
 
 
         {children}
@@ -45,5 +49,6 @@ export default function RootLayout({
 
       </body>
     </html>
+    </ClerkProvider>
   );
 }
