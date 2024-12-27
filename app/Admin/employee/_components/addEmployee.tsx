@@ -18,6 +18,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { toast } from "react-toastify"
+import axios from "axios"
+import { Loader } from "lucide-react"
 
 interface AddEmployeeProps {
   visible: boolean;
@@ -36,14 +39,30 @@ export function AddEmployeeDialog({ visible, onClose }: AddEmployeeProps) {
     password: '',
   });
 
+  const [loading, setLoading] = useState<boolean>(false); // Track loading state
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // components/AddEmployeeDialog.tsx
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form Submitted:', formData);
+    setLoading(true); // Start the loading state
+
+    try {
+      const response = await axios.post("/api/auth", formData);
+      toast.success(response.data.message); // Show success toast
+    } catch (error: any) {
+      // Check for error message from the API response
+      if (error.response && error.response.data && error.response.data.error) {
+        toast.error(error.response.data.error); // Show error toast
+      } else {
+        toast.error("Something went wrong. Please try again."); // Generic error
+      }
+    }
+    setLoading(false); // End the loading state
   };
 
   const handleCancel = () => {
@@ -204,8 +223,16 @@ export function AddEmployeeDialog({ visible, onClose }: AddEmployeeProps) {
           >
             Cancel
           </Button>
-          <Button type="submit" onClick={handleSubmit} className="py-2 px-6 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
-            Save Changes
+          <Button
+            type="button"
+            onClick={handleSubmit}
+            disabled={loading} // Disable button while loading
+            className="relative"
+          >
+            {loading && (
+              <Loader size="35px" className="animate-spin" />
+            )}
+            {loading ? 'Saving...' : 'Save'}
           </Button>
         </DialogFooter>
       </DialogContent>

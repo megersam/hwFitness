@@ -1,26 +1,38 @@
-import mongoose, { Document, Schema } from 'mongoose';
+// models/user.model.ts
+import mongoose, { Schema, Document } from 'mongoose';
 
+// Define the user interface
 interface IUser extends Document {
   firstName: string;
+  middleName: string;
   lastName: string;
-  clerkID: string;
+  sex: string;
+  phoneNumber: string;
+  role: string;
   email: string;
   password: string;
-  role: string;
   status: boolean;
 }
 
-const userSchema = new Schema<IUser>({
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
-  clerkID: { type: String, required: true, unique: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  role: { type: String, default: 'employee' }, // Default value set to 'employee'
-  status: { type: Boolean, default: true },    // Default value set to true
-}, {
-  timestamps: true,
-});
+// Define the schema for the user
+const userSchema: Schema = new Schema(
+  {
+    firstName: { type: String, required: true },
+    middleName: { type: String, required: false },
+    lastName: { type: String, required: true },
+    sex: { type: String, required: true },
+    phoneNumber: { type: String, required: true, unique: true },
+    role: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    status: { type: Boolean, default: true },
+  },
+  {
+    timestamps: true,
+  }
+);
 
+// Create the User model
 const User = mongoose.models.User || mongoose.model<IUser>('User', userSchema);
+
 export default User;
