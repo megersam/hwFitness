@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { Urbanist } from 'next/font/google'
 import "./globals.css";
-import { cn } from "@/lib/utils";
-import { ThemeProvider } from "@/context/theme-provider";
+import { cn } from "@/lib/utils"; 
 import { Bounce, ToastContainer, toast } from 'react-toastify';
-import { ClerkProvider } from "@clerk/nextjs";
+ 
 // import QueryProvider from "@/context/query-provider";
 
 
