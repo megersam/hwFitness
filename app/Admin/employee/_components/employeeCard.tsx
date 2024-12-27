@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from "react";
 
 // Employee type definition
@@ -16,8 +18,12 @@ type Employee = {
   updatedAt: string;
   imageUrl?: string; // Optional image URL
 };
+interface EmployeeCardProps {
+  employee: Employee;
+  onClick: () => void;
+}
 
-const EmployeeCard: React.FC<{ employee: Employee }> = ({ employee }) => {
+const EmployeeCard:  React.FC<EmployeeCardProps> = ({ employee, onClick }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const toggleDropdown = () => {
@@ -34,7 +40,7 @@ const EmployeeCard: React.FC<{ employee: Employee }> = ({ employee }) => {
   const initials = getInitials(employee.firstName, employee.lastName);
 
   return (
-    <div className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 relative">
+    <div onClick={onClick} className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 relative">
       <div className="flex justify-end px-4 pt-4">
         <button
           id="dropdownButton"

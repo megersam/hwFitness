@@ -1,11 +1,12 @@
 'use client'
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Plus } from 'lucide-react';
-import React, { useState, useEffect } from 'react';
-import EmployeeCard from './_components/employeeCard';
-import { AddEmployeeDialog } from './_components/addEmployee';
-import EmployeeCardSkeleton from './_components/EmployeeCardSkeleton';
+import { useState, useEffect } from "react";
+import EmployeeCard from "./_components/employeeCard";
+import { AddEmployeeDialog } from "./_components/addEmployee";
+import EmployeeCardSkeleton from "./_components/EmployeeCardSkeleton";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { ViewEmployeeDialog } from "./_components/viewEmployee";
+import { Input } from "@/components/ui/input";
 
 interface Employee {
   _id: string;
@@ -20,7 +21,7 @@ interface Employee {
   status: boolean;
   createdAt: string;
   updatedAt: string;
-  imageUrl?: string; // Optional image URL
+  imageUrl?: string;
 }
 
 const EmployeePage = () => {
@@ -28,14 +29,14 @@ const EmployeePage = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
 
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const response = await fetch('/api/users'); // Update this to your actual API endpoint
+        const response = await fetch("/api/users"); // Update this to your actual API endpoint
         if (!response.ok) {
-          throw new Error('Failed to fetch employees');
+          throw new Error("Failed to fetch employees");
         }
         const data = await response.json();
         setEmployees(data.users || []);
@@ -52,24 +53,10 @@ const EmployeePage = () => {
   const handleAddEmployeeClick = () => setDialogVisible(true);
   const closeDialog = () => setDialogVisible(false);
 
-  // Function to add a new employee to the list without re-fetching
-  const handleNewEmployee = (newEmployee: Employee) => {
-    setEmployees((prevEmployees) => [...prevEmployees, newEmployee]);
+  const handleCardClick = (employee: Employee) => {
+    setSelectedEmployee(employee); // Set the selected employee data
+    setDialogVisible(true); // Open the dialog
   };
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-  };
-
-  // Filter employees based on search query
-  const filteredEmployees = employees.filter((employee) => {
-    const searchLower = searchQuery.toLowerCase();
-    return (
-      employee.firstName.toLowerCase().includes(searchLower) ||
-      employee.lastName.toLowerCase().includes(searchLower) ||
-      employee.phoneNumber.includes(searchLower)
-    );
-  });
 
   if (loading) {
     return (
@@ -86,27 +73,33 @@ const EmployeePage = () => {
       <div className="py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <Input
           type="search"
-          value={searchQuery}
-          onChange={handleSearchChange}
           placeholder="Search Employee..."
           className="w-full sm:w-[80px] md:w-[140px] lg:w-[600px]"
         />
-
         <div className="mt-4 sm:mt-0 sm:ml-4">
           <Button onClick={handleAddEmployeeClick} className="flex items-center space-x-2">
             <Plus size={16} />
             <span>Add Employee</span>
           </Button>
         </div>
-        <AddEmployeeDialog visible={dialogVisible} onClose={closeDialog} />
       </div>
       <div className="relative overflow-x-auto py-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-6">
-          {filteredEmployees.map((employee) => (
-            <EmployeeCard key={employee._id} employee={employee} />
+          {employees.map((employee) => (
+            <EmployeeCard
+              key={employee._id}
+              employee={employee}
+              onClick={() => handleCardClick(employee)} // Pass the selected employee data to the handler
+            />
           ))}
         </div>
       </div>
+
+      <ViewEmployeeDialog
+        visible={dialogVisible}
+        onClose={closeDialog}
+        selectedEmployee={selectedEmployee} // Pass the selected employee data to the dialog
+      />
     </div>
   );
 };
