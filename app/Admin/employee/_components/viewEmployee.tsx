@@ -41,9 +41,10 @@ interface ViewEmployeeProps {
   visible: boolean;
   onClose: () => void;
   selectedEmployee: Employee | null; // Accept selected employee data
+  onEmployeeEdited: (newEmployee: any) => void;
 }
 
-export function ViewEmployeeDialog({ visible, onClose, selectedEmployee }: ViewEmployeeProps) {
+export function ViewEmployeeDialog({ visible, onClose, selectedEmployee, onEmployeeEdited }: ViewEmployeeProps) {
   const [formData, setFormData] = useState({
     firstName: '',
     middleName: '',
@@ -91,6 +92,7 @@ export function ViewEmployeeDialog({ visible, onClose, selectedEmployee }: ViewE
     try {
       const response = await axios.put(`/api/users/${selectedEmployee?._id}`, updatedData);
       toast.success("Employee updated successfully!");
+      onEmployeeEdited(response.data.user);
       handleCancel();
       onClose();
     } catch (error: any) {

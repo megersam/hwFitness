@@ -24,7 +24,7 @@ import { Loader } from "lucide-react"
 
 interface AddEmployeeProps {
   visible: boolean;
-  onClose: () => void;
+  onClose: () => void; // Pass the handler to add the new employee to the list
 }
 
 export function AddEmployeeDialog({ visible, onClose }: AddEmployeeProps) {
@@ -46,18 +46,16 @@ export function AddEmployeeDialog({ visible, onClose }: AddEmployeeProps) {
     setFormData({ ...formData, [name]: value });
   };
 
-  // components/AddEmployeeDialog.tsx
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true); // Start the loading state
 
     try {
       const response = await axios.post("/api/auth", formData);
-      toast.success(response.data.message); // Show success toast
+      toast.success(response.data.message); // Show success toast 
       handleCancel();
       onClose();
     } catch (error: any) {
-      // Check for error message from the API response
       if (error.response && error.response.data && error.response.data.error) {
         toast.error(error.response.data.error); // Show error toast
         onClose();
@@ -153,11 +151,10 @@ export function AddEmployeeDialog({ visible, onClose }: AddEmployeeProps) {
                 </SelectContent>
               </Select>
             </div>
-
             <div className="flex flex-col">
               <Label htmlFor="phoneNumber" className="font-medium text-gray-700">Phone Number</Label>
               <Input
-                type="text"
+                type="tel"
                 name="phoneNumber"
                 id="phoneNumber"
                 value={formData.phoneNumber}
@@ -168,8 +165,8 @@ export function AddEmployeeDialog({ visible, onClose }: AddEmployeeProps) {
             </div>
           </div>
 
-          {/* Third Row: Role, Email, Password */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          {/* Third Row: Role, Email */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div className="flex flex-col">
               <Label htmlFor="role" className="font-medium text-gray-700">Role</Label>
               <Select
@@ -182,13 +179,11 @@ export function AddEmployeeDialog({ visible, onClose }: AddEmployeeProps) {
                   <SelectValue placeholder="Select Role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Admin">Admin</SelectItem>
-                  <SelectItem value="Reception">Reception</SelectItem>
-                  <SelectItem value="Trainer">Trainer</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem> 
+                  <SelectItem value="reception">Reception</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-
             <div className="flex flex-col">
               <Label htmlFor="email" className="font-medium text-gray-700">Email</Label>
               <Input
@@ -201,44 +196,32 @@ export function AddEmployeeDialog({ visible, onClose }: AddEmployeeProps) {
                 required
               />
             </div>
-
-            <div className="flex flex-col">
-              <Label htmlFor="password" className="font-medium text-gray-700">Password</Label>
-              <Input
-                type="password"
-                name="password"
-                id="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="mt-2 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
           </div>
-        </form>
 
-        {/* Footer with Cancel and Submit Buttons */}
-        <DialogFooter className="space-x-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleCancel}
-            className="py-2 px-6 text-sm font-medium text-gray-600 border border-gray-300 rounded-md"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            onClick={handleSubmit}
-            disabled={loading} // Disable button while loading
-            className="relative"
-          >
-            {loading && (
-              <Loader size="35px" className="animate-spin" />
-            )}
-            {loading ? 'Saving...' : 'Save'}
-          </Button>
-        </DialogFooter>
+          {/* Password Field */}
+          <div className="flex flex-col mb-6">
+            <Label htmlFor="password" className="font-medium text-gray-700">Password</Label>
+            <Input
+              type="password"
+              name="password"
+              id="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="mt-2 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          {/* Dialog Footer with Buttons */}
+          <DialogFooter>
+            <Button onClick={handleCancel} variant="outline" className="w-full sm:w-auto">
+              Cancel
+            </Button>
+            <Button type="submit" className="w-full sm:w-auto" disabled={loading}>
+              {loading ? <Loader className="animate-spin" size={20} /> : "Add Employee"}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

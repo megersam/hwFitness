@@ -26,6 +26,7 @@ interface Employee {
 
 const EmployeePage = () => {
   const [dialogVisible, setDialogVisible] = useState(false);
+  const [addDialogVisible, setAddDialogVisible] = useState(false); // Separate state for Add Dialog
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -50,12 +51,30 @@ const EmployeePage = () => {
     fetchEmployees();
   }, []);
 
-  const handleAddEmployeeClick = () => setDialogVisible(true);
-  const closeDialog = () => setDialogVisible(false);
+  const handleAddEmployeeClick = () => {
+    setAddDialogVisible(true); // Open Add Dialog
+  };
+
+  const closeDialog = () => {
+    setDialogVisible(false);
+    setAddDialogVisible(false); // Close both dialogs
+  };
 
   const handleCardClick = (employee: Employee) => {
     setSelectedEmployee(employee); // Set the selected employee data
-    setDialogVisible(true); // Open the dialog
+    setDialogVisible(true); // Open Edit dialog (View/Edit)
+  };
+
+  const handleEmployeeAdded = (newEmployee: Employee) => {
+    setEmployees((prevEmployees) => [...prevEmployees, newEmployee]);
+  };
+
+  const handleEmployeeEdited = (updatedEmployee: Employee) => {
+    setEmployees((prevEmployees) =>
+      prevEmployees.map((emp) =>
+        emp._id === updatedEmployee._id ? updatedEmployee : emp
+      )
+    );
   };
 
   if (loading) {
@@ -95,11 +114,24 @@ const EmployeePage = () => {
         </div>
       </div>
 
-      <ViewEmployeeDialog
-        visible={dialogVisible}
-        onClose={closeDialog}
-        selectedEmployee={selectedEmployee} // Pass the selected employee data to the dialog
-      />
+      {/* Add Employee Dialog */}
+      {addDialogVisible && (
+        <AddEmployeeDialog
+          visible={addDialogVisible}
+          onClose={closeDialog}
+          // onEmployeeAdded={handleEmployeeAdded} // Pass the handler to update the employee list
+        />
+      )}
+
+      {/* Edit Employee (View) Dialog */}
+      {dialogVisible && selectedEmployee && (
+        <ViewEmployeeDialog
+          visible={dialogVisible}
+          onClose={closeDialog}
+          selectedEmployee={selectedEmployee} // Pass the selected employee data to the dialog
+          onEmployeeEdited={handleEmployeeEdited} // Pass the handler to update the employee details
+        />
+      )}
     </div>
   );
 };
