@@ -62,7 +62,7 @@ export function AddEmployeeDialog({ visible, onClose }: AddEmployeeProps) {
 
   return (
     <Dialog open={visible} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[800px] w-full bg-white p-8 rounded-lg shadow-lg">
+      <DialogContent className="sm:max-w-[800px] w-full bg-white p-8 rounded-lg shadow-lg overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-3xl font-semibold text-gray-900">Add Employee</DialogTitle>
         </DialogHeader>
@@ -116,7 +116,8 @@ export function AddEmployeeDialog({ visible, onClose }: AddEmployeeProps) {
               <Label htmlFor="sex" className="font-medium text-gray-700">Sex</Label>
               <Select
                 name="sex"
-                value={formData.sex}  // Required
+                value={formData.sex}  // Required to bind selected value
+                onValueChange={(value) => setFormData({ ...formData, sex: value })}  // Update state when a value is selected
                 required
               >
                 <SelectTrigger className="w-full mt-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500">
@@ -150,11 +151,12 @@ export function AddEmployeeDialog({ visible, onClose }: AddEmployeeProps) {
               <Label htmlFor="role" className="font-medium text-gray-700">Role</Label>
               <Select
                 name="role"
-                value={formData.role}  
+                value={formData.role}  // Required to bind selected value
+                onValueChange={(value) => setFormData({ ...formData, role: value })}  // Update state when a value is selected
                 required
               >
                 <SelectTrigger className="w-full mt-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500">
-                <SelectValue placeholder="Select Role" />
+                  <SelectValue placeholder="Select Role" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Admin">Admin</SelectItem>
