@@ -9,7 +9,7 @@ connectDB();
 // POST API to create a new user
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
-    const { firstName, lastName, sex, phoneNumber, role,  email, password } = await req.json();
+    const { firstName, middleName, lastName, sex, phoneNumber, role,  email, password } = await req.json();
 
     // Validate required fields
     if (!firstName || !lastName || !email || !password) {
@@ -43,6 +43,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     // Create and save the new user
     const newUser = new User({
       firstName,
+      middleName,
       lastName,
       email,
       phoneNumber,

@@ -54,12 +54,16 @@ export function AddEmployeeDialog({ visible, onClose }: AddEmployeeProps) {
     try {
       const response = await axios.post("/api/auth", formData);
       toast.success(response.data.message); // Show success toast
+      handleCancel();
+      onClose();
     } catch (error: any) {
       // Check for error message from the API response
       if (error.response && error.response.data && error.response.data.error) {
         toast.error(error.response.data.error); // Show error toast
+        onClose();
       } else {
         toast.error("Something went wrong. Please try again."); // Generic error
+        onClose();
       }
     }
     setLoading(false); // End the loading state

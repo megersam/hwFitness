@@ -1,12 +1,21 @@
-'use client';
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-interface Employee {
-  id: number;
-  name: string;
-  position: string;
-  imageUrl: string;
-}
+// Employee type definition
+type Employee = {
+  _id: string;
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  sex: string;
+  phoneNumber: string;
+  role: string;
+  email: string;
+  password: string;
+  status: boolean;
+  createdAt: string;
+  updatedAt: string;
+  imageUrl?: string; // Optional image URL
+};
 
 const EmployeeCard: React.FC<{ employee: Employee }> = ({ employee }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -14,6 +23,15 @@ const EmployeeCard: React.FC<{ employee: Employee }> = ({ employee }) => {
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
   };
+
+  // Generate initials from firstName and lastName
+  const getInitials = (firstName: string, lastName: string) => {
+    const firstInitial = firstName ? firstName[0].toUpperCase() : "";
+    const lastInitial = lastName ? lastName[0].toUpperCase() : "";
+    return `${firstInitial}${lastInitial}` || "N/A";
+  };
+
+  const initials = getInitials(employee.firstName, employee.lastName);
 
   return (
     <div className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 relative">
@@ -49,7 +67,6 @@ const EmployeeCard: React.FC<{ employee: Employee }> = ({ employee }) => {
                   Edit
                 </a>
               </li>
-             
               <li>
                 <a
                   href="#"
@@ -63,34 +80,32 @@ const EmployeeCard: React.FC<{ employee: Employee }> = ({ employee }) => {
         )}
       </div>
       <div className="flex flex-col items-center pb-10">
-        <img
-          className="w-24 h-24 mb-3 rounded-full shadow-lg"
-          src={employee.imageUrl}
-          alt={`${employee.name} image`}
-        />
+        {employee.imageUrl ? (
+          <img
+            className="w-24 h-24 mb-3 rounded-full shadow-lg"
+            src={employee.imageUrl}
+            alt={`${employee.firstName} ${employee.middleName} image`}
+          />
+        ) : (
+          <div className="w-24 h-24 mb-3 flex items-center justify-center rounded-full shadow-lg bg-gray-300">
+            <span className="text-xl font-medium text-gray-700 dark:text-gray-900">
+              {initials}
+            </span>
+          </div>
+        )}
         <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">
-          {employee.name}
+          {employee.firstName} {employee.middleName} {employee.lastName}
         </h5>
         <span className="text-sm text-gray-500 dark:text-gray-400">
-          {employee.position}
+          {employee.role}
         </span>
-        {/* <div className="flex mt-4 md:mt-6">
-          <a
-            href="#"
-            className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          >
-            Edit
-          </a>
-          <a
-            href="#"
-            className="py-2 px-4 ms-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-          >
-            Delete
-          </a>
-        </div> */}
+        <span className="text-sm text-gray-500 dark:text-gray-400">
+          {employee.phoneNumber}
+        </span>
       </div>
     </div>
   );
 };
+
 
 export default EmployeeCard;
