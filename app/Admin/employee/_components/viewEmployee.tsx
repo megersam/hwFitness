@@ -23,91 +23,95 @@ import axios from "axios"
 import { Loader } from "lucide-react"
 
 interface Employee {
-    _id: string;
-    firstName: string;
-    middleName: string;
-    lastName: string;
-    sex: string;
-    phoneNumber: string;
-    role: string;
-    email: string;
-    password: string;
-    status: boolean;
-    createdAt: string;
-    updatedAt: string;
-    imageUrl?: string;
-  }
+  _id: string;
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  sex: string;
+  phoneNumber: string;
+  role: string;
+  email: string;
+  password: string;
+  status: boolean;
+  createdAt: string;
+  updatedAt: string;
+  imageUrl?: string;
+}
 interface ViewEmployeeProps {
-    visible: boolean;
-    onClose: () => void;
-    selectedEmployee: Employee | null; // Accept selected employee data
+  visible: boolean;
+  onClose: () => void;
+  selectedEmployee: Employee | null; // Accept selected employee data
 }
 
 export function ViewEmployeeDialog({ visible, onClose, selectedEmployee }: ViewEmployeeProps) {
-    const [formData, setFormData] = useState({
-        firstName: '',
-        middleName: '',
-        lastName: '',
-        sex: '',
-        phoneNumber: '',
-        role: '',
-        email: '',
+  const [formData, setFormData] = useState({
+    firstName: '',
+    middleName: '',
+    lastName: '',
+    sex: '',
+    phoneNumber: '',
+    role: '',
+    email: '',
+    password: '',
+    status: '',
+  });
+
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    if (selectedEmployee) {
+      setFormData({
+        firstName: selectedEmployee.firstName,
+        middleName: selectedEmployee.middleName,
+        lastName: selectedEmployee.lastName,
+        sex: selectedEmployee.sex,
+        phoneNumber: selectedEmployee.phoneNumber,
+        role: selectedEmployee.role,
+        email: selectedEmployee.email,
         password: '',
-        status: '',
+        status: selectedEmployee.status ? 'Active' : 'Inactive',
       });
+    }
+  }, [selectedEmployee]);
 
-      const [loading, setLoading] = useState(false);
-      useEffect(() => {
-        // Populate formData with selected employee data when the dialog is opened
-        if (selectedEmployee) {
-          setFormData({
-            firstName: selectedEmployee.firstName,
-            middleName: selectedEmployee.middleName,
-            lastName: selectedEmployee.lastName,
-            sex: selectedEmployee.sex,
-            phoneNumber: selectedEmployee.phoneNumber,
-            role: selectedEmployee.role,
-            email: selectedEmployee.email,
-            password: '',
-            status: selectedEmployee.status ? 'Active' : 'Inactive',
-          });
-        }
-      }, [selectedEmployee]);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
-      const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-      };
-
-  // components/AddEmployeeDialog.tsx
+  // Ensure the status is sent as a boolean (false) instead of "Inactive"
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true); // Start the loading state
+    setLoading(true);
+
+    const updatedData = {
+      ...formData,
+      status: formData.status === "Inactive" ? false : true, // Correct the status field
+    };
 
     try {
-      const response = await axios.post("/api/auth", formData);
-      toast.success(response.data.message); // Show success toast
+      const response = await axios.put(`/api/users/${selectedEmployee?._id}`, updatedData);
+      toast.success("Employee updated successfully!");
       handleCancel();
       onClose();
     } catch (error: any) {
-      // Check for error message from the API response
       if (error.response && error.response.data && error.response.data.error) {
-        toast.error(error.response.data.error); // Show error toast
-        onClose();
+        toast.error(error.response.data.error);
       } else {
-        toast.error("Something went wrong. Please try again."); // Generic error
-        onClose();
+        toast.error("Something went wrong. Please try again.");
       }
+      onClose();
     }
-    setLoading(false); // End the loading state
+
+    setLoading(false);
   };
+
 
   const handleCancel = () => {
     setFormData({
       firstName: '',
       middleName: '',
       lastName: '',
-      sex: '', 
+      sex: '',
       phoneNumber: '',
       role: '',
       email: '',
@@ -200,7 +204,7 @@ export function ViewEmployeeDialog({ visible, onClose, selectedEmployee }: ViewE
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Active">Active</SelectItem>
-                  <SelectItem value="Inactive">Inactive</SelectItem> 
+                  <SelectItem value="Inactive">Inactive</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -252,8 +256,6 @@ export function ViewEmployeeDialog({ visible, onClose, selectedEmployee }: ViewE
                 required
               />
             </div>
-
-            
           </div>
         </form>
 
