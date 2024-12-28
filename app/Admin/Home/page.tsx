@@ -1,5 +1,6 @@
 import React from 'react';
 import { SmallCard } from '../_components/smallCard';
+import withAuth from '@/lib/withAuth';
 
 const DashboardHomePage = () => {
   return (
@@ -8,5 +9,5 @@ const DashboardHomePage = () => {
     </div>
   );
 };
-
-export default DashboardHomePage;
+ 
+export default  DashboardHomePage ;

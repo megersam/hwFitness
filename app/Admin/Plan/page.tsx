@@ -6,6 +6,7 @@ import { Plus } from 'lucide-react'
 import PlansTable from './_components/plansTable'
 import { Input } from '@/components/ui/input'
 import { AddPlanDialog } from './_components/addPlan'
+import withAuth from '@/lib/withAuth'
 
 const PlansPage = () => {
    const [dialogVisible, setDialogVisible] = useState(false);
@@ -51,5 +52,5 @@ const PlansPage = () => {
 
   )
 }
-
-export default PlansPage
+ 
+export default PlansPage ;

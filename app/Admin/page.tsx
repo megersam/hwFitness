@@ -37,4 +37,4 @@ const AdminPage = () => {
   );
 };
  
-export default withAuth(AdminPage, ["Admin"]);
+export default AdminPage;

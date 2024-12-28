@@ -10,72 +10,55 @@ import Link from 'next/link';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-      // Check if the user is already logged in
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
-      if (user?.token) {
-        // Redirect to the appropriate page based on the user's role
-        if (user.role === 'Admin') {
-          window.location.href = '/Admin';
-        } else if (user.role === 'Reception') {
-          window.location.href = '/Employee';
-        }
-      }
-    }, []);
+
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
   
-    const handleLogin = async (e: React.FormEvent) => {
-      e.preventDefault();
-      setLoading(true);
-      try {
-        const res = await fetch('/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password }),
-        });
-    
-        const data = await res.json();
-    
-        if (!res.ok) {
-          setError(data.error || 'Login failed');
-          return;
-        }
-    
-        // Save the complete user object
-        const user = {
-          token: data.token,
-          role: data.role,
-          firstName: data.firstName,     // Add user's name
-          lastName: data.lastName,     // Add user's name
-          middleName: data.middleName,     // Add user's name
-          email: data.email,   // Add user's email (or any other data you need)
-          // Add any other fields from the backend response
-        };
-    
-        // Store the full user object in localStorage
-        localStorage.setItem('user', JSON.stringify(user));
-    
-        // Redirect based on role
-        if (data.role === 'Admin') {
-          window.location.href = '/Admin'; // Redirect to admin page
-        } else if (data.role === 'Reception') {
-          window.location.href = '/Employee'; // Redirect to employee page
-        }
-    
-        toast.success('Login successful');
-      } catch (err) {
-        setError('Something went wrong. Please try again later.');
+      const data = await res.json();
+  
+      if (!res.ok) {
+        setError(data.error || 'Login failed');
+        return;
       }
-      setLoading(false);
-    };
-    
-    
-    
-    
- 
+  
+      // Save user data in cookies
+      document.cookie = `user=${JSON.stringify(data)}; path=/;`;
+  
+      // Save user data in localStorage for additional frontend use
+      localStorage.setItem('user', JSON.stringify(data));
+  
+      // Redirect based on role
+      if (data.role === 'Admin') {
+        window.location.href = '/Admin';
+      } else if (data.role === 'Reception') {
+        window.location.href = '/Employee';
+      }
+  
+      toast.success('Login successful');
+    } catch (err) {
+      setError('Something went wrong. Please try again later.');
+    }
+    setLoading(false);
+  };
+
+
+
+
+
+
+
 
   return (
     <div className="min-h-screen bg-[#1E1E20] flex flex-col lg:flex-row items-center justify-center px-4">
@@ -112,13 +95,13 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <Button 
-          type="submit"
-          className="w-full bg-yellow-600 hover:bg-yellow-700"
-          disabled={loading}
-          onClick={handleLogin}
+          <Button
+            type="submit"
+            className="w-full bg-yellow-600 hover:bg-yellow-700"
+            disabled={loading}
+            onClick={handleLogin}
           >
-              {loading ? 'Logging in...' : 'Log In'}
+            {loading ? 'Logging in...' : 'Log In'}
           </Button>
         </form>
       </div>

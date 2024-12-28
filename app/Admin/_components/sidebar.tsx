@@ -51,29 +51,33 @@ const items = [
 export function AdminSideBar() {
     const pathname = usePathname(); // Get the current route
     const [user, setUser] = useState<any>(null);
-
+    
+    
     useEffect(() => {
-        // Get the user data from localStorage when the component mounts
-        const userData = JSON.parse(localStorage.getItem("user") || "{}");
-        if (userData?.token) {
-          setUser(userData);  // Set user data if user is logged in
-          console.log('sidebar', userData);
-        }
+        const cookie = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("user="));
+        const userData = cookie
+          ? JSON.parse(decodeURIComponent(cookie.split("=")[1]))
+          : null;
+        console.log("User Data from Cookie:", userData);
+        setUser(userData);
       }, []);
-
-      if (!user?.token) {
-        return null;  // Don't render the sidebar if the user is not logged in
-      }
-      const handleLogout = () => {
-        // Clear user data from localStorage
-        localStorage.removeItem('user');
       
-        // Redirect to the login page
-        window.location.href = '/Login';
-      
-        // Optionally, you can also show a toast to indicate the user has logged out
-        toast.success('Logged out successfully');
+   
+ 
+      const handleLogout = async () => {
+        try {
+          await fetch('/api/logout', { method: 'GET' }); // Trigger the logout API
+          // Optionally clear cookie on client-side for immediate effect
+          document.cookie = "user=; Max-Age=0; path=/";
+          window.location.href = "/Login"; // Redirect to the login page
+        } catch (error) {
+          console.error("Logout failed:", error);
+        }
       };
+      
+       
     return (
         <Sidebar className="h-screen">
             <SidebarContent>
@@ -120,7 +124,7 @@ export function AdminSideBar() {
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <SidebarMenuButton className="flex items-center gap-3 text-base font-medium">
-                                    <User2 className="w-6 h-6" /> {user?.firstName}
+                                    <User2 className="w-6 h-6" /> {user?.firstName} {user?.middleName} {user?.lastName} 
                                     <ChevronUp className="ml-auto w-5 h-5" />
                                 </SidebarMenuButton>
                             </DropdownMenuTrigger>

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { ViewEmployeeDialog } from "./_components/viewEmployee";
 import { Input } from "@/components/ui/input";
+import withAuth from "@/lib/withAuth";
 
 interface Employee {
   _id: string;
@@ -135,5 +136,5 @@ const EmployeePage = () => {
     </div>
   );
 };
-
-export default EmployeePage;
+ 
+export default  EmployeePage ;

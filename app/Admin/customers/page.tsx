@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { AddCustomerDialog } from '../_components/addCustomers';
 import CustomerTable from './_components/CustomerTable';
 import {customers} from './_components/customer';
+import withAuth from '@/lib/withAuth';
 const CustomersPage = () => {
   const [dialogVisible, setDialogVisible] = useState(false);
 
@@ -43,5 +44,5 @@ const CustomersPage = () => {
     </div>
   );
 };
-
+ 
 export default CustomersPage;
