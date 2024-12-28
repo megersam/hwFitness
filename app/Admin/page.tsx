@@ -6,6 +6,7 @@ import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { SmallCard } from './_components/smallCard';
 import { AdminChart } from './_components/adminChart';
 import { RecentSales } from './_components/recentCustomer';
+import withAuth  from '@/lib/withAuth'
 
 const AdminPage = () => {
 
@@ -35,5 +36,5 @@ const AdminPage = () => {
     </div>
   );
 };
-
-export default AdminPage;
+ 
+export default withAuth(AdminPage, ["Admin"]);

@@ -1,3 +1,5 @@
+'use client'
+import withAuth from '@/lib/withAuth';
 import React from 'react'
 
 function EmployeeDashboard() {
@@ -5,5 +7,5 @@ function EmployeeDashboard() {
     <div>EmployeeDashboard</div>
   )
 }
-
-export default EmployeeDashboard
+ 
+export default withAuth(EmployeeDashboard, ["Reception"]);

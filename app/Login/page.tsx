@@ -4,8 +4,79 @@ import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import Link from 'next/link';
 
 export default function LoginPage() {
+  const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+      // Check if the user is already logged in
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      if (user?.token) {
+        // Redirect to the appropriate page based on the user's role
+        if (user.role === 'Admin') {
+          window.location.href = '/Admin';
+        } else if (user.role === 'Reception') {
+          window.location.href = '/Employee';
+        }
+      }
+    }, []);
+  
+    const handleLogin = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setLoading(true);
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+    
+        const data = await res.json();
+    
+        if (!res.ok) {
+          setError(data.error || 'Login failed');
+          return;
+        }
+    
+        // Save the complete user object
+        const user = {
+          token: data.token,
+          role: data.role,
+          firstName: data.firstName,     // Add user's name
+          lastName: data.lastName,     // Add user's name
+          middleName: data.middleName,     // Add user's name
+          email: data.email,   // Add user's email (or any other data you need)
+          // Add any other fields from the backend response
+        };
+    
+        // Store the full user object in localStorage
+        localStorage.setItem('user', JSON.stringify(user));
+    
+        // Redirect based on role
+        if (data.role === 'Admin') {
+          window.location.href = '/Admin'; // Redirect to admin page
+        } else if (data.role === 'Reception') {
+          window.location.href = '/Employee'; // Redirect to employee page
+        }
+    
+        toast.success('Login successful');
+      } catch (err) {
+        setError('Something went wrong. Please try again later.');
+      }
+      setLoading(false);
+    };
+    
+    
+    
+    
+ 
+
   return (
     <div className="min-h-screen bg-[#1E1E20] flex flex-col lg:flex-row items-center justify-center px-4">
       {/* Left: Login Form */}
@@ -24,6 +95,8 @@ export default function LoginPage() {
               type="email"
               placeholder="Enter your email"
               className="bg-[#2A2A2E] text-white"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div>
@@ -35,10 +108,17 @@ export default function LoginPage() {
               type="password"
               placeholder="Enter your password"
               className="bg-[#2A2A2E] text-white"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <Button type="submit" className="w-full bg-yellow-600 hover:bg-yellow-700">
-            Log In
+          <Button 
+          type="submit"
+          className="w-full bg-yellow-600 hover:bg-yellow-700"
+          disabled={loading}
+          onClick={handleLogin}
+          >
+              {loading ? 'Logging in...' : 'Log In'}
           </Button>
         </form>
       </div>
