@@ -64,69 +64,58 @@ const chartConfig = {
 export function SmallCard() {
   return (
     <div className="grid gap-8 sm:grid-cols-3 xl:grid-cols-3 py-10">
-      {/* first card */}
-      <Card className="h-[100px]"> {/* Set the height of the card */}
-        {/* Center the CardHeader */}
-        <CardHeader className="flex justify-center items-center py-1">
-          <CardTitle className="text-center text-sm font-normal text-lg font-bold">
-            Total Revenue
-          </CardTitle>
-        </CardHeader>
-        {/* Align icon and data in CardContent */}
-        <CardContent className="pb-0 flex items-center justify-between">
-          {/* Icon on the left */}
-          <div className="text-black flex-shrink-0">
-            {/* Replace with your actual icon */}
-            <DollarSign size={40} /> {/* Use consistent size */}
-          </div>
-          {/* Data on the right */}
-          <div className="text-lg font-semibold">15,231.89</div> {/* Match text size */}
-        </CardContent>
-      </Card>
+    {/* First card */}
+    <Card className="h-[100px] bg-yellow-500 text-white border-none shadow-none"> {/* Ensure no border or shadow */}
+      <CardHeader className="flex justify-center items-center py-1">
+        <CardTitle className="text-center text-sm font-normal text-lg">
+          Total Revenue
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="pb-0 flex items-center justify-between">
+        {/* Icon on the left */}
+        <div className="flex-shrink-0">
+          <DollarSign size={40} className="text-white" /> {/* Icon color is white */}
+        </div>
+        {/* Data on the right */}
+        <div className="text-lg font-normal">15,231.89</div>
+      </CardContent>
+    </Card>
+  
+    {/* Second card */}
+    <Card className="h-[100px] bg-yellow-500 text-white border-none shadow-none"> {/* Ensure no border or shadow */}
+      <CardHeader className="flex justify-center items-center py-1">
+        <CardTitle className="text-center text-sm font-normal text-lg">
+          Total Customers
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="pb-0 flex items-center justify-between">
+        {/* Icon on the left */}
+        <div className="flex-shrink-0">
+          <User size={40} className="text-white" /> {/* Icon color is white */}
+        </div>
+        {/* Data on the right */}
+        <div className="text-lg font-normal">30</div>
+      </CardContent>
+    </Card>
+  
+    {/* Third card */}
+    <Card className="h-[100px] bg-yellow-500 text-white border-none shadow-none"> {/* Ensure no border or shadow */}
+      <CardHeader className="flex justify-center items-center py-1">
+        <CardTitle className="text-center text-sm font-normal text-lg">
+          Expired Subscriptions
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="pb-0 flex items-center justify-between">
+        {/* Icon on the left */}
+        <div className="flex-shrink-0">
+          <Subscript size={40} className="text-white" /> {/* Icon color is white */}
+        </div>
+        {/* Data on the right */}
+        <div className="text-lg font-normal">89</div>
+      </CardContent>
+    </Card>
+  </div>
+  
 
-
-
-      {/* second card */}
-      <Card className="h-[100px]"> {/* Set the height of the card */}
-        {/* Center the CardHeader */}
-        <CardHeader className="flex justify-center items-center py-1">
-          <CardTitle className="text-center text-sm font-normal text-lg font-bold">
-            Total Customers
-          </CardTitle>
-        </CardHeader>
-        {/* Align icon and data in CardContent */}
-        <CardContent className="pb-0 flex items-center justify-between">
-          {/* Icon on the left */}
-          <div className="text-black flex-shrink-0">
-            {/* Replace with your actual icon */}
-            <User size={40} /> {/* Use consistent size */}
-          </div>
-          {/* Data on the right */}
-          <div className="text-lg font-semibold">30</div> {/* Match text size */}
-        </CardContent>
-      </Card>
-
-
-
-      {/* third card */}
-      <Card className="h-[100px]"> {/* Set the height of the card */}
-        {/* Center the CardHeader */}
-        <CardHeader className="flex justify-center items-center py-1">
-          <CardTitle className="text-center text-sm font-normal text-lg font-bold">
-            Expiered Subscriptions
-          </CardTitle>
-        </CardHeader>
-        {/* Align icon and data in CardContent */}
-        <CardContent className="pb-0 flex items-center justify-between">
-          {/* Icon on the left */}
-          <div className="text-black flex-shrink-0">
-            {/* Replace with your actual icon */}
-            <Subscript size={40} /> {/* Use consistent size */}
-          </div>
-          {/* Data on the right */}
-          <div className="text-lg font-semibold">89</div> {/* Match text size */}
-        </CardContent>
-      </Card>
-    </div>
   );
 }

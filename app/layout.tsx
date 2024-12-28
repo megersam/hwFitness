@@ -23,7 +23,7 @@ export default function RootLayout({
     <html lang="en">
 
       <body
-        className={cn("bg-background", urbanist.className)}
+        className={cn("bg-[#1E1E20]", urbanist.className)}
       >
 
 

@@ -39,32 +39,41 @@ const chartConfig = {
 
 export function AdminChart() {
   return (
-    <Card>
+    <Card className="bg-[#1E1E20] text-white border border-[#1E1E20] rounded-md">
       <CardHeader>
         <CardTitle>Bar Chart - Multiple</CardTitle>
-        <CardDescription>January -  June2024</CardDescription>
+        <CardDescription>January - June 2024</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
           <BarChart accessibilityLayer data={chartData}>
-            <CartesianGrid vertical={false} />
+            {/* Grid Lines */}
+            <CartesianGrid vertical={false} stroke="#444" /> {/* Lighter grid lines */}
+
+            {/* X-Axis */}
             <XAxis
               dataKey="month"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
+              tick={{ fill: '#fff' }} /* Make axis labels white */
+              tickFormatter={(value) => value.slice(0, 3)} /* Shorten month names */
             />
+
+            {/* Tooltip */}
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator="dashed" />}
             />
-            <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
-            <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
+
+            {/* Bars */}
+            <Bar dataKey="desktop" fill="#FFD700" radius={4} /> {/* Yellow for desktop */}
+            <Bar dataKey="mobile" fill="#FFC107" radius={4} /> {/* Yellow for mobile */}
           </BarChart>
         </ChartContainer>
       </CardContent>
-       
     </Card>
+
+
   )
 }

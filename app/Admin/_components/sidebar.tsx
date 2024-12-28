@@ -1,8 +1,18 @@
-'use client'
-import { Calendar, ChevronUp, Currency, Home, Inbox, PersonStanding, Settings, Subtitles, User2, UserRoundCheck } from "lucide-react";
+'use client';
+import {
+    Calendar,
+    ChevronUp,
+    Currency,
+    Home,
+    Inbox,
+    PersonStanding,
+    Settings,
+    Subtitles,
+    User2,
+    UserRoundCheck,
+} from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation"; // Import the hook
-
+import { usePathname } from "next/navigation";
 import {
     Sidebar,
     SidebarContent,
@@ -14,9 +24,13 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 
 // Menu items.
 const items = [
@@ -45,50 +59,44 @@ const items = [
         url: "/Admin/Price",
         icon: Currency,
     },
-    
 ];
 
 export function AdminSideBar() {
     const pathname = usePathname(); // Get the current route
     const [user, setUser] = useState<any>(null);
-    
-    
+
     useEffect(() => {
         const cookie = document.cookie
-          .split("; ")
-          .find((row) => row.startsWith("user="));
+            .split("; ")
+            .find((row) => row.startsWith("user="));
         const userData = cookie
-          ? JSON.parse(decodeURIComponent(cookie.split("=")[1]))
-          : null;
+            ? JSON.parse(decodeURIComponent(cookie.split("=")[1]))
+            : null;
         console.log("User Data from Cookie:", userData);
         setUser(userData);
-      }, []);
-      
-   
- 
-      const handleLogout = async () => {
+    }, []);
+
+    const handleLogout = async () => {
         try {
-          await fetch('/api/logout', { method: 'GET' }); // Trigger the logout API
-          // Optionally clear cookie on client-side for immediate effect
-          document.cookie = "user=; Max-Age=0; path=/";
-          window.location.href = "/Login"; // Redirect to the login page
+            await fetch("/api/logout", { method: "GET" });
+            document.cookie = "user=; Max-Age=0; path=/";
+            window.location.href = "/Login";
         } catch (error) {
-          console.error("Logout failed:", error);
+            console.error("Logout failed:", error);
         }
-      };
-      
-       
+    };
+
     return (
-        <Sidebar className="h-screen">
+        <Sidebar className="h-screen bg-[#1E1E20]">
             <SidebarContent>
                 <SidebarGroup>
-                    <SidebarGroupLabel className="text-lg font-semibold mb-8">
+                    <SidebarGroupLabel className="text-lg font-semibold text-white mb-8">
                         <h1>HW Fitness</h1>
                     </SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu className="flex flex-col gap-6">
                             {items.map((item) => {
-                                const isActive = pathname === item.url; // Check if the current route matches the item's URL
+                                const isActive = pathname === item.url;
                                 return (
                                     <SidebarMenuItem key={item.title} className="w-full">
                                         <SidebarMenuButton asChild>
@@ -99,11 +107,10 @@ export function AdminSideBar() {
                                                 prefetch={false}
                                             >
                                                 <a
-                                                    className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-md transition ${
-                                                        isActive
-                                                            ? "bg-primary text-white" // Active styles
-                                                            : "hover:bg-primary text-black" // Hover styles
-                                                    }`}
+                                                    className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-md transition ${isActive
+                                                            ? "bg-yellow-500 text-white" // Active styles
+                                                            : "hover:bg-yellow-500 hover:text-black text-white" // Hover styles
+                                                        }`}
                                                 >
                                                     <item.icon className="w-6 h-6" />
                                                     <span>{item.title}</span>
@@ -123,16 +130,23 @@ export function AdminSideBar() {
                     <SidebarMenuItem>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <SidebarMenuButton className="flex items-center gap-3 text-base font-medium">
-                                    <User2 className="w-6 h-6" /> {user?.firstName} {user?.middleName} {user?.lastName} 
+                                <SidebarMenuButton className="flex items-center gap-3 text-base font-medium text-white">
+                                    <User2 className="w-6 h-6" />{" "}
+                                    {user?.firstName} {user?.middleName} {user?.lastName}
                                     <ChevronUp className="ml-auto w-5 h-5" />
                                 </SidebarMenuButton>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent side="top" className="w-full">
-                                <DropdownMenuItem>
+                            <DropdownMenuContent
+                                side="top"
+                                className="w-full bg-[#1E1E20] text-white hover:bg-yellow-500"
+                            >
+                                <DropdownMenuItem className="hover:bg-yellow-500 hover:text-black transition">
                                     <span>Account</span>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={handleLogout}>
+                                <DropdownMenuItem
+                                    onClick={handleLogout}
+                                    className="hover:bg-yellow-500 hover:text-black transition"
+                                >
                                     <span>Sign out</span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -143,4 +157,3 @@ export function AdminSideBar() {
         </Sidebar>
     );
 }
-

@@ -8,9 +8,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="flex h-screen">
             <SidebarProvider>
                 <AdminSideBar />
-                <SidebarTrigger size='lg'/>
+                <SidebarTrigger
+                    size="sm"
+                    className="bg-yellow-500 text-white hover:bg-yellow-500"
+                />
                 <main className="flex-1 p-4">{children}
-                    
+
                 </main>
             </SidebarProvider>
         </div>
