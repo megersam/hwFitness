@@ -13,6 +13,8 @@ const CustomersPage = () => {
 
   const handleAddCustomerClick = () => setDialogVisible(true);
   const closeDialog = () => setDialogVisible(false);
+    const [shouldRefresh, setShouldRefresh] = useState(false);
+  const refreshCustomer = () => setShouldRefresh((prev) => !prev);
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       {/* Search Input */}
@@ -30,13 +32,16 @@ const CustomersPage = () => {
           </Button>
 
         </div>
-        <AddCustomerDialog visible={dialogVisible} onClose={closeDialog} />
+        <AddCustomerDialog 
+        visible={dialogVisible}
+        onCustomerAdded={refreshCustomer} 
+        onClose={closeDialog} />
       </div>
 
       {/* Table for users data display */}
       <div className="relative overflow-x-auto py-6 ">
 
-        <CustomerTable />
+        <CustomerTable shouldRefresh={shouldRefresh}/>
 
       </div>
     </div>

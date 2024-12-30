@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 interface AddCompanyProps {
   visible: boolean;
   onClose: () => void;
+  onCustomerAdded: () => void;
 }
 
 interface Plan {
@@ -31,7 +32,8 @@ interface Plan {
   updatedAt: string;
 }
 
-export function AddCustomerDialog({ visible, onClose }: AddCompanyProps) {
+
+export function AddCustomerDialog({ visible, onClose, onCustomerAdded }: AddCompanyProps) {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
   const [image, setImage] = useState<File | null>(null);
@@ -134,9 +136,10 @@ export function AddCustomerDialog({ visible, onClose }: AddCompanyProps) {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = ( ) => {
     setLoading(true);
+   
+ 
     // Ensure the image URL is part of the formData when submitting
     const selectedPlan = plans.find((plan) => plan._id === selectedPlanId);
   
@@ -162,6 +165,8 @@ export function AddCustomerDialog({ visible, onClose }: AddCompanyProps) {
         console.log('Customer saved:', data);
         if (data.message) {
           toast.success('Customer saved successfully!');
+          onCustomerAdded(); // Trigger re-fetching the customer data
+          onClose(); // Close the dialog
         } else if (data.error) {
           toast.error(`Error: ${data.error}`);
         }

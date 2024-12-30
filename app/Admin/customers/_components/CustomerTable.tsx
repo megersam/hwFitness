@@ -16,8 +16,11 @@ interface Customer {
     paymentMethod: string;
     total: string;
 }
+interface CustomersTableProps {
+    shouldRefresh: boolean; // Prop to trigger the refresh
+}
 
-const CustomerTable: React.FC = () => {
+const CustomerTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [filteredStatus, setFilteredStatus] = useState("All");
     const [searchQuery, setSearchQuery] = useState<string>(""); // State for search query
@@ -49,7 +52,7 @@ const CustomerTable: React.FC = () => {
             }
         };
         fetchData();
-    }, []);
+    }, [shouldRefresh]);
 
     // Filter customers based on the selected status
     const filteredCustomers = Array.isArray(customerData)
