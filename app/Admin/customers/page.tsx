@@ -2,10 +2,10 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus } from 'lucide-react';
-import React, { useState } from 'react'; 
+import React, { useState } from 'react';
 import { AddCustomerDialog } from '../_components/addCustomers';
 import CustomerTable from './_components/CustomerTable';
-import {customers} from './_components/customer';
+import { customers } from './_components/customer';
 import withAuth from '@/lib/withAuth';
 const CustomersPage = () => {
   const [dialogVisible, setDialogVisible] = useState(false);
@@ -22,27 +22,29 @@ const CustomersPage = () => {
           placeholder="Search..."
           className="w-full sm:w-[80px] md:w-[140px] lg:w-[600px]"
         />
-        
+
         {/* Button for adding customers */}
         <div className="mt-4 sm:mt-0 sm:ml-4">
-          <Button 
-          onClick={handleAddCustomerClick}
-          className="flex items-center space-x-2">
+          <Button
+            onClick={handleAddCustomerClick}
+            className="flex items-center space-x-2 bg-yellow-500 hover:bg-yellow-600 text-white font-medium px-4 py-2 rounded-md"
+          >
             <Plus size={16} />
             <span>Add Customer</span>
           </Button>
+
         </div>
-        <AddCustomerDialog visible={dialogVisible} onClose={closeDialog}/>
+        <AddCustomerDialog visible={dialogVisible} onClose={closeDialog} />
       </div>
 
       {/* Table for users data display */}
-      <div className="relative overflow-x-auto py-6">
-        
-          <CustomerTable/>
-        
+      <div className="relative overflow-x-auto py-6 ">
+
+        <CustomerTable />
+
       </div>
     </div>
   );
 };
- 
+
 export default CustomersPage;
