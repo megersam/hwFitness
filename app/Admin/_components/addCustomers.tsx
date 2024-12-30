@@ -9,13 +9,60 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useEffect, useState } from "react"
 
 interface AddCompanyProps {
   visible: boolean;
   onClose: () => void;
 }
-
+// Define the type of the plan object
+interface Plan {
+  _id: string;
+  planName: string;
+  period: number;
+  discount: boolean;
+  percentage: number;
+  total: number;
+  status: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
 export function AddCustomerDialog({ visible, onClose }: AddCompanyProps) {
+  const [plans, setPlans] = useState<Plan[]>([]); // Explicitly define the type
+  const [selectedTotal, setSelectedTotal] = useState<string>(""); // Store the selected total
+
+  // Fetch plan prices from API
+  const fetchPlanPrices = async () => {
+    try {
+      const response = await fetch("/api/customer/plan");
+      const data = await response.json();
+      if (data?.prices) {
+        setPlans(data.prices);
+      }
+    } catch (error) {
+      console.error("Error fetching plans:", error);
+    }
+  };
+
+
+  useEffect(() => {
+    fetchPlanPrices();
+  }, []);
+
+  // Handle selection change
+  // Handle selection change
+  const handlePlanChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedId = e.target.value;
+    const selectedPlan = plans.find((plan) => plan._id === selectedId);
+    if (selectedPlan) {
+      setSelectedTotal(selectedPlan.total.toString()); // Convert number to string for input value
+    } else {
+      setSelectedTotal(""); // Reset if no plan is selected
+    }
+  };
+
+
+
   return (
     <Dialog open={visible} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px]">
@@ -103,20 +150,29 @@ export function AddCustomerDialog({ visible, onClose }: AddCompanyProps) {
                   <select
                     id="plan"
                     className="w-full border rounded px-2 py-1"
+                    onChange={handlePlanChange}
                   >
                     <option value="">Select</option>
-                    <option value="Plan1">Plan 1</option>
-                    <option value="Plan2">Plan 2</option>
+                    {plans.map((plan: any) => (
+                      <option key={plan._id} value={plan._id}>
+                        {plan.planName} -{" "}
+                        {plan.planName === "Daily"
+                          ? `${plan.period} ${plan.period > 1 ? "days" : "day"}`
+                          : `${plan.period} ${plan.period > 1 ? "Months" : "Month"}`}
+
+                      </option>
+                    ))}
                   </select>
                 </div>
 
                 {/* Total */}
-                <div className="text-center sm:text-left">
+                <div className="text-center sm:text-left mt-4">
                   <Label htmlFor="total">Total</Label>
                   <Input
                     id="total"
                     name="total"
                     placeholder="Total price"
+                    value={selectedTotal}
                     readOnly
                     className="w-full"
                   />
