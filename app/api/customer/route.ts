@@ -69,3 +69,24 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     );
   }
 }
+
+
+// GET API to fetch all customers
+export async function GET(req: NextRequest): Promise<NextResponse> {
+  try {
+    // Fetch all customers sorted by createdAt in descending order
+    const customers = await CustomerModel.find().sort({ createdAt: -1 });
+
+    if (!customers || customers.length === 0) {
+      return NextResponse.json({ error: "No customer found." }, { status: 404 });
+    }
+
+    return NextResponse.json({ customers });
+  } catch (error) {
+    console.error("Error fetching customers:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch customers" },
+      { status: 500 }
+    );
+  }
+}

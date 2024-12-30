@@ -211,7 +211,7 @@ const PriceTable: React.FC<PriceTableProps> = ({ shouldRefresh }) => {
                                 </td>
                                 <td className="px-6 py-4">
                                     <Skeleton className="h-4 w-16" />
-                                </td>
+                                 </td>
                             </tr>
                         ))
                         : paginatedPrices.map((price, index) => (

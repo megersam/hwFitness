@@ -10,6 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { uploadImageToCloudinary } from "@/lib/cloudinary";
+import { Loader } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -35,6 +36,7 @@ export function AddCustomerDialog({ visible, onClose }: AddCompanyProps) {
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
   const [image, setImage] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false); // Track loading state
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -134,7 +136,7 @@ export function AddCustomerDialog({ visible, onClose }: AddCompanyProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-  
+    setLoading(true);
     // Ensure the image URL is part of the formData when submitting
     const selectedPlan = plans.find((plan) => plan._id === selectedPlanId);
   
@@ -168,6 +170,7 @@ export function AddCustomerDialog({ visible, onClose }: AddCompanyProps) {
         console.error('Error saving customer:', error);
         toast.error('Failed to save customer. Please try again.');
       });
+    setLoading(false);
   };
 
 
@@ -335,7 +338,10 @@ export function AddCustomerDialog({ visible, onClose }: AddCompanyProps) {
 
         <DialogFooter>
           <Button onClick={handleSubmit} type="submit">
-            Save Changes
+          {loading && (
+                            <Loader size="35px" className="animate-spin" />
+                        )}
+                        {loading ? 'Saving...' : 'Save'}
           </Button>
         </DialogFooter>
       </DialogContent>
