@@ -142,16 +142,7 @@ const ViewCustomerDialog: React.FC<ViewCustomerDialogProps> = ({ isOpen, onClose
             toast.error('An error occurred while updating the customer image.');
         }
     };
-
-    const [scannedCustomerData, setScannedCustomerData] = useState<Customer | null>(null); // Store scanned customer data
-    const handleQrCodeScan = (jsonData: string) => {
-        try {
-          const parsedData = JSON.parse(jsonData);
-          setScannedCustomerData(parsedData); // Update state with scanned data
-        } catch (error) {
-          toast.error('Error parsing QR code data.');
-        }
-      };
+ 
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
