@@ -43,10 +43,7 @@ const ViewCustomerDialog: React.FC<ViewCustomerDialogProps> = ({ isOpen, onClose
     const [formData, setFormData] = useState<Customer>(customer);
     const [image, setImage] = useState<File | null>(null);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
-
-
-    const [qrData, setQrData] = useState<any>(null); // Store parsed QR data
-
+  
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -237,7 +234,7 @@ const ViewCustomerDialog: React.FC<ViewCustomerDialogProps> = ({ isOpen, onClose
             {/* QR Code - Positioned Below Inputs */}
             <div className="flex justify-center mb-8">
                 <QRCodeSVG
-                    value={`https://hw-fitness.vercel.app/api/customer/${formData._id}`}
+                    value={`https://hw-fitness.vercel.app/api/customer/${customer._id}`} // Use customer ID as QR code value
                     size={256} // Larger size
                     bgColor="#FFFFFF"
                     fgColor="#000000"
@@ -248,51 +245,10 @@ const ViewCustomerDialog: React.FC<ViewCustomerDialogProps> = ({ isOpen, onClose
                         excavate: true,
                         opacity: 1,
                     }}
+                    className="border border-gray-300 rounded-md"
                 />
             </div>
-            {scannedCustomerData  && (
-          <div className="space-y-4">
-            <div className="flex items-center space-x-4">
-              <img
-                src={customer.image}
-                alt={`${customer.firstName} ${customer.lastName}`}
-                className="w-20 h-20 rounded-full"
-              />
-              <div>
-                <h2 className="text-xl font-semibold">{`${customer.firstName} ${customer.middleName} ${customer.lastName}`}</h2>
-                <p className="text-gray-600">{customer.phoneNumber}</p>
-              </div>
-            </div>
-
-            <div>
-              <strong>Gender:</strong> {customer.gender}
-            </div>
-            <div>
-              <strong>Selected Plan:</strong> {customer.selectedPlan}
-            </div>
-            <div>
-              <strong>Plan Period:</strong> {customer.selectedPlanPeriod} month(s)
-            </div>
-            <div>
-              <strong>Start Date:</strong> {customer.startDate}
-            </div>
-            {/* <div>
-              <strong>End Date:</strong> {calculateEndDate(customer.startDate, customer.selectedPlanPeriod)}
-            </div> */}
-            <div>
-              <strong>Next Payment Date:</strong> {customer.nextPaymentDate}
-            </div>
-            <div>
-              <strong>Total:</strong> {customer.total}
-            </div>
-            <div>
-              <strong>Payment Method:</strong> {customer.paymentMethod}
-            </div>
-            <div>
-              <strong>Payment Status:</strong> {customer.paymentStatus}
-            </div>
-          </div>
-        )}
+         
              
 
             {/* Footer */}
