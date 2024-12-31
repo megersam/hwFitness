@@ -39,20 +39,6 @@ const ViewCustomerDialog: React.FC<ViewCustomerDialogProps> = ({ isOpen, onClose
 
     const [loading, setLoading] = useState(false);
 
-       // Format dates
-       const formatDate = (date: string) => {
-        const d = new Date(date);
-        return d.toLocaleDateString();
-    };
-
-       // Calculate the end date from the start date and selected plan period
-       const calculateEndDate = (startDate: string, selectedPeriod: string) => {
-        const date = new Date(startDate);
-        const period = parseInt(selectedPeriod);
-        date.setMonth(date.getMonth() + period); // Add the period (in months)
-        return date.toLocaleDateString();
-    };
-
     // Local state to track updates
     const [formData, setFormData] = useState<Customer>(customer);
     const [image, setImage] = useState<File | null>(null);
@@ -160,15 +146,15 @@ const ViewCustomerDialog: React.FC<ViewCustomerDialogProps> = ({ isOpen, onClose
         }
     };
 
-
+    const [scannedCustomerData, setScannedCustomerData] = useState<Customer | null>(null); // Store scanned customer data
     const handleQrCodeScan = (jsonData: string) => {
         try {
-            const parsedData = JSON.parse(jsonData);
-            setQrData(parsedData); // Parse and store QR data
+          const parsedData = JSON.parse(jsonData);
+          setScannedCustomerData(parsedData); // Update state with scanned data
         } catch (error) {
-            toast.error('Error parsing QR code data.');
+          toast.error('Error parsing QR code data.');
         }
-    };
+      };
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
@@ -264,48 +250,50 @@ const ViewCustomerDialog: React.FC<ViewCustomerDialogProps> = ({ isOpen, onClose
                     }}
                 />
             </div>
+            {scannedCustomerData  && (
+          <div className="space-y-4">
+            <div className="flex items-center space-x-4">
+              <img
+                src={customer.image}
+                alt={`${customer.firstName} ${customer.lastName}`}
+                className="w-20 h-20 rounded-full"
+              />
+              <div>
+                <h2 className="text-xl font-semibold">{`${customer.firstName} ${customer.middleName} ${customer.lastName}`}</h2>
+                <p className="text-gray-600">{customer.phoneNumber}</p>
+              </div>
+            </div>
 
-                {/* Customer Info Section */}
-                <div className="space-y-4">
-                    <div className="flex items-center space-x-4">
-                        <img
-                            src={customer.image}
-                            alt={`${customer.firstName} ${customer.lastName}`}
-                            className="w-20 h-20 rounded-full"
-                        />
-                        <div>
-                            <h2 className="text-xl font-semibold">{`${customer.firstName} ${customer.middleName} ${customer.lastName}`}</h2>
-                            <p className="text-gray-600">{customer.phoneNumber}</p>
-                        </div>
-                    </div>
-                    <div>
-                        <strong>Gender:</strong> {customer.gender}
-                    </div>
-                    <div>
-                        <strong>Selected Plan:</strong> {customer.selectedPlan}
-                    </div>
-                    <div>
-                        <strong>Plan Period:</strong> {customer.selectedPlanPeriod} month(s)
-                    </div>
-                    <div>
-                        <strong>Start Date:</strong> {formatDate(customer.startDate)}
-                    </div>
-                    {/* <div>
-                        <strong>End Date:</strong> {calculateEndDate(customer.startDate, customer.selectedPlanPeriod)}
-                    </div> */}
-                    <div>
-                        <strong>Next Payment Date:</strong> {formatDate(customer.nextPaymentDate)}
-                    </div>
-                    <div>
-                        <strong>Total:</strong> {customer.total}
-                    </div>
-                    <div>
-                        <strong>Payment Method:</strong> {customer.paymentMethod}
-                    </div>
-                    <div>
-                        <strong>Payment Status:</strong> {customer.paymentStatus}
-                    </div>
-                </div>
+            <div>
+              <strong>Gender:</strong> {customer.gender}
+            </div>
+            <div>
+              <strong>Selected Plan:</strong> {customer.selectedPlan}
+            </div>
+            <div>
+              <strong>Plan Period:</strong> {customer.selectedPlanPeriod} month(s)
+            </div>
+            <div>
+              <strong>Start Date:</strong> {customer.startDate}
+            </div>
+            {/* <div>
+              <strong>End Date:</strong> {calculateEndDate(customer.startDate, customer.selectedPlanPeriod)}
+            </div> */}
+            <div>
+              <strong>Next Payment Date:</strong> {customer.nextPaymentDate}
+            </div>
+            <div>
+              <strong>Total:</strong> {customer.total}
+            </div>
+            <div>
+              <strong>Payment Method:</strong> {customer.paymentMethod}
+            </div>
+            <div>
+              <strong>Payment Status:</strong> {customer.paymentStatus}
+            </div>
+          </div>
+        )}
+             
 
             {/* Footer */}
             <DialogFooter className="space-x-4">
