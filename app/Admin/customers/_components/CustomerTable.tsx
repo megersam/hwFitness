@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { customers } from "./customer";
 import { Skeleton } from "@/components/ui/skeleton";
+import ViewCustomerDialog from "./viewCustomers";
 
 interface Customer {
     _id: string;
@@ -9,7 +10,7 @@ interface Customer {
     middleName: string;
     lastName: string;
     gender: string;
-    phoneNumber: string; 
+    phoneNumber: string;
     image: string;
     paymentStatus: string;
     nextPaymentDate: string;
@@ -28,6 +29,10 @@ const CustomerTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => {
     const [itemsPerPage] = useState(5); // Number of items per page
     const [loading, setLoading] = useState(true);
     const [customerData, setCustomerData] = useState<Customer[]>([]);
+
+    // Inside the CustomerTable component
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
 
 
     useEffect(() => {
@@ -56,11 +61,11 @@ const CustomerTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => {
 
     // Filter customers based on the selected status
     const filteredCustomers = Array.isArray(customerData)
-    ? customerData.filter((customer) => {
-        if (filteredStatus === "All") return true;
-        return customer.paymentStatus === filteredStatus;
-      })
-    : [];
+        ? customerData.filter((customer) => {
+            if (filteredStatus === "All") return true;
+            return customer.paymentStatus === filteredStatus;
+        })
+        : [];
 
     // Further filter customers based on the search query (case-insensitive search)
     const searchedCustomers = filteredCustomers.filter((customer) => {
@@ -109,8 +114,17 @@ const CustomerTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => {
         NotPaid: "bg-red-500 text-white",
     };
 
- 
 
+    // Inside the CustomerTable component
+    const handleRowClick = (customer: Customer) => {
+        setSelectedCustomer(customer);
+        setIsDialogOpen(true);
+    };
+
+    const handleCloseDialog = () => {
+        setIsDialogOpen(false);
+        setSelectedCustomer(null);
+    };
 
 
 
@@ -167,7 +181,7 @@ const CustomerTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => {
                                         href="#"
                                         className="block px-4 py-2 text-green-400 hover:bg-gray-300 dark:hover:bg-gray-500 dark:hover:text-white"
                                     >
-                                       Paid
+                                        Paid
                                     </a>
                                 </li>
                                 <li>
@@ -185,7 +199,7 @@ const CustomerTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => {
                                         href="#"
                                         className="block px-4 py-2 text-yellow-400 hover:bg-gray-300 dark:hover:bg-gray-500"
                                     >
-                                         Pending
+                                        Pending
                                     </a>
                                 </li>
                             </ul>
@@ -254,7 +268,7 @@ const CustomerTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => {
                     </tr>
                 </thead>
                 <tbody>
-                {loading
+                    {loading
                         ? Array.from({ length: itemsPerPage }).map((_, index) => (
                             <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                 <td className="p-4">
@@ -268,54 +282,62 @@ const CustomerTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => {
                                 </td>
                                 <td className="px-6 py-4">
                                     <Skeleton className="h-4 w-16" />
-                                 </td>
+                                </td>
                             </tr>
                         ))
-                        : 
-                    paginatedCustomers.map((customer) => (
-                        <tr
-                            key={customer._id}
-                            className="bg-gray-100 border-b dark:bg-gray-700 dark:border-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500">
-                            <td className="w-4 p-4">
-                                <div className="flex items-center">
-                                    <input
-                                        id="checkbox-table-search-1"
-                                        type="checkbox"
-                                        className="w-4 h-4 text-blue-500 bg-gray-200 border-gray-300 rounded focus:ring-blue-400 dark:focus:ring-blue-500 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                                    />
-                                    <label htmlFor="checkbox-table-search-1" className="sr-only">
-                                        checkbox
-                                    </label>
-                                </div>
-                            </td>
-                            <th
-                                scope="row"
-                                className="flex items-center px-6 py-4 text-gray-700 whitespace-nowrap dark:text-gray-200"
-                            >
-                                <img
-                                    className="w-10 h-10 rounded-full"
-                                    src={customer.image}
-                                />
-                                <div className="pl-3">
-                                    <div className="text-base font-semibold">{customer.firstName} {customer.middleName} {customer.lastName}</div>
-                                    <div className="font-normal text-black-500">
-                                        {customer.phoneNumber}
+                        :
+                        paginatedCustomers.map((customer) => (
+                            <tr
+                                key={customer._id}
+                                onClick={() => handleRowClick(customer)}
+                                tabIndex={0}
+                                typeof="button"
+                                onKeyPress={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        handleRowClick(customer);
+                                    }
+                                }}
+                                className="bg-gray-100 border-b dark:bg-gray-700 dark:border-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500">
+                                <td className="w-4 p-4">
+                                    <div className="flex items-center">
+                                        <input
+                                            id="checkbox-table-search-1"
+                                            type="checkbox"
+                                            className="w-4 h-4 text-blue-500 bg-gray-200 border-gray-300 rounded focus:ring-blue-400 dark:focus:ring-blue-500 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                                        />
+                                        <label htmlFor="checkbox-table-search-1" className="sr-only">
+                                            checkbox
+                                        </label>
                                     </div>
-                                </div>
-                            </th>
-                            <td className="px-6 py-4 text-base color-black">{customer.nextPaymentDate}</td>
-                            <td className="px-6 py-4">
-                                <div className="flex items-center">
-                                    <span
-                                        className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[customer.paymentStatus]
-                                            }`}
-                                    >
-                                        {customer.paymentStatus}
-                                    </span>
-                                </div>
-                            </td>
-                        </tr>
-                    ))}
+                                </td>
+                                <th
+                                    scope="row"
+                                    className="flex items-center px-6 py-4 text-gray-700 whitespace-nowrap dark:text-gray-200"
+                                >
+                                    <img
+                                        className="w-10 h-10 rounded-full"
+                                        src={customer.image}
+                                    />
+                                    <div className="pl-3">
+                                        <div className="text-base font-semibold">{customer.firstName} {customer.middleName} {customer.lastName}</div>
+                                        <div className="font-normal text-black-500">
+                                            {customer.phoneNumber}
+                                        </div>
+                                    </div>
+                                </th>
+                                <td className="px-6 py-4 text-base color-black">{customer.nextPaymentDate}</td>
+                                <td className="px-6 py-4">
+                                    <div className="flex items-center">
+                                        <span
+                                            className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[customer.paymentStatus]
+                                                }`}
+                                        >
+                                            {customer.paymentStatus}
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
                 </tbody>
             </table>
             {/* Pagination Controls */}
@@ -344,6 +366,12 @@ const CustomerTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => {
                     Next
                 </button>
             </div>
+           
+            <ViewCustomerDialog
+                isOpen={isDialogOpen}
+                onClose={handleCloseDialog}
+                customer={selectedCustomer}
+            />
         </div>
 
 

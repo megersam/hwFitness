@@ -1,11 +1,13 @@
 import connectDB from "@/lib/db";
 import CustomerModel from "@/Models/customerModel";
+import SubscriptionHistoryModel from "@/Models/subscriptionHistory";
 import { NextRequest, NextResponse } from "next/server";
 
 // Connect to the database
 connectDB();
 
-// POST API to create a new customer
+// POST API to create a new customer 
+
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     // Parse request body
@@ -15,6 +17,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       lastName,
       phoneNumber,
       gender,
+      selectedPlan,
+      selectedPlanPeriod,
       paymentMethod,
       paymentStatus,
       bankAccount,
@@ -47,6 +51,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       lastName,
       phoneNumber,
       gender,
+      selectedPlan,
+      selectedPlanPeriod,
       paymentMethod,
       paymentStatus,
       bankAccount,
@@ -55,20 +61,36 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       nextPaymentDate,
     });
 
-    await newCustomer.save();
+    const savedCustomer = await newCustomer.save();
+
+    // Create and save the subscription history
+    const subscriptionHistory = new SubscriptionHistoryModel({
+      customerId: savedCustomer._id, // Map the customer ID
+      selectedPlan,
+      selectedPlanPeriod,
+      startDate: new Date(),
+      nextPaymentDate,
+      paymentMethod,
+      paymentStatus,
+      total,
+    });
+
+    await subscriptionHistory.save();
 
     return NextResponse.json({
-      message: "Customer added successfully!",
-      customer: newCustomer,
+      message: "Customer and subscription history added successfully!",
+      customer: savedCustomer,
+      subscriptionHistory,
     });
   } catch (error) {
-    console.error("Error creating customer:", error);
+    console.error("Error creating customer and subscription history:", error);
     return NextResponse.json(
-      { error: "Failed to add customer" },
+      { error: "Failed to add customer and subscription history" },
       { status: 500 }
     );
   }
 }
+
 
 
 // GET API to fetch all customers

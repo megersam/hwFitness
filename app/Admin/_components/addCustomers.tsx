@@ -148,6 +148,7 @@ export function AddCustomerDialog({ visible, onClose, onCustomerAdded }: AddComp
       ...formData,
       image: imageUrl, // Add the image URL to the form data
       selectedPlan: selectedPlan ? selectedPlan.planName : undefined,
+      selectedPlanPeriod: selectedPlan ? selectedPlan.period : undefined,
     };
   
     console.log(customerData); // You can log the customer data to verify
