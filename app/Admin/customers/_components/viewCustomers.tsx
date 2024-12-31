@@ -43,7 +43,7 @@ const ViewCustomerDialog: React.FC<ViewCustomerDialogProps> = ({ isOpen, onClose
     const [formData, setFormData] = useState<Customer>(customer);
     const [image, setImage] = useState<File | null>(null);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
-  
+
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -142,130 +142,130 @@ const ViewCustomerDialog: React.FC<ViewCustomerDialogProps> = ({ isOpen, onClose
             toast.error('An error occurred while updating the customer image.');
         }
     };
- 
+
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-[1000px] max-h-[80vh] overflow-auto">
-            <DialogHeader>
-                <DialogTitle>Customer Details</DialogTitle>
-                <DialogDescription>
-                    Detailed information about the customer.
-                </DialogDescription>
-            </DialogHeader>
+            <DialogContent className="sm:max-w-[1000px] max-h-[80vh] overflow-auto">
+                <DialogHeader>
+                    <DialogTitle>Customer Details</DialogTitle>
+                    <DialogDescription>
+                        Detailed information about the customer.
+                    </DialogDescription>
+                </DialogHeader>
 
-            {/* Personal Information Section */}
-            <div className="mb-8">
-                <h2 className="text-lg font-semibold mb-4">Personal Information</h2>
-                <div className="grid grid-cols-4 gap-4">
-                    {/* Image */}
-                    <div className="col-span-1 flex items-center justify-center border rounded-md h-32 bg-gray-100">
-                        <input
-                            type="file"
-                            id="image"
-                            onChange={handleImageChange}
-                            className="hidden"
-                        />
-                        <label htmlFor="image">
-                            <img
-                                src={formData.image}
-                                alt="Customer"
-                                className="w-32 h-32 rounded-full cursor-pointer"
+                {/* Personal Information Section */}
+                <div className="mb-8">
+                    <h2 className="text-lg font-semibold mb-4">Personal Information</h2>
+                    <div className="grid grid-cols-4 gap-4">
+                        {/* Image */}
+                        <div className="col-span-1 flex items-center justify-center border rounded-md h-32 bg-gray-100">
+                            <input
+                                type="file"
+                                id="image"
+                                onChange={handleImageChange}
+                                className="hidden"
                             />
-                        </label>
-                    </div>
-                    {/* Inputs */}
-                    <div className="col-span-3 grid grid-cols-3 gap-4">
-                        <Input
-                            name="firstName"
-                            id="firstName"
-                            placeholder="First Name"
-                            value={formData.firstName}
-                            onChange={handleChange}
-                        />
-                        <Input
-                            name="middleName"
-                            id="middleName"
-                            placeholder="Middle Name"
-                            value={formData.middleName}
-                            onChange={handleChange}
-                        />
-                        <Input
-                            name="lastName"
-                            id="lastName"
-                            placeholder="Last Name"
-                            value={formData.lastName}
-                            onChange={handleChange}
-                        />
-                        <Select
-                            value={formData.gender}
-                            onValueChange={handleGenderChange}
-                        >
-                            <SelectTrigger>
-                                <SelectValue placeholder="Gender">
-                                    {formData.gender}
-                                </SelectValue>
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="male">Male</SelectItem>
-                                <SelectItem value="female">Female</SelectItem>
-                            </SelectContent>
-                        </Select>
-                        <Input
-                            name="phoneNumber"
-                            id="phoneNumber"
-                            placeholder="Phone Number"
-                            value={formData.phoneNumber}
-                            onChange={handleChange}
-                        />
+                            <label htmlFor="image">
+                                <img
+                                    src={formData.image}
+                                    alt="Customer"
+                                    className="w-32 h-32 rounded-full cursor-pointer"
+                                />
+                            </label>
+                        </div>
+                        {/* Inputs */}
+                        <div className="col-span-3 grid grid-cols-3 gap-4">
+                            <Input
+                                name="firstName"
+                                id="firstName"
+                                placeholder="First Name"
+                                value={formData.firstName}
+                                onChange={handleChange}
+                            />
+                            <Input
+                                name="middleName"
+                                id="middleName"
+                                placeholder="Middle Name"
+                                value={formData.middleName}
+                                onChange={handleChange}
+                            />
+                            <Input
+                                name="lastName"
+                                id="lastName"
+                                placeholder="Last Name"
+                                value={formData.lastName}
+                                onChange={handleChange}
+                            />
+                            <Select
+                                value={formData.gender}
+                                onValueChange={handleGenderChange}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Gender">
+                                        {formData.gender}
+                                    </SelectValue>
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="male">Male</SelectItem>
+                                    <SelectItem value="female">Female</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <Input
+                                name="phoneNumber"
+                                id="phoneNumber"
+                                placeholder="Phone Number"
+                                value={formData.phoneNumber}
+                                onChange={handleChange}
+                            />
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* QR Code - Positioned Below Inputs */}
-            <div className="flex justify-center mb-8">
-                <QRCodeSVG
-                    value={`https://hw-fitness.vercel.app/api/customer/${customer._id}`} // Use customer ID as QR code value
-                    size={256} // Larger size
-                    bgColor="#FFFFFF"
-                    fgColor="#000000"
-                    imageSettings={{
-                        src: "/logo.png",
-                        height: 20,
-                        width: 20,
-                        excavate: true,
-                        opacity: 1,
-                    }}
-                    className="border border-gray-300 rounded-md"
-                />
-            </div>
-         
-             
+                {/* QR Code - Positioned Below Inputs */}
+                <div className="flex justify-center mb-8">
+                    <QRCodeSVG
+                        value={`https://hw-fitness.vercel.app/viewCustomer/${customer._id}`} // URL containing the customer ID
+                        size={256} // Size of the QR code
+                        bgColor="#FFFFFF"
+                        fgColor="#000000"
+                        imageSettings={{
+                            src: "/logo.png",
+                            height: 20,
+                            width: 20,
+                            excavate: true,
+                            opacity: 1,
+                        }}
+                        className="border border-gray-300 rounded-md"
+                    />
+                </div>
 
-            {/* Footer */}
-            <DialogFooter className="space-x-4">
-                <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleCancel}
-                    className="py-2 px-6 text-sm font-medium text-gray-600 border border-gray-300 rounded-md"
-                >
-                    Cancel
-                </Button>
-                <Button
-                    type="button"
-                    onClick={handleSubmit}
-                    disabled={loading}
-                    className="relative"
-                >
-                    {loading && (
-                        <Loader size="35px" className="animate-spin absolute left-4" />
-                    )}
-                    {loading ? 'Updating...' : 'Update'}
-                </Button>
-            </DialogFooter>
-        </DialogContent>
-    </Dialog>
+
+
+                {/* Footer */}
+                <DialogFooter className="space-x-4">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleCancel}
+                        className="py-2 px-6 text-sm font-medium text-gray-600 border border-gray-300 rounded-md"
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        type="button"
+                        onClick={handleSubmit}
+                        disabled={loading}
+                        className="relative"
+                    >
+                        {loading && (
+                            <Loader size="35px" className="animate-spin absolute left-4" />
+                        )}
+                        {loading ? 'Updating...' : 'Update'}
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
 };
 
