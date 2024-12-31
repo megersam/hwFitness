@@ -2,54 +2,56 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/db'; 
 import CustomerModel from '@/Models/customerModel';
 
-export async function PUT(
-  req: NextRequest, 
-  context: { params: Promise<{ id: string }> } // Params is now a Promise
-): Promise<NextResponse> {
-  const params = await context.params; // Await the params
-  const { id } = params;
-
-  await connectDB();
-
-  const body = await req.json(); // Parse the request body
-
-  try {
-    const updatedCustomer = await CustomerModel.findByIdAndUpdate(
-      id,
-      { $set: body },
-      { new: true } // Return the updated document
-    );
-
-    if (!updatedCustomer) {
-      return NextResponse.json({ error: "Plan not found" }, { status: 404 });
-    }
-
-    return NextResponse.json(updatedCustomer);
-  } catch (error) {
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-  }
-}
-
-
 export async function GET(
   req: NextRequest, 
-  context: { params: Promise<{ id: string }> } // Params is now a Promise
+  context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
-  const params = await context.params; // Await the params
+  const params = await context.params; 
   const { id } = params;
 
   await connectDB();
 
   try {
-    // Find the customer by ID
     const customer = await CustomerModel.findById(id);
 
     if (!customer) {
-      return NextResponse.json({ error: "Customer not found" }, { status: 404 });
+      return new NextResponse(
+        `<html><body><h1>Customer Not Found</h1></body></html>`, 
+        { status: 404, headers: { 'Content-Type': 'text/html' } }
+      );
     }
 
-    return NextResponse.json(customer);
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Customer Details</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 20px; }
+          img { border-radius: 50%; width: 100px; height: 100px; }
+          .customer-details { margin-top: 20px; }
+        </style>
+      </head>
+      <body>
+        <h1>Customer Details</h1>
+        <img src="${customer.image}" alt="Customer Image" />
+        <div class="customer-details">
+          <p><strong>Name:</strong> ${customer.firstName} ${customer.middleName} ${customer.lastName}</p>
+          <p><strong>Phone:</strong> ${customer.phoneNumber}</p>
+          <p><strong>Gender:</strong> ${customer.gender}</p>
+          <p><strong>Plan:</strong> ${customer.selectedPlan}</p>
+          <p><strong>Payment Status:</strong> ${customer.paymentStatus}</p>
+          <p><strong>Next Payment Date:</strong> ${customer.nextPaymentDate}</p>
+        </div>
+      </body>
+      </html>
+    `;
+
+    return new NextResponse(htmlContent, { headers: { 'Content-Type': 'text/html' } });
   } catch (error) {
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return new NextResponse(
+      `<html><body><h1>Internal Server Error</h1></body></html>`,
+      { status: 500, headers: { 'Content-Type': 'text/html' } }
+    );
   }
 }
