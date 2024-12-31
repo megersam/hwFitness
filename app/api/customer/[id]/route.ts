@@ -40,8 +40,10 @@ export async function GET(
           <p><strong>Phone:</strong> ${customer.phoneNumber}</p>
           <p><strong>Gender:</strong> ${customer.gender}</p>
           <p><strong>Plan:</strong> ${customer.selectedPlan}</p>
+          <p><strong>Period:</strong> ${customer.selectedPlanPeriod}</p>
+          <p><strong>Start Date:</strong> ${customer.startDate}</p>
+          <p><strong>End Date:</strong> ${customer.nextPaymentDate}</p>
           <p><strong>Payment Status:</strong> ${customer.paymentStatus}</p>
-          <p><strong>Next Payment Date:</strong> ${customer.nextPaymentDate}</p>
         </div>
       </body>
       </html>
@@ -55,3 +57,33 @@ export async function GET(
     );
   }
 }
+export async function PUT(
+  req: NextRequest, 
+  context: { params: Promise<{ id: string }> } // Params is now a Promise
+): Promise<NextResponse> {
+  const params = await context.params; // Await the params
+  const { id } = params;
+
+  await connectDB();
+
+  const body = await req.json(); // Parse the request body
+
+  try {
+    const updatedCustomer = await CustomerModel.findByIdAndUpdate(
+      id,
+      { $set: body },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedCustomer) {
+      return NextResponse.json({ error: "Plan not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(updatedCustomer);
+  } catch (error) {
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
+
+
+ 
