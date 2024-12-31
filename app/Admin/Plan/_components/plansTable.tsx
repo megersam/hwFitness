@@ -320,7 +320,7 @@ const PlansTable: React.FC<PlanTableProps> = ({ shouldRefresh }) => {
                 </button>
             </div>
 
-
+ 
             {/* Dialog */}
             {isDialogOpen && selectedPlan && (
                 <ViewPlanDialog
