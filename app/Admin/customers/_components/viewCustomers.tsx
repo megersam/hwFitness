@@ -217,7 +217,7 @@ const ViewCustomerDialog: React.FC<ViewCustomerDialogProps> = ({ isOpen, onClose
             {/* QR Code - Positioned Below Inputs */}
             <div className="flex justify-center mb-8">
                 <QRCodeSVG
-                    value={`https://hw-fitness.vercel.app/${formData._id}`}
+                    value={`https://hw-fitness.vercel.app/api/customer/${formData._id}`}
                     size={256} // Larger size
                     bgColor="#FFFFFF"
                     fgColor="#000000"
