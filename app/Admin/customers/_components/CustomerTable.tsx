@@ -9,13 +9,18 @@ interface Customer {
     firstName: string;
     middleName: string;
     lastName: string;
-    gender: string;
     phoneNumber: string;
-    image: string;
-    paymentStatus: string;
+    gender: string;
+    selectedPlan: string;
+    selectedPlanPeriod: string;
     nextPaymentDate: string;
     paymentMethod: string;
+    paymentStatus: string;
     total: string;
+    image: string;
+    startDate: string;
+    createdAt: string;
+    updatedAt: string;
 }
 interface CustomersTableProps {
     shouldRefresh: boolean; // Prop to trigger the refresh
