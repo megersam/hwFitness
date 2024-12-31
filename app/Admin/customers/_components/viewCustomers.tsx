@@ -14,13 +14,18 @@ interface Customer {
     firstName: string;
     middleName: string;
     lastName: string;
-    gender: string;
     phoneNumber: string;
-    image: string;
-    paymentStatus: string;
+    gender: string;
+    selectedPlan: string;
+    selectedPlanPeriod: string;
     nextPaymentDate: string;
     paymentMethod: string;
+    paymentStatus: string;
     total: string;
+    image: string;
+    startDate: string;
+    createdAt: string;
+    updatedAt: string;
 }
 
 interface ViewCustomerDialogProps {
@@ -34,10 +39,29 @@ const ViewCustomerDialog: React.FC<ViewCustomerDialogProps> = ({ isOpen, onClose
 
     const [loading, setLoading] = useState(false);
 
+       // Format dates
+       const formatDate = (date: string) => {
+        const d = new Date(date);
+        return d.toLocaleDateString();
+    };
+
+       // Calculate the end date from the start date and selected plan period
+       const calculateEndDate = (startDate: string, selectedPeriod: string) => {
+        const date = new Date(startDate);
+        const period = parseInt(selectedPeriod);
+        date.setMonth(date.getMonth() + period); // Add the period (in months)
+        return date.toLocaleDateString();
+    };
+
     // Local state to track updates
     const [formData, setFormData] = useState<Customer>(customer);
     const [image, setImage] = useState<File | null>(null);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
+
+
+    const [qrData, setQrData] = useState<any>(null); // Store parsed QR data
+
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
@@ -136,6 +160,16 @@ const ViewCustomerDialog: React.FC<ViewCustomerDialogProps> = ({ isOpen, onClose
         }
     };
 
+
+    const handleQrCodeScan = (jsonData: string) => {
+        try {
+            const parsedData = JSON.parse(jsonData);
+            setQrData(parsedData); // Parse and store QR data
+        } catch (error) {
+            toast.error('Error parsing QR code data.');
+        }
+    };
+
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-[1000px] max-h-[80vh] overflow-auto">
@@ -230,6 +264,48 @@ const ViewCustomerDialog: React.FC<ViewCustomerDialogProps> = ({ isOpen, onClose
                     }}
                 />
             </div>
+
+                {/* Customer Info Section */}
+                <div className="space-y-4">
+                    <div className="flex items-center space-x-4">
+                        <img
+                            src={customer.image}
+                            alt={`${customer.firstName} ${customer.lastName}`}
+                            className="w-20 h-20 rounded-full"
+                        />
+                        <div>
+                            <h2 className="text-xl font-semibold">{`${customer.firstName} ${customer.middleName} ${customer.lastName}`}</h2>
+                            <p className="text-gray-600">{customer.phoneNumber}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>Gender:</strong> {customer.gender}
+                    </div>
+                    <div>
+                        <strong>Selected Plan:</strong> {customer.selectedPlan}
+                    </div>
+                    <div>
+                        <strong>Plan Period:</strong> {customer.selectedPlanPeriod} month(s)
+                    </div>
+                    <div>
+                        <strong>Start Date:</strong> {formatDate(customer.startDate)}
+                    </div>
+                    {/* <div>
+                        <strong>End Date:</strong> {calculateEndDate(customer.startDate, customer.selectedPlanPeriod)}
+                    </div> */}
+                    <div>
+                        <strong>Next Payment Date:</strong> {formatDate(customer.nextPaymentDate)}
+                    </div>
+                    <div>
+                        <strong>Total:</strong> {customer.total}
+                    </div>
+                    <div>
+                        <strong>Payment Method:</strong> {customer.paymentMethod}
+                    </div>
+                    <div>
+                        <strong>Payment Status:</strong> {customer.paymentStatus}
+                    </div>
+                </div>
 
             {/* Footer */}
             <DialogFooter className="space-x-4">
