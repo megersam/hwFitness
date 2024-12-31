@@ -5,9 +5,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader } from 'lucide-react';
+import { Download, Loader } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { QRCodeSVG } from 'qrcode.react';  // Import QRCodeSVG
+import { jsPDF } from "jspdf"; // Install jsPDF
+import html2canvas from "html2canvas"; // Install html2canvas
 
 interface Customer {
     _id: string;
@@ -143,7 +145,27 @@ const ViewCustomerDialog: React.FC<ViewCustomerDialogProps> = ({ isOpen, onClose
         }
     };
 
+    const downloadQRCode = async () => {
+        const qrCodeElement = document.getElementById("qr-code"); // Reference to the QR code container
 
+        if (!qrCodeElement) {
+            console.error("QR code element not found");
+            return;
+        }
+
+        // Convert the QR code element to a canvas
+        const canvas = await html2canvas(qrCodeElement, { scale: 2 });
+
+        // Initialize jsPDF
+        const pdf = new jsPDF();
+        const imgData = canvas.toDataURL("image/png");
+
+        // Add the QR code image to the PDF
+        pdf.addImage(imgData, "PNG", 10, 10, 90, 90); // Adjust position and size as needed
+
+        // Trigger the download
+        pdf.save("QRCode.pdf");
+    };
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-[1000px] max-h-[80vh] overflow-auto">
@@ -223,22 +245,35 @@ const ViewCustomerDialog: React.FC<ViewCustomerDialogProps> = ({ isOpen, onClose
                 </div>
 
                 {/* QR Code - Positioned Below Inputs */}
-                <div className="flex justify-center mb-8">
-                    <QRCodeSVG
-                        value={`https://hw-fitness.vercel.app/api/customer/${customer._id}`} // URL containing the customer ID
-                        size={256} // Size of the QR code
-                        bgColor="#FFFFFF"
-                        fgColor="#000000"
-                        imageSettings={{
-                            src: "/logo.png",
-                            height: 20,
-                            width: 20,
-                            excavate: true,
-                            opacity: 1,
-                        }}
-                        className="border border-gray-300 rounded-md"
-                    />
+                <div className="flex flex-col items-center mb-8 space-y-4">
+                    {/* QR Code Container */}
+                    <div id="qr-code" className="border border-gray-300 rounded-md">
+                        <QRCodeSVG
+                            value={`https://hw-fitness.vercel.app/api/customer/${customer._id}`} // URL containing the customer ID
+                            size={256} // Size of the QR code
+                            bgColor="#FFFFFF"
+                            fgColor="#000000"
+                            imageSettings={{
+                                src: "/logo.png",
+                                height: 20,
+                                width: 20,
+                                excavate: true,
+                                opacity: 1,
+                            }}
+                            className="border border-gray-300 rounded-md"
+                        />
+                    </div>
+
+                    {/* Button Positioned Below */}
+                    <Button
+                        type="button"
+                        onClick={downloadQRCode}
+                    >
+                        <Download size={24} className="ml-2" />
+                        Download
+                    </Button>
                 </div>
+
 
 
 
