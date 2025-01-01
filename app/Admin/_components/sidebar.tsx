@@ -3,6 +3,7 @@ import {
     Calendar,
     ChevronUp,
     Currency,
+    DollarSign,
     Home,
     Inbox,
     PersonStanding,
@@ -57,7 +58,12 @@ const items = [
     {
         title: "Price",
         url: "/Admin/Price",
-        icon: Currency,
+        icon: DollarSign,
+    },
+    {
+        title: "Subscription",
+        url: "/Admin/subscriptions",
+        icon: Calendar,
     },
 ];
 
