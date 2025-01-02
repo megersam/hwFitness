@@ -32,7 +32,7 @@ export async function GET(
       customerId: id,
       startDate: { $lte: currentDate },
       endDate: { $gte: currentDate },
-    }).populate('subscriptionPlan', 'planName period totla');
+    }).populate('subscriptionPlan', 'planName period total');
 
     if (!activeSubscription) {
       console.log('No active subscription found for customer:', id);
