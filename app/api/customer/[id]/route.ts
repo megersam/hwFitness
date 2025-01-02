@@ -31,14 +31,14 @@ export async function GET(
       customerId: id,
       startDate: { $lte: currentDate },
       endDate: { $gte: currentDate },
-    }).populate('selectedPlan', 'planName period price'); // Only select the required fields
+    }).populate('selectedPlan', 'planName period total'); // Only select the required fields
 
     // Prepare the subscription details
     const subscriptionDetails = activeSubscription
       ? `
-        <p><strong>Subscription Plan:</strong> ${activeSubscription.subscriptionPlan.planName}</p>
-        <p><strong>Period:</strong> ${activeSubscription.subscriptionPlan.period}</p>
-        <p><strong>Price:</strong> ${activeSubscription.subscriptionPlan.price}</p>
+        <p><strong>Subscription Plan:</strong> ${activeSubscription.selectedPlan.planName}</p>
+        <p><strong>Period:</strong> ${activeSubscription.selectedPlan.period}</p>
+        <p><strong>Price:</strong> ${activeSubscription.selectedPlan.total}</p>
         <p><strong>Start Date:</strong> ${activeSubscription.startDate.toDateString()}</p>
         <p><strong>End Date:</strong> ${activeSubscription.endDate.toDateString()}</p>
         <p><strong>Status:</strong> Active</p>
