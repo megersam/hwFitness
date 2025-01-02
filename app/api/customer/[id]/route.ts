@@ -3,6 +3,7 @@ import connectDB from '@/lib/db';
 import CustomerModel from '@/Models/customerModel';
 import SubscriptionModel from '@/Models/subscriptionModel';
 
+
 export async function GET(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -31,14 +32,20 @@ export async function GET(
       customerId: id,
       startDate: { $lte: currentDate },
       endDate: { $gte: currentDate },
-    }).populate('selectedPlan', 'planName period total'); // Only select the required fields
+    }).populate('subscriptionPlan', 'planName period totla');
+
+    if (!activeSubscription) {
+      console.log('No active subscription found for customer:', id);
+    } else if (!activeSubscription.subscriptionPlan) {
+      console.log('Subscription found, but plan data is missing or not populated.');
+    }
 
     // Prepare the subscription details
-    const subscriptionDetails = activeSubscription
+    const subscriptionDetails = activeSubscription && activeSubscription.subscriptionPlan
       ? `
-        <p><strong>Subscription Plan:</strong> ${activeSubscription.selectedPlan.planName}</p>
-        <p><strong>Period:</strong> ${activeSubscription.selectedPlan.period}</p>
-        <p><strong>Price:</strong> ${activeSubscription.selectedPlan.total}</p>
+        <p><strong>Subscription Plan:</strong> ${activeSubscription.subscriptionPlan.planName}</p>
+        <p><strong>Period:</strong> ${activeSubscription.subscriptionPlan.period}</p>
+        <p><strong>Price:</strong> ${activeSubscription.subscriptionPlan.total}</p>
         <p><strong>Start Date:</strong> ${activeSubscription.startDate.toDateString()}</p>
         <p><strong>End Date:</strong> ${activeSubscription.endDate.toDateString()}</p>
         <p><strong>Status:</strong> Active</p>
@@ -76,7 +83,7 @@ export async function GET(
 
     return new NextResponse(htmlContent, { headers: { 'Content-Type': 'text/html' } });
   } catch (error) {
-    console.error(error);
+    console.error('Error fetching subscription or customer data:', error);
     return new NextResponse(
       `<html><body><h1>Internal Server Error</h1></body></html>`,
       { status: 500, headers: { 'Content-Type': 'text/html' } }
