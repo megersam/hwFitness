@@ -26,17 +26,19 @@ export async function GET(
     // Current date to determine the active subscription
     const currentDate = new Date();
 
-    // Fetch the active subscription for the customer
+    // Fetch the active subscription for the customer and populate the plan details
     const activeSubscription = await SubscriptionModel.findOne({
       customerId: id,
       startDate: { $lte: currentDate },
       endDate: { $gte: currentDate },
-    });
+    }).populate('subscriptionPlan', 'planName period price'); // Only select the required fields
 
     // Prepare the subscription details
     const subscriptionDetails = activeSubscription
       ? `
-        <p><strong>Subscription Plan:</strong> ${activeSubscription.planName}</p>
+        <p><strong>Subscription Plan:</strong> ${activeSubscription.subscriptionPlan.planName}</p>
+        <p><strong>Period:</strong> ${activeSubscription.subscriptionPlan.period}</p>
+        <p><strong>Price:</strong> ${activeSubscription.subscriptionPlan.price}</p>
         <p><strong>Start Date:</strong> ${activeSubscription.startDate.toDateString()}</p>
         <p><strong>End Date:</strong> ${activeSubscription.endDate.toDateString()}</p>
         <p><strong>Status:</strong> Active</p>
@@ -74,6 +76,7 @@ export async function GET(
 
     return new NextResponse(htmlContent, { headers: { 'Content-Type': 'text/html' } });
   } catch (error) {
+    console.error(error);
     return new NextResponse(
       `<html><body><h1>Internal Server Error</h1></body></html>`,
       { status: 500, headers: { 'Content-Type': 'text/html' } }
