@@ -56,7 +56,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
      // Step 2: Create Subscription
      const subscription = await SubscriptionModel.create({
       customerId: savedCustomer._id,
-      selectedPlan: selectedPlanId,
+      planId: selectedPlanId,
       paymentStatus,
       startDate: new Date(),
       endDate,
