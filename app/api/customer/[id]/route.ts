@@ -23,19 +23,23 @@ export async function GET(
       );
     }
 
-    // Fetch active subscription for the customer
+    // Current date to determine the active subscription
+    const currentDate = new Date();
+
+    // Fetch the active subscription for the customer
     const activeSubscription = await SubscriptionModel.findOne({
       customerId: id,
-      status: 'active', // Adjust based on your Subscription schema's active status field
+      startDate: { $lte: currentDate },
+      endDate: { $gte: currentDate },
     });
 
     // Prepare the subscription details
     const subscriptionDetails = activeSubscription
       ? `
         <p><strong>Subscription Plan:</strong> ${activeSubscription.planName}</p>
-        <p><strong>Start Date:</strong> ${activeSubscription.startDate}</p>
-        <p><strong>End Date:</strong> ${activeSubscription.endDate}</p>
-        <p><strong>Status:</strong> ${activeSubscription.status}</p>
+        <p><strong>Start Date:</strong> ${activeSubscription.startDate.toDateString()}</p>
+        <p><strong>End Date:</strong> ${activeSubscription.endDate.toDateString()}</p>
+        <p><strong>Status:</strong> Active</p>
       `
       : `<p>No active subscription</p>`;
 
@@ -49,20 +53,16 @@ export async function GET(
           body { font-family: Arial, sans-serif; margin: 20px; }
           img { border-radius: 50%; width: 100px; height: 100px; }
           .customer-details { margin-top: 20px; }
+          .subscription-details { margin-top: 20px; }
         </style>
       </head>
       <body>
         <h1>Customer Details</h1>
         <img src="${customer.image}" alt="Customer Image" />
         <div class="customer-details">
-          <p><strong>Name:</strong> ${customer.firstName} ${customer.middleName} ${customer.lastName}</p>
+          <p><strong>Name:</strong> ${customer.firstName} ${customer.middleName || ''} ${customer.lastName}</p>
           <p><strong>Phone:</strong> ${customer.phoneNumber}</p>
           <p><strong>Gender:</strong> ${customer.gender}</p>
-          <p><strong>Plan:</strong> ${customer.selectedPlan}</p>
-          <p><strong>Period:</strong> ${customer.selectedPlanPeriod}</p>
-          <p><strong>Start Date:</strong> ${customer.startDate}</p>
-          <p><strong>End Date:</strong> ${customer.nextPaymentDate}</p>
-          <p><strong>Payment Status:</strong> ${customer.paymentStatus}</p>
         </div>
         <h2>Subscription Details</h2>
         <div class="subscription-details">
