@@ -1,26 +1,45 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/db'; 
 import CustomerModel from '@/Models/customerModel';
+import SubscriptionModel from '@/Models/subscriptionModel';
 
 export async function GET(
-  req: NextRequest, 
+  req: NextRequest,
   context: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
-  const params = await context.params; 
+  const params = await context.params;
   const { id } = params;
 
   await connectDB();
 
   try {
+    // Fetch customer details
     const customer = await CustomerModel.findById(id);
 
     if (!customer) {
       return new NextResponse(
-        `<html><body><h1>Customer Not Found</h1></body></html>`, 
+        `<html><body><h1>Customer Not Found</h1></body></html>`,
         { status: 404, headers: { 'Content-Type': 'text/html' } }
       );
     }
 
+    // Fetch active subscription for the customer
+    const activeSubscription = await SubscriptionModel.findOne({
+      customerId: id,
+      status: 'active', // Adjust based on your Subscription schema's active status field
+    });
+
+    // Prepare the subscription details
+    const subscriptionDetails = activeSubscription
+      ? `
+        <p><strong>Subscription Plan:</strong> ${activeSubscription.planName}</p>
+        <p><strong>Start Date:</strong> ${activeSubscription.startDate}</p>
+        <p><strong>End Date:</strong> ${activeSubscription.endDate}</p>
+        <p><strong>Status:</strong> ${activeSubscription.status}</p>
+      `
+      : `<p>No active subscription</p>`;
+
+    // Build the HTML response
     const htmlContent = `
       <!DOCTYPE html>
       <html>
@@ -45,6 +64,10 @@ export async function GET(
           <p><strong>End Date:</strong> ${customer.nextPaymentDate}</p>
           <p><strong>Payment Status:</strong> ${customer.paymentStatus}</p>
         </div>
+        <h2>Subscription Details</h2>
+        <div class="subscription-details">
+          ${subscriptionDetails}
+        </div>
       </body>
       </html>
     `;
@@ -57,6 +80,10 @@ export async function GET(
     );
   }
 }
+
+
+
+
 export async function PUT(
   req: NextRequest, 
   context: { params: Promise<{ id: string }> } // Params is now a Promise
