@@ -3,7 +3,7 @@ import mongoose, { Document, Schema, Types } from 'mongoose';
 
 interface Subscription extends Document {
   customerId: ObjectId;
-  selectedPlan: ObjectId 
+  selectedPlan: ObjectId ;
   startDate: Date; 
   endDate: Date | null; 
   paymentStatus: 'Pending' | 'Paid' | 'Not Paid';
