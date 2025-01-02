@@ -27,23 +27,17 @@ export async function GET(
     // Current date to determine the active subscription
     const currentDate = new Date();
 
-    // Fetch the active subscription for the customer and populate the plan details
+    // Fetch the active subscription for the customer
     const activeSubscription = await SubscriptionModel.findOne({
       customerId: id,
       startDate: { $lte: currentDate },
       endDate: { $gte: currentDate },
-    })
-
-    if (!activeSubscription) {
-      console.log('No active subscription found for customer:', id);
-    } else if (!activeSubscription.subscriptionPlan) {
-      console.log('Subscription found, but plan data is missing or not populated.');
-    }
+    });
 
     // Prepare the subscription details
-    const subscriptionDetails = activeSubscription && activeSubscription.subscriptionPlan
+    const subscriptionDetails = activeSubscription
       ? `
-        
+        <p><strong>Subscription Plan:</strong> ${activeSubscription.planName}</p>
         <p><strong>Start Date:</strong> ${activeSubscription.startDate.toDateString()}</p>
         <p><strong>End Date:</strong> ${activeSubscription.endDate.toDateString()}</p>
         <p><strong>Status:</strong> Active</p>
@@ -81,7 +75,6 @@ export async function GET(
 
     return new NextResponse(htmlContent, { headers: { 'Content-Type': 'text/html' } });
   } catch (error) {
-    console.error('Error fetching subscription or customer data:', error);
     return new NextResponse(
       `<html><body><h1>Internal Server Error</h1></body></html>`,
       { status: 500, headers: { 'Content-Type': 'text/html' } }
