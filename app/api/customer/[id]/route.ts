@@ -32,8 +32,9 @@ export async function GET(
       customerId: id,
       startDate: { $lte: currentDate },
       endDate: { $gte: currentDate },
-    });
+    }).populate('selectedPlan', 'planName period total'); 
 
+    console.log(activeSubscription);
     // Prepare the subscription details
     const subscriptionDetails = activeSubscription
       ? `
