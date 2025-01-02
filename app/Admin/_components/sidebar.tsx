@@ -62,7 +62,7 @@ const items = [
     },
     {
         title: "Subscription",
-        url: "/Admin/subscriptions",
+        url: "/Admin/SubscriptionAdmin",
         icon: Calendar,
     },
 ];
