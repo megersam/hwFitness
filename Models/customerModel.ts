@@ -4,17 +4,9 @@ interface Customer extends Document {
   firstName: string;
   middleName: string;
   lastName: string;
+  image: string;
   phoneNumber: string;
-  gender: string;
-  selectedPlan: string | null;
-  selectedPlanPeriod:string | null;
-  startDate: Date;
-  paymentMethod: string;
-  paymentStatus: string;
-  bankAccount: string;
-  total: string;
-  image: string; // URL from Cloudinary
-  nextPaymentDate: string | null;
+  gender: string;   
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -24,15 +16,7 @@ const customerSchema = new Schema<Customer>({
   middleName: { type: String, required: true },
   lastName: { type: String, required: true },
   phoneNumber: { type: String, required: true, unique: true },
-  gender: { type: String, required: true },
-  selectedPlan: { type: String, default: null },
-  selectedPlanPeriod: { type: String, default: null },
-  startDate: { type: Date, default: Date.now },
-  nextPaymentDate: { type: String, default: null },
-  paymentMethod: { type: String},
-  paymentStatus: { type: String, required: true },
-  bankAccount: { type: String},
-  total: { type: String, required: true },
+  gender: { type: String, required: true },    
   image: { type: String}, // Store the Cloudinary URL 
   createdAt: {
     type: Date,

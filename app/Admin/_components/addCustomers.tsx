@@ -136,48 +136,43 @@ export function AddCustomerDialog({ visible, onClose, onCustomerAdded }: AddComp
     }
   };
 
-  const handleSubmit = ( ) => {
+  const handleSubmit = () => {
     setLoading(true);
-   
- 
-    // Ensure the image URL is part of the formData when submitting
+  
     const selectedPlan = plans.find((plan) => plan._id === selectedPlanId);
   
-    // Prepare the data to be sent to the backend
-    const customerData = {
+    const payload = {
       ...formData,
-      image: imageUrl, // Add the image URL to the form data
-      selectedPlan: selectedPlan ? selectedPlan.planName : undefined,
-      selectedPlanPeriod: selectedPlan ? selectedPlan.period : undefined,
+      image: imageUrl, // Add the uploaded image URL
+      selectedPlanId, // Plan ID for subscription
+      paymentStatus: formData.paymentStatus, // Add payment status
+      endDate: formData.nextPaymentDate, // Add next payment date
     };
   
-    console.log(customerData); // You can log the customer data to verify
-  
-    // Send the form data to the backend
-    fetch('/api/customer', {
-      method: 'POST',
+    fetch("/api/customer", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(customerData), // Send the complete data
+      body: JSON.stringify(payload),
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log('Customer saved:', data);
         if (data.message) {
-          toast.success('Customer saved successfully!');
-          onCustomerAdded(); // Trigger re-fetching the customer data
-          onClose(); // Close the dialog
+          toast.success("Customer and subscription created successfully!");
+          onCustomerAdded(); // Refresh data
+          onClose(); // Close dialog
         } else if (data.error) {
           toast.error(`Error: ${data.error}`);
         }
       })
       .catch((error) => {
-        console.error('Error saving customer:', error);
-        toast.error('Failed to save customer. Please try again.');
-      });
-    setLoading(false);
+        console.error("Error saving customer and subscription:", error);
+        toast.error("Failed to save customer and subscription. Please try again.");
+      })
+      .finally(() => setLoading(false));
   };
+  
 
 
    

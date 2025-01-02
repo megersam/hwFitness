@@ -1,6 +1,6 @@
 import connectDB from "@/lib/db";
-import CustomerModel from "@/Models/customerModel";
-import SubscriptionHistoryModel from "@/Models/subscriptionHistory";
+import CustomerModel from "@/Models/customerModel"; 
+import SubscriptionModel from "@/Models/subscriptionModel";
 import { NextRequest, NextResponse } from "next/server";
 
 // Connect to the database
@@ -17,14 +17,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       lastName,
       phoneNumber,
       gender,
-      selectedPlan,
-      selectedPlanPeriod,
-      paymentMethod,
-      paymentStatus,
-      bankAccount,
-      total,
       image,
-      nextPaymentDate,
+      selectedPlanId,
+      paymentStatus,
+      endDate,
     } = await req.json();
 
     // Validate required fields
@@ -51,36 +47,27 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       lastName,
       phoneNumber,
       gender,
-      selectedPlan,
-      selectedPlanPeriod,
-      paymentMethod,
-      paymentStatus,
-      bankAccount,
-      total,
-      image, // Cloudinary image URL
-      nextPaymentDate,
+      image,
     });
 
     const savedCustomer = await newCustomer.save();
 
     // Create and save the subscription history
-    const subscriptionHistory = new SubscriptionHistoryModel({
-      customerId: savedCustomer._id, // Map the customer ID
-      selectedPlan,
-      selectedPlanPeriod,
-      startDate: new Date(),
-      nextPaymentDate,
-      paymentMethod,
+     // Step 2: Create Subscription
+     const subscription = await SubscriptionModel.create({
+      customerId: savedCustomer._id,
+      selectedPlan: selectedPlanId,
       paymentStatus,
-      total,
+      startDate: new Date(),
+      endDate,
     });
 
-    await subscriptionHistory.save();
+    await subscription.save();
 
     return NextResponse.json({
       message: "Customer and subscription history added successfully!",
       customer: savedCustomer,
-      subscriptionHistory,
+      subscription,
     });
   } catch (error) {
     console.error("Error creating customer and subscription history:", error);
