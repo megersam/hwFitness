@@ -32,7 +32,7 @@ export async function GET(
       customerId: id,
       startDate: { $lte: currentDate },
       endDate: { $gte: currentDate },
-    }).populate('selectedPlan'); 
+    }).populate('customerId', 'firstName middleName lastName'); 
 
     console.log(activeSubscription);
     // Prepare the subscription details
