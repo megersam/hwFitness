@@ -52,7 +52,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     const savedCustomer = await newCustomer.save();
 
-    // Create and save the subscription history
+    
      // Step 2: Create Subscription
      const subscription = await SubscriptionModel.create({
       customerId: savedCustomer._id,
@@ -83,6 +83,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 // GET API to fetch all customers
 export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
+   
+
     // Fetch all customers sorted by createdAt in descending order
     const customers = await CustomerModel.find().sort({ createdAt: -1 });
 
@@ -90,11 +92,37 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ error: "No customer found." }, { status: 404 });
     }
 
-    return NextResponse.json({ customers });
+    // Current date for determining active subscriptions
+    const currentDate = new Date();
+
+    // Map customers with their corresponding subscriptions
+    const customersWithSubscriptions = await Promise.all(
+      customers.map(async (customer) => {
+        // Fetch active subscription
+        const activeSubscription = await SubscriptionModel.findOne({
+          customerId: customer._id,
+          startDate: { $lte: currentDate },
+          endDate: { $gte: currentDate },
+        });
+
+        // Fetch subscription history (sorted by startDate descending)
+        const subscriptionHistory = await SubscriptionModel.find({
+          customerId: customer._id,
+        }).sort({ startDate: -1 });
+
+        return {
+          ...customer.toObject(), // Convert the customer document to plain object
+          activeSubscription,
+          subscriptionHistory,
+        };
+      })
+    );
+
+    return NextResponse.json({ customers: customersWithSubscriptions });
   } catch (error) {
-    console.error("Error fetching customers:", error);
+    console.error("Error fetching customers with subscriptions:", error);
     return NextResponse.json(
-      { error: "Failed to fetch customers" },
+      { error: "Failed to fetch customers and subscriptions" },
       { status: 500 }
     );
   }

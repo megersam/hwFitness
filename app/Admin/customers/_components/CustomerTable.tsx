@@ -133,6 +133,14 @@ const CustomerTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => {
 
 
 
+  // Format the date to "MMM-dd-yyyy"
+  const formattedDate = customerData[0]?.createdAt
+  ? new Intl.DateTimeFormat("en-US", {
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+  }).format(new Date(customerData[0]?.createdAt))
+  : "N/A"; // Provide a fallback value
 
 
 
@@ -265,11 +273,9 @@ const CustomerTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => {
                             Name
                         </th>
                         <th scope="col" className="px-6 py-3">
-                            Subscription End Date
+                            Created At
                         </th>
-                        <th scope="col" className="px-6 py-3">
-                            Status
-                        </th>
+                      
                     </tr>
                 </thead>
                 <tbody>
@@ -285,9 +291,7 @@ const CustomerTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => {
                                 <td className="px-6 py-4">
                                     <Skeleton className="h-4 w-32" />
                                 </td>
-                                <td className="px-6 py-4">
-                                    <Skeleton className="h-4 w-16" />
-                                </td>
+                                 
                             </tr>
                         ))
                         :
@@ -330,17 +334,8 @@ const CustomerTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => {
                                         </div>
                                     </div>
                                 </th>
-                                <td className="px-6 py-4 text-base color-black">{customer.nextPaymentDate}</td>
-                                <td className="px-6 py-4">
-                                    <div className="flex items-center">
-                                        <span
-                                            className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[customer.paymentStatus]
-                                                }`}
-                                        >
-                                            {customer.paymentStatus}
-                                        </span>
-                                    </div>
-                                </td>
+                                <td className="px-6 py-4 text-base color-black">{formattedDate}</td>
+                                 
                             </tr>
                         ))}
                 </tbody>
