@@ -31,7 +31,7 @@ export async function GET(
       customerId: id,
       startDate: { $lte: currentDate },
       endDate: { $gte: currentDate },
-    }).populate('subscriptionPlan', 'planName period price'); // Only select the required fields
+    }).populate('selectedPlan', 'planName period price'); // Only select the required fields
 
     // Prepare the subscription details
     const subscriptionDetails = activeSubscription
