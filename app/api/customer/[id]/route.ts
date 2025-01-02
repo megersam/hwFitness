@@ -32,13 +32,13 @@ export async function GET(
       customerId: id,
       startDate: { $lte: currentDate },
       endDate: { $gte: currentDate },
-    }).populate('planId'); 
+    }).populate('planId', 'planName'); 
 
     console.log(activeSubscription);
     // Prepare the subscription details
     const subscriptionDetails = activeSubscription
       ? `
-        <p><strong>Subscription Plan:</strong> ${activeSubscription.planName}</p>
+        <p><strong>Subscription Plan:</strong> ${activeSubscription.planId.planName}</p>
         <p><strong>Start Date:</strong> ${activeSubscription.startDate.toDateString()}</p>
         <p><strong>End Date:</strong> ${activeSubscription.endDate.toDateString()}</p>
         <p><strong>Status:</strong> Active</p>
