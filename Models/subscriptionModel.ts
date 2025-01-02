@@ -3,7 +3,7 @@ import mongoose, { Document, Schema, Types } from 'mongoose';
 
 interface Subscription extends Document {
   customerId: ObjectId;
-  selectedPlan: ObjectId ;
+  planId: ObjectId ;
   startDate: Date; 
   endDate: Date | null; 
   paymentStatus: 'Pending' | 'Paid' | 'Not Paid';
@@ -18,10 +18,11 @@ const subscriptionSchema = new Schema<Subscription>(
       ref: 'Customer',
       required: true,
     },
-    selectedPlan: { 
+    planId: { 
       type: Schema.Types.ObjectId, 
       ref: 'Plan',
-      default: null },
+      required: true
+       },
    
     startDate: { type: Date, default: Date.now },
     endDate: { type: Date, default: null }, 
