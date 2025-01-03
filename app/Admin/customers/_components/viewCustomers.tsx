@@ -145,6 +145,8 @@ const ViewCustomerDialog: React.FC<ViewCustomerDialogProps> = ({ isOpen, onClose
         }
     };
 
+    const FullName = `${customer.firstName} ${customer.middleName} ${customer.lastName}`;
+
     const downloadQRCode = async () => {
         const qrCodeElement = document.getElementById("qr-code"); // Reference to the QR code container
 
@@ -161,10 +163,10 @@ const ViewCustomerDialog: React.FC<ViewCustomerDialogProps> = ({ isOpen, onClose
         const imgData = canvas.toDataURL("image/png");
 
         // Add the QR code image to the PDF
-        pdf.addImage(imgData, "PNG", 10, 10, 90, 90); // Adjust position and size as needed
+        pdf.addImage(imgData, "PNG", 10, 10, 50, 50); // Adjust position and size as needed
 
         // Trigger the download
-        pdf.save("QRCode.pdf");
+        pdf.save(`${FullName}-qr-code.pdf`); // File name
     };
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
@@ -250,11 +252,11 @@ const ViewCustomerDialog: React.FC<ViewCustomerDialogProps> = ({ isOpen, onClose
                     <div id="qr-code" className="border border-gray-300 rounded-md">
                         <QRCodeSVG
                             value={`https://hw-fitness.vercel.app/api/customer/${customer._id}`} // URL containing the customer ID
-                            size={256} // Size of the QR code
+                            size={128} // Size of the QR code
                             bgColor="#FFFFFF"
                             fgColor="#000000"
                             imageSettings={{
-                                src: "/logo.png",
+                                src: "/icon.png", // Logo image
                                 height: 20,
                                 width: 20,
                                 excavate: true,
