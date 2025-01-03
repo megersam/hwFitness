@@ -30,19 +30,37 @@ export async function GET(
     // Fetch the active subscription for the customer
     const activeSubscription = await SubscriptionModel.findOne({
       customerId: id,
-      startDate: { $lte: currentDate },
-      endDate: { $gte: currentDate },
+      startDate: { $lte: currentDate },  // Subscription has started
+      endDate: { $gte: currentDate },    // Subscription is still ongoing
     });
 
-    console.log(activeSubscription);
-    // Prepare the subscription details
+    console.log('Current Date:', currentDate);
+    console.log('Active Subscription:', activeSubscription);
+
+    let subscriptionStatus = 'Inactive';
+    let statusColor = 'red';
+
+    if (activeSubscription) {
+      // If subscription is active, set status to Active
+      const subscriptionEndDate = new Date(activeSubscription.endDate);
+      const isSubscriptionEnded = subscriptionEndDate < currentDate;
+
+      if (!isSubscriptionEnded) {
+        subscriptionStatus = 'Active';
+        statusColor = 'green';
+      }
+    }
+
+    // Build the subscription details section with the status
     const subscriptionDetails = activeSubscription
-    ? `
-      <p><strong>Start Date:</strong> ${activeSubscription.startDate.toDateString()}</p>
-      <p><strong>End Date:</strong> ${activeSubscription.endDate.toDateString()}</p>
-      <p><strong>Status:</strong> Active</p>
-    `
-    : `<p>No active subscription</p>`;
+      ? `
+          <p><strong>Start Date:</strong> ${activeSubscription.startDate.toDateString()}</p>
+          <p><strong>End Date:</strong> ${activeSubscription.endDate.toDateString()}</p>
+          <p><strong>Status:</strong> <span style="color: ${statusColor};">${subscriptionStatus}</span></p>
+        `
+      : `
+          <p>No active subscription</p>
+        `;
 
     // Build the HTML response
     const htmlContent = `
@@ -115,17 +133,11 @@ export async function GET(
     </div>
     <div class="card subscription-card">
       <h3 class="underline">Subscription Details</h3>
-      ${activeSubscription
-        ? `
-        <p><strong>Start Date:</strong> ${activeSubscription.startDate.toDateString()}</p>
-        <p><strong>End Date:</strong> ${activeSubscription.endDate.toDateString()}</p>
-        <p><strong>Status:</strong> Active</p>`
-        : `<p>No active subscription</p>`}
+      ${subscriptionDetails}
     </div>
   </body>
   </html>
 `;
-
 
     return new NextResponse(htmlContent, { headers: { 'Content-Type': 'text/html' } });
   } catch (error) {
@@ -135,6 +147,9 @@ export async function GET(
     );
   }
 }
+
+
+
 
 
 
