@@ -37,13 +37,12 @@ export async function GET(
     console.log(activeSubscription);
     // Prepare the subscription details
     const subscriptionDetails = activeSubscription
-      ? `
-         
-        <p><strong>Start Date:</strong> ${activeSubscription.startDate.toDateString()}</p>
-        <p><strong>End Date:</strong> ${activeSubscription.endDate.toDateString()}</p>
-        <p><strong>Status:</strong> Active</p>
-      `
-      : `<p>No active subscription</p>`;
+    ? `
+      <p><strong>Start Date:</strong> ${activeSubscription.startDate.toDateString()}</p>
+      <p><strong>End Date:</strong> ${activeSubscription.endDate.toDateString()}</p>
+      <p><strong>Status:</strong> Active</p>
+    `
+    : `<p>No active subscription</p>`;
 
     // Build the HTML response
     const htmlContent = `
