@@ -77,17 +77,16 @@ const UpdateSubscriptions: React.FC<UpdateSubscriptionDialogProps> = ({ isOpen, 
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[1000px] max-h-[100vh] overflow-auto bg-white">
+            <DialogContent className="sm:max-w-[1000px] max-h-full overflow-auto bg-white">
                 <DialogHeader>
                     <DialogTitle>Customer Details</DialogTitle>
                     <p>{customer?._id}</p>
-
                 </DialogHeader>
 
-                <div className="flex flex-col items-left bg-gray-100 py-4">
-                    <div className="bg-white shadow-lg rounded-lg p-6 max-w-lg w-full">
-                        {/* Profile Page */}
-                        <div className="flex items-left space-x-4">
+                <div className="flex flex-col bg-gray-100 py-4 space-y-5">
+                    {/* Profile Card */}
+                    <div className="bg-white shadow-lg rounded-lg p-5 max-w-lg w-full">
+                        <div className="flex items-start space-x-5">
                             <img
                                 src={customer?.image || "/default-avatar.png"}
                                 alt="Profile"
@@ -95,113 +94,100 @@ const UpdateSubscriptions: React.FC<UpdateSubscriptionDialogProps> = ({ isOpen, 
                             />
                             <div>
                                 <h2 className="text-xl font-semibold">
-                                    {customer?.firstName} {customer?.middleName || ""}{" "}
-                                    {customer?.lastName}
+                                    {customer?.firstName} {customer?.middleName || ""} {customer?.lastName}
                                 </h2>
                                 <p className="text-gray-600">
                                     <strong>Phone:</strong> {customer?.phoneNumber}
                                 </p>
-
                             </div>
                         </div>
-
-
                     </div>
 
+                    {/* Active Plan Card */}
                      
+                        <span className="bg-green-500 text-white text-sm w-48 font-bold px-3 py-1 rounded-md block text-center">
+                            Active Plan
+                        </span>
+                   
+
                     {/* Current Subscriptions */}
                     {subscriptionData?.currentPlans && subscriptionData.currentPlans.length > 0 ? (
                         subscriptionData.currentPlans.map((plan) => (
                             <div
                                 key={plan._id}
-                                className="flex items-center bg-white mt-10 p-8 rounded-lg shadow-md w-full max-w-lg"
+                                className="flex items-center bg-white shadow-md rounded-lg p-5 max-w-lg w-full"
                             >
-                                 
                                 {/* Icon Section */}
-                                <div className="bg-blue-500 text-white w-16 h-16 flex items-center justify-center rounded-md">
-                                    <CalendarIcon size="40px" />
+                                <div className="bg-blue-500 text-white w-10 h-10 flex items-center justify-center rounded-md">
+                                    <CalendarIcon size="20px" />
                                 </div>
 
                                 {/* Text Section */}
-                                <div className="ml-4 flex flex-col space-y-2 flex-grow align-left">
-                                    <div className="  rounded-md px-3 py-1">
-                                        <p className="text-sm text-gray-700 font-bold">{plan.selectedPlanName}</p>
-                                    </div>
-                                    <div className=" rounded-md px-3 py-1">
-                                        <p className="text-sm text-gray-700 font-bold">{plan.selectedPlanPeriod}</p>
-                                    </div>
+                                <div className="ml-4 flex flex-col space-y-2 flex-grow">
+                                    <p className="text-sm font-bold text-gray-700">
+                                        {plan.selectedPlanName} ({plan.selectedPlanPeriod})
+                                    </p>
+                                    <p className="text-sm font-bold text-gray-700">{plan.selectedPlanPrice}</p>
+                                    <span
+                                        className={`text-sm font-bold px-2 py-1 w-16 rounded ${plan.paymentStatus === "Paid"
+                                                ? "bg-green-500 text-white"
+                                                : plan.paymentStatus === "Pending"
+                                                    ? "bg-yellow-500 text-white"
+                                                    : "bg-red-500 text-white"
+                                            }`}
+                                    >
+                                        {plan.paymentStatus}
+                                    </span>
                                 </div>
 
-                                {plan.paymentStatus}
-
                                 {/* Date Section */}
-                                <div className="ml-auto flex flex-col items-center align-right">
-                                    <div className="bg-gray-200 rounded-md px-4 py-2 mb-2">
-                                        {/* Start Date */}
-                                        <p className="text-sm text-gray-700 font-semibold">Start Date</p>
-                                        {new Date(plan.startDate).toLocaleDateString('en-US', {
-                                            month: 'short',
-                                            day: '2-digit',
-                                            year: 'numeric',
-                                        }).replace(/,/, '-')}
-
+                                <div className="ml-auto flex flex-col items-center space-y-2">
+                                    <div className="bg-gray-200 rounded-md px-4 py-2">
+                                        <p className="text-sm font-semibold text-gray-700">Start Date</p>
+                                        <p>
+                                            {new Date(plan.startDate).toLocaleDateString("en-US", {
+                                                month: "short",
+                                                day: "2-digit",
+                                                year: "numeric",
+                                            }).replace(/,/, "-")}
+                                        </p>
                                     </div>
                                     <div className="bg-gray-200 rounded-md px-4 py-2">
-                                        {/* End Date in red */}
-                                        <p className="text-sm text-red-500 font-semibold"> End Date  </p>
-                                        {new Date(plan.endDate).toLocaleDateString('en-US', {
-                                            month: 'short',
-                                            day: '2-digit',
-                                            year: 'numeric',
-                                        }).replace(/,/, '-')}
-
+                                        <p className="text-sm font-semibold text-red-500">End Date</p>
+                                        <p>
+                                            {new Date(plan.endDate).toLocaleDateString("en-US", {
+                                                month: "short",
+                                                day: "2-digit",
+                                                year: "numeric",
+                                            }).replace(/,/, "-")}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
-
                         ))
                     ) : (
-                        <div className="mt-10 text-center text-gray-700">
+                        <div className="mt-5 text-center text-gray-700">
                             <p>No active subscription</p>
                         </div>
                     )}
-
-
-
-                    {/* previous subscriptions. */}
-
-
                 </div>
-
-
-
-
 
                 {/* Footer */}
                 <DialogFooter className="space-x-4">
                     <Button
                         type="button"
                         variant="outline"
-                        // onClick={handleCancel}
                         className="py-2 px-6 text-sm font-medium text-gray-600 border border-gray-300 rounded-md"
                     >
                         Cancel
                     </Button>
-                    <Button
-                        type="button"
-                        // onClick={handleSubmit}
-                        // disabled={loading}
-                        className="relative"
-                    >
-                        {/* {loading && (
-                            <Loader size="35px" className="animate-spin absolute left-4" />
-                        )}
-                        {loading ? 'Updating...' : 'Update'} */}
+                    <Button type="button" className="relative">
                         Update Subscription
                     </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
+
     )
 }
 
