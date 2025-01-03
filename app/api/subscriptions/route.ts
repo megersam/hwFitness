@@ -9,9 +9,7 @@ connectDB();
 export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
     const subscriptions = await SubscriptionModel.find()
-    .populate('customerId')
-    .populate('planId')
-    .exec();
+     
 
     return NextResponse.json({ subscriptions });
   } catch (error:any) {
