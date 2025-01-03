@@ -2,8 +2,10 @@ import { ObjectId } from 'mongodb';
 import mongoose, { Document, Schema, Types } from 'mongoose';
 
 interface Subscription extends Document {
-  customerId: ObjectId;
-  planId: ObjectId ;
+  customerId: String;
+  selectedPlanName: String;
+  selectedPlanPeriod: String;
+  selectedPlanPrice: Number;
   startDate: Date; 
   endDate: Date | null; 
   paymentStatus: 'Pending' | 'Paid' | 'Not Paid';
@@ -13,17 +15,13 @@ interface Subscription extends Document {
 
 const subscriptionSchema = new Schema<Subscription>(
   {
-    customerId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Customer',
-      required: true,
-    },
-    planId: { 
-      type: Schema.Types.ObjectId, 
-      ref: 'Plan',
+    customerId: { 
+      type:String,
       required: true
-       },
-   
+    },
+    selectedPlanName: { type: String, required: true },
+    selectedPlanPeriod: { type: String, required: true },
+    selectedPlanPrice: { type: Number, required: true },
     startDate: { type: Date, default: Date.now },
     endDate: { type: Date, default: null }, 
     paymentStatus: { type: String, enum: ['Pending', 'Paid', 'Not Paid'], required: true },

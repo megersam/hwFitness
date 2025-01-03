@@ -27,9 +27,9 @@ const customerSchema = new Schema<Customer>({
     default: Date.now,
   },
 },
-{ timestamps: true }
+{ timestamps: true 
+}
 );
 
 const CustomerModel = mongoose.models.Customer || mongoose.model<Customer>('Customer', customerSchema);
-
 export default CustomerModel;

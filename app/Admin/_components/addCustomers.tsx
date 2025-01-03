@@ -35,7 +35,11 @@ interface Plan {
 
 export function AddCustomerDialog({ visible, onClose, onCustomerAdded }: AddCompanyProps) {
   const [plans, setPlans] = useState<Plan[]>([]);
-  const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
+  const [selectedPlanDetails, setSelectedPlanDetails] = useState({
+    planName: '',
+    planPeriod: 0,
+    planTotal: 0,
+  });
   const [image, setImage] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false); // Track loading state
@@ -83,9 +87,15 @@ export function AddCustomerDialog({ visible, onClose, onCustomerAdded }: AddComp
 
   const handlePlanChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = e.target.value;
-    setSelectedPlanId(selectedId);
     const selectedPlan = plans.find((plan) => plan._id === selectedId);
+  
     if (selectedPlan) {
+      setSelectedPlanDetails({
+        planName: selectedPlan.planName,
+        planPeriod: selectedPlan.period,
+        planTotal: selectedPlan.total,
+      });
+  
       setFormData({
         ...formData,
         total: selectedPlan.total.toString(),
@@ -139,16 +149,16 @@ export function AddCustomerDialog({ visible, onClose, onCustomerAdded }: AddComp
   const handleSubmit = () => {
     setLoading(true);
   
-    const selectedPlan = plans.find((plan) => plan._id === selectedPlanId);
-  
     const payload = {
       ...formData,
-      image: imageUrl, // Add the uploaded image URL
-      selectedPlanId, // Plan ID for subscription
-      paymentStatus: formData.paymentStatus, // Add payment status
-      endDate: formData.nextPaymentDate, // Add next payment date
+      image: imageUrl,
+      selectedPlanName: selectedPlanDetails.planName,
+      selectedPlanPeriod: selectedPlanDetails.planPeriod,
+      selectedPlanPrice: selectedPlanDetails.planTotal, // Correctly map to `selectedPlanPrice`
+      paymentStatus: formData.paymentStatus,
+      endDate: formData.nextPaymentDate,
     };
-  
+    console.log("Payload:", payload);
     fetch("/api/customer", {
       method: "POST",
       headers: {
@@ -172,6 +182,7 @@ export function AddCustomerDialog({ visible, onClose, onCustomerAdded }: AddComp
       })
       .finally(() => setLoading(false));
   };
+
   
 
 
@@ -271,20 +282,20 @@ export function AddCustomerDialog({ visible, onClose, onCustomerAdded }: AddComp
                 <div className="text-center sm:text-left">
                   <Label htmlFor="plan">Selected Plan</Label>
                   <select
-                    id="plan"
-                    className="w-full border rounded px-2 py-1"
-                    onChange={handlePlanChange}
-                  >
-                    <option value="">Select</option>
-                    {plans.map((plan) => (
-                      <option key={plan._id} value={plan._id}>
-                        {plan.planName} -{" "}
-                        {plan.planName === "Daily"
-                          ? `${plan.period} ${plan.period > 1 ? "days" : "day"}`
-                          : `${plan.period} ${plan.period > 1 ? "Months" : "Month"}`}
-                      </option>
-                    ))}
-                  </select>
+  id="plan"
+  className="w-full border rounded px-2 py-1"
+  onChange={handlePlanChange}
+>
+  <option value="">Select</option>
+  {plans.map((plan) => (
+    <option key={plan._id} value={plan._id}>
+      {plan.planName} -{" "}
+      {plan.planName === "Daily"
+        ? `${plan.period} ${plan.period > 1 ? "days" : "day"}`
+        : `${plan.period} ${plan.period > 1 ? "Months" : "Month"}`}
+    </option>
+  ))}
+</select>
                 </div>
 
                 <div className="text-center sm:text-left mt-4">

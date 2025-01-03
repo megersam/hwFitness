@@ -8,4 +8,4 @@ function EmployeeDashboard() {
   )
 }
  
-export default withAuth(EmployeeDashboard, ["Reception"]);
+export default EmployeeDashboard;

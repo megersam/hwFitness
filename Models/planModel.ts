@@ -54,7 +54,5 @@ const planSchema: Schema<IPlan> = new Schema(
 );
 
 // Define the model with the interface
-const PlanModel: Model<IPlan> =
-    mongoose.models.Plan || mongoose.model<IPlan>("Plan", planSchema);
-
+const PlanModel = mongoose.models.Plan || mongoose.model<IPlan>('Plan', planSchema);
 export default PlanModel;

@@ -7,10 +7,10 @@ import { NextRequest, NextResponse } from "next/server";
 connectDB();
 
 // POST API to create a new customer 
-
+ 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
-    // Parse request body
+    // Parse the incoming JSON request body
     const {
       firstName,
       middleName,
@@ -18,7 +18,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       phoneNumber,
       gender,
       image,
-      selectedPlanId,
+      selectedPlanName,
+      selectedPlanPeriod,
+      selectedPlanPrice, // Ensure this field is passed correctly
       paymentStatus,
       endDate,
     } = await req.json();
@@ -31,7 +33,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // Check for existing customer with the same phoneNumber
+    // Check if a customer with the same phone number already exists
     const existingCustomer = await CustomerModel.findOne({ phoneNumber });
     if (existingCustomer) {
       return NextResponse.json(
@@ -40,7 +42,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // Create and save the new customer
+    // Create a new customer
     const newCustomer = new CustomerModel({
       firstName,
       middleName,
@@ -52,18 +54,20 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     const savedCustomer = await newCustomer.save();
 
-    
-     // Step 2: Create Subscription
-     const subscription = await SubscriptionModel.create({
+    // Step 2: Create a subscription for the customer
+    const subscription = await SubscriptionModel.create({
       customerId: savedCustomer._id,
-      planId: selectedPlanId,
+      selectedPlanName,
+      selectedPlanPeriod,
+      selectedPlanPrice, // Ensure the correct price is used
       paymentStatus,
       startDate: new Date(),
-      endDate,
+      endDate,  // Use the provided endDate from the frontend
     });
 
     await subscription.save();
 
+    // Respond with success message
     return NextResponse.json({
       message: "Customer and subscription history added successfully!",
       customer: savedCustomer,
@@ -77,6 +81,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     );
   }
 }
+
 
 
 
