@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import UpdateSubscriptions from "./updateSubscriptions";
 
 interface Subscription {
     _id: string;
@@ -27,6 +28,8 @@ const SubscriptionTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => 
     const [loading, setLoading] = useState(true);
     const [customerData, setCustomerData] = useState<Customer[]>([]);
     const [searchQuery, setSearchQuery] = useState<string>("");
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -63,6 +66,16 @@ const SubscriptionTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => 
         );
     });
 
+    const handleRowClick = (customer: Customer) => {
+        setSelectedCustomer(customer);
+        setIsDialogOpen(true);
+    };
+
+    const handleCloseDialog = () => {
+        setIsDialogOpen(false);
+        setSelectedCustomer(null);
+    };
+
     return (
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg bg-[#1E1E1E]">
             <div className="py-4">
@@ -94,12 +107,20 @@ const SubscriptionTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => 
                                 <td className="px-6 py-4"><Skeleton className="h-4 w-20" /></td>
                                 <td className="px-6 py-4"><Skeleton className="h-4 w-20" /></td>
                                 <td className="px-6 py-4"><Skeleton className="h-4 w-20" /></td>
-                                <td className="px-6 py-4"><Skeleton className="h-4 w-20" /></td>
-                                <td className="px-6 py-4"><Skeleton className="h-4 w-20" /></td>
                             </tr>
                         ))
                         : filteredCustomers.map((customer) => (
-                            <tr key={customer._id} className="bg-gray-100 border-b dark:bg-gray-800 dark:border-gray-700">
+                            <tr 
+                            key={customer._id} 
+                            onClick={() => handleRowClick(customer)}
+                            tabIndex={0}
+                            typeof="button"
+                            onKeyPress={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    handleRowClick(customer);
+                                }
+                            }}
+                             className="bg-gray-100 border-b dark:bg-gray-800 dark:border-gray-700">
                                 <td className="px-6 py-4">
                                     <img src={customer.image} alt="Profile" className="w-10 h-10 rounded-full" />
                                 </td>
@@ -133,6 +154,11 @@ const SubscriptionTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => 
                         ))}
                 </tbody>
             </table>
+            <UpdateSubscriptions
+                isOpen={isDialogOpen}
+                onClose={handleCloseDialog}
+                 customer={selectedCustomer}
+            />
         </div>
     );
 };
