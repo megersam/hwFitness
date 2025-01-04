@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react'
 import ProfileCard from './profileCard'
 import Image from 'next/image'
 import { Label } from '@/components/ui/label'
+import { toast } from 'react-toastify'
 
 interface Customer {
     _id: string
@@ -29,6 +30,10 @@ interface Customer {
 
 interface Plan {
     _id: string;
+    planName: string;
+    period: number;
+    price: number;
+    total: number;
     selectedPlanName: string;
     selectedPlanPeriod: string;
     selectedPlanPrice: number;
@@ -49,22 +54,26 @@ const UpdateSubscriptions: React.FC<UpdateSubscriptionDialogProps> = ({ isOpen, 
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [plans, setPlans] = useState<Plan[]>([]);
+    const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+    const [formData, setFormData] = useState({
+        firstName: "",
+        middleName: "",
+        lastName: "",
+        phoneNumber: "",
+        gender: "",
+        paymentMethod: "",
+        paymentStatus: "",
+        bankAccount: "",
+        total: "",
+        image: "", // The URL from Cloudinary will be stored here
+        nextPaymentDate: null as string | null, // Allow null or string
+    });
+
     const [selectedPlanDetails, setSelectedPlanDetails] = useState({
         planName: '',
         planPeriod: 0,
         planTotal: 0,
     });
-
-    const calculateNextPaymentDate = (selectedPlan: Plan | undefined) => {
-        if (!selectedPlan) return null;
-        const now = new Date();
-        if (selectedPlan.selectedPlanName === "Daily") {
-            now.setDate(now.getDate() + Number(selectedPlan.selectedPlanPeriod));
-        } else {
-            now.setMonth(now.getMonth() + Number(selectedPlan.selectedPlanPeriod));
-        }
-        return now.toISOString().split("T")[0]; // Format as YYYY-MM-DD
-    };
 
 
 
@@ -92,6 +101,7 @@ const UpdateSubscriptions: React.FC<UpdateSubscriptionDialogProps> = ({ isOpen, 
             try {
                 const response = await fetch("/api/customer/plan");
                 const data = await response.json();
+                console.log(data)
                 if (data?.prices) {
                     setPlans(data.prices);
                 }
@@ -103,6 +113,83 @@ const UpdateSubscriptions: React.FC<UpdateSubscriptionDialogProps> = ({ isOpen, 
         fetchPlanPrices();
         fetchSubscriptions();
     }, [customerId]);
+
+
+
+
+
+    const handlePlanChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedId = e.target.value;
+        const selectedPlan = plans.find((plan) => plan._id === selectedId);
+
+        if (selectedPlan) {
+            setSelectedPlanDetails({
+                planName: selectedPlan.planName,
+                planPeriod: selectedPlan.period,
+                planTotal: selectedPlan.total,
+            });
+
+            setFormData({
+                ...formData,
+                total: selectedPlan.total.toString(),
+                nextPaymentDate: calculateNextPaymentDate(selectedPlan),
+            });
+        }
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { id, value } = e.target;
+        setFormData({ ...formData, [id]: value });
+    };
+
+    const calculateNextPaymentDate = (selectedPlan: Plan | undefined) => {
+        if (!selectedPlan) return null;
+        const now = new Date();
+        if (selectedPlan.planName === "Daily") {
+            now.setDate(now.getDate() + selectedPlan.period);
+        } else {
+            now.setMonth(now.getMonth() + selectedPlan.period);
+        }
+        return now.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+    };
+
+     const handleSubmit = () => {
+        setLoading(true);
+    
+        const payload = {
+          ...formData,
+            customerId,
+          selectedPlanName: selectedPlanDetails.planName,
+          selectedPlanPeriod: selectedPlanDetails.planPeriod,
+          selectedPlanPrice: selectedPlanDetails.planTotal, // Correctly map to `selectedPlanPrice`
+          paymentStatus: formData.paymentStatus,
+          endDate: formData.nextPaymentDate,
+        };
+        console.log("Payload:", payload);
+        fetch("/api/customer", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.message) {
+              toast.success("Customer and subscription created successfully!");
+            //   onCustomerAdded(); // Refresh data
+              onClose(); // Close dialog
+            } else if (data.error) {
+              toast.error(`Error: ${data.error}`);
+            }
+          })
+          .catch((error) => {
+            console.error("Error saving customer and subscription:", error);
+            toast.error("Failed to save customer and subscription. Please try again.");
+          })
+          .finally(() => setLoading(false));
+      };
+
 
 
 
@@ -252,15 +339,15 @@ const UpdateSubscriptions: React.FC<UpdateSubscriptionDialogProps> = ({ isOpen, 
                                 <select
                                     id="plan"
                                     className="w-full border rounded px-2 py-1"
-                                // onChange={handlePlanChange}
+                                    onChange={handlePlanChange}
                                 >
                                     <option value="">Select</option>
                                     {plans.map((plan) => (
                                         <option key={plan._id} value={plan._id}>
-                                            {plan.selectedPlanName} -{" "}
-                                            {plan.selectedPlanName === "Daily"
-                                                ? `${plan.selectedPlanPeriod} ${Number(plan.selectedPlanPeriod) > 1 ? "days" : "day"}`
-                                                : `${plan.selectedPlanPeriod} ${Number(plan.selectedPlanPeriod) > 1 ? "Months" : "Month"}`}
+                                            {plan.planName} -{" "}
+                                            {plan.planName === "Daily"
+                                                ? `${plan.period} ${plan.period > 1 ? "days" : "day"}`
+                                                : `${plan.period} ${plan.period > 1 ? "Months" : "Month"}`}
                                         </option>
                                     ))}
                                 </select>
@@ -271,9 +358,9 @@ const UpdateSubscriptions: React.FC<UpdateSubscriptionDialogProps> = ({ isOpen, 
                                     id="total"
                                     name="total"
                                     placeholder="Total price"
-                                    // value={formData.total}
+                                    value={formData.total}
                                     readOnly
-                                    // onChange={handleInputChange}
+                                    onChange={handleInputChange}
                                     className="w-full"
                                 />
                             </div>
@@ -281,7 +368,7 @@ const UpdateSubscriptions: React.FC<UpdateSubscriptionDialogProps> = ({ isOpen, 
                                 <Label htmlFor="paymentMethod">Payment Method</Label>
                                 <select
                                     id="paymentMethod"
-                                    // onChange={handleInputChange}
+                                    onChange={handleInputChange}
                                     className="w-full border rounded px-2 py-1"
                                 >
                                     <option value="">Select</option>
@@ -295,7 +382,7 @@ const UpdateSubscriptions: React.FC<UpdateSubscriptionDialogProps> = ({ isOpen, 
                                 <Label htmlFor="paymentStatus">Payment Status</Label>
                                 <select
                                     id="paymentStatus"
-                                    // onChange={handleInputChange}
+                                    onChange={handleInputChange}
                                     className="w-full border rounded px-2 py-1"
                                 >
                                     <option value="">Select</option>
@@ -303,6 +390,12 @@ const UpdateSubscriptions: React.FC<UpdateSubscriptionDialogProps> = ({ isOpen, 
                                     <option value="NotPaid">Not Paid</option>
                                 </select>
                             </div>
+                            <Button onClick={handleSubmit} type="submit">
+                                {loading && (
+                                    <Loader size="35px" className="animate-spin" />
+                                )}
+                                {loading ? 'Updating Subscription...' : 'Update Subscription'}
+                            </Button>
                         </div>
 
                     </div>
