@@ -28,13 +28,14 @@ const SubscriptionTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => 
     const [loading, setLoading] = useState(true);
     const [customerData, setCustomerData] = useState<Customer[]>([]);
     const [searchQuery, setSearchQuery] = useState<string>("");
-      const [currentPage, setCurrentPage] = useState(1);
-        const [itemsPerPage] = useState(5); // Number of items per page
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(5); // Number of items per page
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
-const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
     const [filteredStatus, setFilteredStatus] = useState("All");
-
+    const [filteredSubscriptionStatus, setFilteredSubscriptionStatus] = useState("All"); // For Subscription Status
+    
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
@@ -61,21 +62,26 @@ const [dropdownOpen, setDropdownOpen] = useState(false);
         fetchData();
     }, [shouldRefresh]);
 
+
     const filteredCustomers = customerData.filter((customer) => {
         const fullName = `${customer.firstName} ${customer.middleName} ${customer.lastName}`.toLowerCase();
         const phone = customer.phoneNumber.toLowerCase();
-        const matchesSearchQuery =
-            fullName.includes(searchQuery.toLowerCase()) || phone.includes(searchQuery.toLowerCase());
     
-        const matchesPaymentStatus =
-            filteredStatus === "All" || // Include all customers if "All" is selected
-            (filteredStatus === "Paid" && customer.currentPlan?.paymentStatus === "Paid") ||
-            (filteredStatus === "Not Paid" && customer.currentPlan?.paymentStatus === "Not Paid") ||
-            (filteredStatus === "Pending" && customer.currentPlan?.paymentStatus === "Pending");
+        const matchesFilter =
+            filteredSubscriptionStatus === "All" ||
+            (filteredSubscriptionStatus === "Paid" && customer.currentPlan?.paymentStatus === "Paid") ||
+            (filteredSubscriptionStatus === "Not Paid" && customer.currentPlan?.paymentStatus === "Not Paid") ||
+            (filteredSubscriptionStatus === "Pending" && customer.currentPlan?.paymentStatus === "Pending") ||
+            (filteredSubscriptionStatus === "Active" && customer.currentPlan) ||
+            (filteredSubscriptionStatus === "Inactive" && !customer.currentPlan);
     
-        return matchesSearchQuery && matchesPaymentStatus;
+        return (
+            (fullName.includes(searchQuery.toLowerCase()) || phone.includes(searchQuery.toLowerCase())) &&
+            matchesFilter
+        );
     });
     
+
     const handleRowClick = (customer: Customer) => {
         setSelectedCustomer(customer);
         setIsDialogOpen(true);
@@ -104,30 +110,29 @@ const [dropdownOpen, setDropdownOpen] = useState(false);
                 return "text-white-500";
         }
     };
-  // Function to handle the status change and close the dropdown
-  const handleStatusChange = (status: string) => {
-    setFilteredStatus(status);
-    setDropdownOpen(false);
-};
- 
-const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-};
- // Further filter customers based on the search query (case-insensitive search)
- const searchedCustomers = filteredCustomers.filter((customer) => {
-    const fullName = `${customer.firstName} ${customer.lastName}`.toLowerCase();
-    const phone = customer.phoneNumber.toLowerCase();
-    return (
-        fullName.includes(searchQuery.toLowerCase()) ||
-        phone.includes(searchQuery.toLowerCase())
+    const handleFilterChange = (status:any) => {
+        setFilteredSubscriptionStatus(status);
+        setDropdownOpen(false);
+    };
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
+    // Further filter customers based on the search query (case-insensitive search)
+    const searchedCustomers = filteredCustomers.filter((customer) => {
+        const fullName = `${customer.firstName} ${customer.lastName}`.toLowerCase();
+        const phone = customer.phoneNumber.toLowerCase();
+        return (
+            fullName.includes(searchQuery.toLowerCase()) ||
+            phone.includes(searchQuery.toLowerCase())
+        );
+    });
+    // Calculate pagination
+    const totalPages = Math.ceil(searchedCustomers.length / itemsPerPage);
+    const paginatedCustomers = searchedCustomers.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
     );
-});
- // Calculate pagination
- const totalPages = Math.ceil(searchedCustomers.length / itemsPerPage);
- const paginatedCustomers = searchedCustomers.slice(
-     (currentPage - 1) * itemsPerPage,
-     currentPage * itemsPerPage
- );
     return (
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg bg-[#1E1E1E]">
             <div className="py-4">
@@ -140,74 +145,92 @@ const handlePageChange = (page: number) => {
                 />
             </div>
             <div>
-                    <button
-                        id="dropdownActionButton"
-                        onClick={() => setDropdownOpen(!dropdownOpen)}
-                        className="inline-flex items-center text-white bg-[#1E1E1E] border border-black focus:outline-none hover:bg-[#1E1E1E] focus:ring-4 focus:ring-black-200 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-700 dark:text-gray-300 dark:border-black dark:hover:bg-[#1E1E1E] dark:focus:ring-black"
-                        type="button"
+    <button
+        id="subscriptionStatusDropdown"
+        onClick={() => setDropdownOpen(!dropdownOpen)}
+        className="inline-flex items-center text-white bg-[#1E1E1E] border border-black focus:outline-none hover:bg-[#1E1E1E] focus:ring-4 focus:ring-black-200 font-medium rounded-lg text-sm px-3 py-1.5"
+    >
+        <span className="sr-only">Subscription & Payment Status</span>
+        <span className={getStatusColor(filteredSubscriptionStatus)}>{filteredSubscriptionStatus}</span>
+        <svg
+            className="w-2.5 h-2.5 ml-2.5"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 10 6"
+            aria-hidden="true"
+        >
+            <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M1 1l4 4 4-4"
+            />
+        </svg>
+    </button>
+    {dropdownOpen && (
+        <div className="absolute mt-2 z-10 bg-[#1E1E1E] divide-y divide-gray-200 rounded-lg shadow w-44">
+            <ul className="py-1 text-sm text-gray-600 dark:text-gray-300">
+                <li>
+                    <a
+                        onClick={() => handleFilterChange("All")}
+                        href="#"
+                        className="block px-4 py-2 hover:bg-gray-300"
                     >
-                        <span className="sr-only text-white">Status button</span>
-                        <span className={getStatusColor(filteredStatus)}>{filteredStatus}</span>
-                        <svg
-                            className="w-2.5 h-2.5 ml-2.5"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 10 6"
-                            aria-hidden="true"
-                        >
-                            <path
-                                stroke="currentColor"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M1 1l4 4 4-4"
-                            />
-                        </svg>
-                    </button>
-                    {/* Dropdown Menu */}
-                    {dropdownOpen && (
-                        <div className="absolute mt-2 z-10 bg-[#1E1E1E] divide-y divide-gray-200 rounded-lg shadow w-44 dark:bg-[#1E1E1E] dark:divide-gray-500">
-                            <ul className="py-1 text-sm text-white-600 dark:text-gray-300">
-                                <li>
-                                    <a
-                                        onClick={() => handleStatusChange("All")}
-                                        href="#"
-                                        className="block px-4 py-2 hover:bg-gray-300 text-white dark:hover:bg-gray-500 dark:hover:text-white"
-                                    >
-                                        All Customers
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                        onClick={() => handleStatusChange("Paid")}
-                                        href="#"
-                                        className="block px-4 py-2 text-green-400 hover:bg-gray-300 dark:hover:bg-gray-500 dark:hover:text-white"
-                                    >
-                                        Paid
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                        onClick={() => handleStatusChange("Not Paid")}
-                                        href="#"
-                                        className="block px-4 py-2 text-red-400 hover:bg-gray-300 dark:hover:bg-gray-500"
-                                    >
-                                        Not Paid
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                        onClick={() => handleStatusChange("Pending")}
-                                        href="#"
-                                        className="block px-4 py-2 text-yellow-400 hover:bg-gray-300 dark:hover:bg-gray-500"
-                                    >
-                                        Pending
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    )}
-                </div>
+                        All
+                    </a>
+                </li>
+                <li>
+                    <a
+                        onClick={() => handleFilterChange("Paid")}
+                        href="#"
+                        className="block px-4 py-2 hover:bg-gray-300 text-green-400"
+                    >
+                        Paid
+                    </a>
+                </li>
+                <li>
+                    <a
+                        onClick={() => handleFilterChange("Not Paid")}
+                        href="#"
+                        className="block px-4 py-2 hover:bg-gray-300 text-red-400"
+                    >
+                        Not Paid
+                    </a>
+                </li>
+                <li>
+                    <a
+                        onClick={() => handleFilterChange("Pending")}
+                        href="#"
+                        className="block px-4 py-2 hover:bg-gray-300 text-yellow-400"
+                    >
+                        Pending
+                    </a>
+                </li>
+                <li>
+                    <a
+                        onClick={() => handleFilterChange("Active")}
+                        href="#"
+                        className="block px-4 py-2 hover:bg-gray-300 text-green-400"
+                    >
+                        Active
+                    </a>
+                </li>
+                <li>
+                    <a
+                        onClick={() => handleFilterChange("Inactive")}
+                        href="#"
+                        className="block px-4 py-2 hover:bg-gray-300 text-red-400"
+                    >
+                        Inactive
+                    </a>
+                </li>
+            </ul>
+        </div>
+    )}
+</div>
+
+
 
             <table className="w-full text-sm text-left text-gray-400 bg-[#1E1E1E] mt-10">
                 <thead className="text-xs text-gray-500 uppercase bg-gray-300 dark:bg-gray-600 dark:text-gray-400">
@@ -216,7 +239,7 @@ const handlePageChange = (page: number) => {
                         <th className="px-6 py-3">Name</th>
                         <th className="px-6 py-3">Phone</th>
                         <th className="px-6 py-3">Status</th>
-                        <th className="px-6 py-3">Payment Status</th> 
+                        <th className="px-6 py-3">Payment Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -231,17 +254,17 @@ const handlePageChange = (page: number) => {
                             </tr>
                         ))
                         : filteredCustomers.map((customer) => (
-                            <tr 
-                            key={customer._id} 
-                            onClick={() => handleRowClick(customer)}
-                            tabIndex={0}
-                            typeof="button"
-                            onKeyPress={(e) => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                    handleRowClick(customer);
-                                }
-                            }}
-                             className="bg-gray-100 border-b dark:bg-gray-800 dark:border-gray-700">
+                            <tr
+                                key={customer._id}
+                                onClick={() => handleRowClick(customer)}
+                                tabIndex={0}
+                                typeof="button"
+                                onKeyPress={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        handleRowClick(customer);
+                                    }
+                                }}
+                                className="bg-gray-100 border-b dark:bg-gray-800 dark:border-gray-700">
                                 <td className="px-6 py-4">
                                     <img src={customer.image} alt="Profile" className="w-10 h-10 rounded-full" />
                                 </td>
@@ -249,11 +272,10 @@ const handlePageChange = (page: number) => {
                                 <td className="px-6 py-4">{customer.phoneNumber}</td>
                                 <td className="px-6 py-4">
                                     <span
-                                        className={`px-2 py-1 rounded ${
-                                            customer.currentPlan
+                                        className={`px-2 py-1 rounded ${customer.currentPlan
                                                 ? "bg-green-500 text-white"
                                                 : "bg-red-500 text-white"
-                                        }`}
+                                            }`}
                                     >
                                         {customer.currentPlan ? "Active" : "Inactive"}
                                     </span>
@@ -261,23 +283,22 @@ const handlePageChange = (page: number) => {
                                 <td className="px-6 py-4">
                                     {/* {customer.currentPlan?.paymentStatus || "N/A"} */}
                                     <span
-                                        className={`px-2 py-1 rounded ${
-                                            customer.currentPlan?.paymentStatus
+                                        className={`px-2 py-1 rounded ${customer.currentPlan?.paymentStatus
                                                 ? "bg-green-500 text-white"
                                                 : "bg-red-500 text-white"
-                                        }`}
+                                            }`}
                                     >
                                         {customer.currentPlan?.paymentStatus || "N/A"}
                                     </span>
                                 </td>
-                                 
+
                             </tr>
                         ))}
                 </tbody>
             </table>
 
-             {/* Pagination Controls */}
-             <div className="flex justify-between items-center mt-4 px-4 py-3 bg-gray-300 border-t border-gray-200 rounded-lg shadow-md">
+            {/* Pagination Controls */}
+            <div className="flex justify-between items-center mt-4 px-4 py-3 bg-gray-300 border-t border-gray-200 rounded-lg shadow-md">
                 <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
@@ -305,7 +326,7 @@ const handlePageChange = (page: number) => {
             <UpdateSubscriptions
                 isOpen={isDialogOpen}
                 onClose={handleCloseDialog}
-                 customer={selectedCustomer}
+                customer={selectedCustomer}
             />
         </div>
     );
