@@ -166,7 +166,7 @@ const UpdateSubscriptions: React.FC<UpdateSubscriptionDialogProps> = ({ isOpen, 
           endDate: formData.nextPaymentDate,
         };
         console.log("Payload:", payload);
-        fetch("/api/customer", {
+        fetch("/api/subscriptions", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -176,7 +176,7 @@ const UpdateSubscriptions: React.FC<UpdateSubscriptionDialogProps> = ({ isOpen, 
           .then((response) => response.json())
           .then((data) => {
             if (data.message) {
-              toast.success("Customer and subscription created successfully!");
+              toast.success("Subscription created successfully!");
             //   onCustomerAdded(); // Refresh data
               onClose(); // Close dialog
             } else if (data.error) {
@@ -184,8 +184,8 @@ const UpdateSubscriptions: React.FC<UpdateSubscriptionDialogProps> = ({ isOpen, 
             }
           })
           .catch((error) => {
-            console.error("Error saving customer and subscription:", error);
-            toast.error("Failed to save customer and subscription. Please try again.");
+            console.error("Error saving Subscription:", error);
+            toast.error("Failed to save Subscription. Please try again.");
           })
           .finally(() => setLoading(false));
       };
@@ -387,7 +387,7 @@ const UpdateSubscriptions: React.FC<UpdateSubscriptionDialogProps> = ({ isOpen, 
                                 >
                                     <option value="">Select</option>
                                     <option value="Paid">Paid</option>
-                                    <option value="NotPaid">Not Paid</option>
+                                    <option value="Not Paid">Not Paid</option>
                                 </select>
                             </div>
                             <Button onClick={handleSubmit} type="submit">

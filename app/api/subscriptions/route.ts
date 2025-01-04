@@ -96,3 +96,55 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
 
 
+
+// POST API to create a new customer 
+ 
+export async function POST(req: NextRequest): Promise<NextResponse> {
+  try {
+    // Parse the incoming JSON request body
+    const {
+     customerId,
+      selectedPlanName,
+      selectedPlanPeriod,
+      selectedPlanPrice, // Ensure this field is passed correctly
+      paymentStatus,
+      endDate,
+    } = await req.json();
+
+    // Validate required fields
+    if (!customerId) {
+      return NextResponse.json(
+        { error: "Customer id is not found" },
+        { status: 400 }
+      );
+    }
+
+   
+    const subscription = await SubscriptionModel.create({
+      customerId,
+      selectedPlanName,
+      selectedPlanPeriod,
+      selectedPlanPrice, // Ensure the correct price is used
+      paymentStatus,
+      startDate: new Date(),
+      endDate,  // Use the provided endDate from the frontend
+    });
+
+    await subscription.save();
+
+    // Respond with success message
+    return NextResponse.json({
+      message: "Customer and subscription history added successfully!",
+      subscription,
+    });
+  } catch (error) {
+    console.error("Error creating customer and subscription history:", error);
+    return NextResponse.json(
+      { error: "Failed to add customer and subscription history" },
+      { status: 500 }
+    );
+  }
+}
+
+
+
