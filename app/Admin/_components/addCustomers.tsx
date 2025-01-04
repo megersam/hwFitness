@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -88,14 +89,14 @@ export function AddCustomerDialog({ visible, onClose, onCustomerAdded }: AddComp
   const handlePlanChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = e.target.value;
     const selectedPlan = plans.find((plan) => plan._id === selectedId);
-  
+
     if (selectedPlan) {
       setSelectedPlanDetails({
         planName: selectedPlan.planName,
         planPeriod: selectedPlan.period,
         planTotal: selectedPlan.total,
       });
-  
+
       setFormData({
         ...formData,
         total: selectedPlan.total.toString(),
@@ -109,7 +110,7 @@ export function AddCustomerDialog({ visible, onClose, onCustomerAdded }: AddComp
     setFormData({ ...formData, [id]: value });
   };
 
-     // Handle the image selection
+  // Handle the image selection
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -117,7 +118,7 @@ export function AddCustomerDialog({ visible, onClose, onCustomerAdded }: AddComp
       uploadImageToCloudinary(file); // Upload to Cloudinary after selection
     }
   };
-  
+
   // Upload the image to Cloudinary
   const uploadImageToCloudinary = async (image: File) => {
     const formData = new FormData();
@@ -148,7 +149,7 @@ export function AddCustomerDialog({ visible, onClose, onCustomerAdded }: AddComp
 
   const handleSubmit = () => {
     setLoading(true);
-  
+
     const payload = {
       ...formData,
       image: imageUrl,
@@ -183,15 +184,15 @@ export function AddCustomerDialog({ visible, onClose, onCustomerAdded }: AddComp
       .finally(() => setLoading(false));
   };
 
-  
 
 
-   
-
-   
 
 
-  
+
+
+
+
+
 
   return (
     <Dialog open={visible} onOpenChange={onClose}>
@@ -202,13 +203,13 @@ export function AddCustomerDialog({ visible, onClose, onCustomerAdded }: AddComp
 
         <div className="sm:overflow-visible overflow-y-auto max-h-[70vh] grid gap-4 py-4 px-4 sm:px-0 flex flex-col items-center justify-center">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8 w-full">
-          <div className="relative w-24 h-24 rounded-full bg-gray-200 overflow-hidden flex-shrink-0">
+            <div className="relative w-24 h-24 rounded-full bg-gray-200 overflow-hidden flex-shrink-0">
               {/* Display selected image inside the circle */}
               {imageUrl ? (
                 <img src={imageUrl} alt="Selected" className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full bg-gray-300 flex items-center justify-center">
-                  
+
                 </div>
               )}
               {/* File input for selecting or capturing image */}
@@ -282,20 +283,20 @@ export function AddCustomerDialog({ visible, onClose, onCustomerAdded }: AddComp
                 <div className="text-center sm:text-left">
                   <Label htmlFor="plan">Selected Plan</Label>
                   <select
-  id="plan"
-  className="w-full border rounded px-2 py-1"
-  onChange={handlePlanChange}
->
-  <option value="">Select</option>
-  {plans.map((plan) => (
-    <option key={plan._id} value={plan._id}>
-      {plan.planName} -{" "}
-      {plan.planName === "Daily"
-        ? `${plan.period} ${plan.period > 1 ? "days" : "day"}`
-        : `${plan.period} ${plan.period > 1 ? "Months" : "Month"}`}
-    </option>
-  ))}
-</select>
+                    id="plan"
+                    className="w-full border rounded px-2 py-1"
+                    onChange={handlePlanChange}
+                  >
+                    <option value="">Select</option>
+                    {plans.map((plan) => (
+                      <option key={plan._id} value={plan._id}>
+                        {plan.planName} -{" "}
+                        {plan.planName === "Daily"
+                          ? `${plan.period} ${plan.period > 1 ? "days" : "day"}`
+                          : `${plan.period} ${plan.period > 1 ? "Months" : "Month"}`}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="text-center sm:text-left mt-4">
@@ -350,10 +351,10 @@ export function AddCustomerDialog({ visible, onClose, onCustomerAdded }: AddComp
 
         <DialogFooter>
           <Button onClick={handleSubmit} type="submit">
-          {loading && (
-                            <Loader size="35px" className="animate-spin" />
-                        )}
-                        {loading ? 'Saving...' : 'Save'}
+            {loading && (
+              <Loader size="35px" className="animate-spin" />
+            )}
+            {loading ? 'Saving...' : 'Save'}
           </Button>
         </DialogFooter>
       </DialogContent>
