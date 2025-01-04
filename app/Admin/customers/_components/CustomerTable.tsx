@@ -108,6 +108,7 @@ const CustomerTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => {
                 return "text-red-500";
             case "Pending":
                 return "text-yellow-500";
+            
             default:
                 return "text-white-500";
         }
