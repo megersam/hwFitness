@@ -4,9 +4,10 @@ import React from 'react';
 import { AdminSideBar } from './_components/sidebar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { SmallCard } from './_components/smallCard';
-import { AdminChart } from './_components/adminChart';
-import { RecentSales } from './_components/recentCustomer';
+import { AdminChart } from './_components/adminChart'; 
 import withAuth from '@/lib/withAuth'
+import { RecentSales } from './_components/recentCustomer';
+import { PaymentStatus } from './_components/payment';
 
 const AdminPage = () => {
 
@@ -19,7 +20,7 @@ const AdminPage = () => {
       <div className="flex flex-col md:flex-row h-auto gap-4">
         {/* Recent Customers Section */}
         <div className="w-full md:w-1/2 bg-[#2A2A2C] p-4 rounded-lg shadow-md">
-          <h1 className="text-lg font-semibold">Recent Customers</h1>
+          <h1 className="text-lg font-semibold">Inactive Subscribers</h1>
           <div className="py-1">
             <RecentSales />
           </div>
@@ -27,9 +28,9 @@ const AdminPage = () => {
 
         {/* Chart Section */}
         <div className="w-full md:w-1/2 bg-[#2A2A2C] p-4 rounded-lg shadow-md">
-          <h1 className="text-lg font-semibold">In Chart</h1>
+          <h1 className="text-lg font-semibold">Payment Request</h1>
           <div className="py-1">
-            <AdminChart />
+            <PaymentStatus />
           </div>
         </div>
       </div>
