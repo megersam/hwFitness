@@ -35,7 +35,7 @@ const SubscriptionTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => 
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [filteredStatus, setFilteredStatus] = useState("All");
     const [filteredSubscriptionStatus, setFilteredSubscriptionStatus] = useState("All"); // For Subscription Status
-    
+
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
@@ -66,7 +66,7 @@ const SubscriptionTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => 
     const filteredCustomers = customerData.filter((customer) => {
         const fullName = `${customer.firstName} ${customer.middleName} ${customer.lastName}`.toLowerCase();
         const phone = customer.phoneNumber.toLowerCase();
-    
+
         const matchesFilter =
             filteredSubscriptionStatus === "All" ||
             (filteredSubscriptionStatus === "Paid" && customer.currentPlan?.paymentStatus === "Paid") ||
@@ -74,13 +74,13 @@ const SubscriptionTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => 
             (filteredSubscriptionStatus === "Pending" && customer.currentPlan?.paymentStatus === "Pending") ||
             (filteredSubscriptionStatus === "Active" && customer.currentPlan) ||
             (filteredSubscriptionStatus === "Inactive" && !customer.currentPlan);
-    
+
         return (
             (fullName.includes(searchQuery.toLowerCase()) || phone.includes(searchQuery.toLowerCase())) &&
             matchesFilter
         );
     });
-    
+
 
     const handleRowClick = (customer: Customer) => {
         setSelectedCustomer(customer);
@@ -110,7 +110,7 @@ const SubscriptionTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => 
                 return "text-white-500";
         }
     };
-    const handleFilterChange = (status:any) => {
+    const handleFilterChange = (status: any) => {
         setFilteredSubscriptionStatus(status);
         setDropdownOpen(false);
     };
@@ -145,90 +145,90 @@ const SubscriptionTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => 
                 />
             </div>
             <div>
-    <button
-        id="subscriptionStatusDropdown"
-        onClick={() => setDropdownOpen(!dropdownOpen)}
-        className="inline-flex items-center text-white bg-[#1E1E1E] border border-black focus:outline-none hover:bg-[#1E1E1E] focus:ring-4 focus:ring-black-200 font-medium rounded-lg text-sm px-3 py-1.5"
-    >
-        <span className="sr-only">Subscription & Payment Status</span>
-        <span className={getStatusColor(filteredSubscriptionStatus)}>{filteredSubscriptionStatus}</span>
-        <svg
-            className="w-2.5 h-2.5 ml-2.5"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 10 6"
-            aria-hidden="true"
-        >
-            <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M1 1l4 4 4-4"
-            />
-        </svg>
-    </button>
-    {dropdownOpen && (
-        <div className="absolute mt-2 z-10 bg-[#1E1E1E] divide-y divide-gray-200 rounded-lg shadow w-44">
-            <ul className="py-1 text-sm text-gray-600 dark:text-gray-300">
-                <li>
-                    <a
-                        onClick={() => handleFilterChange("All")}
-                        href="#"
-                        className="block px-4 py-2 hover:bg-gray-300"
+                <button
+                    id="subscriptionStatusDropdown"
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                    className="inline-flex items-center text-white bg-[#1E1E1E] border border-black focus:outline-none hover:bg-[#1E1E1E] focus:ring-4 focus:ring-black-200 font-medium rounded-lg text-sm px-3 py-1.5"
+                >
+                    <span className="sr-only">Subscription & Payment Status</span>
+                    <span className={getStatusColor(filteredSubscriptionStatus)}>{filteredSubscriptionStatus}</span>
+                    <svg
+                        className="w-2.5 h-2.5 ml-2.5"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 10 6"
+                        aria-hidden="true"
                     >
-                        All
-                    </a>
-                </li>
-                <li>
-                    <a
-                        onClick={() => handleFilterChange("Paid")}
-                        href="#"
-                        className="block px-4 py-2 hover:bg-gray-300 text-green-400"
-                    >
-                        Paid
-                    </a>
-                </li>
-                <li>
-                    <a
-                        onClick={() => handleFilterChange("Not Paid")}
-                        href="#"
-                        className="block px-4 py-2 hover:bg-gray-300 text-red-400"
-                    >
-                        Not Paid
-                    </a>
-                </li>
-                <li>
-                    <a
-                        onClick={() => handleFilterChange("Pending")}
-                        href="#"
-                        className="block px-4 py-2 hover:bg-gray-300 text-yellow-400"
-                    >
-                        Pending
-                    </a>
-                </li>
-                <li>
-                    <a
-                        onClick={() => handleFilterChange("Active")}
-                        href="#"
-                        className="block px-4 py-2 hover:bg-gray-300 text-green-400"
-                    >
-                        Active
-                    </a>
-                </li>
-                <li>
-                    <a
-                        onClick={() => handleFilterChange("Inactive")}
-                        href="#"
-                        className="block px-4 py-2 hover:bg-gray-300 text-red-400"
-                    >
-                        Inactive
-                    </a>
-                </li>
-            </ul>
-        </div>
-    )}
-</div>
+                        <path
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M1 1l4 4 4-4"
+                        />
+                    </svg>
+                </button>
+                {dropdownOpen && (
+                    <div className="absolute mt-2 z-10 bg-[#1E1E1E] divide-y divide-gray-200 rounded-lg shadow w-44">
+                        <ul className="py-1 text-sm text-gray-600 dark:text-gray-300">
+                            <li>
+                                <a
+                                    onClick={() => handleFilterChange("All")}
+                                    href="#"
+                                    className="block px-4 py-2 hover:bg-gray-300"
+                                >
+                                    All
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    onClick={() => handleFilterChange("Paid")}
+                                    href="#"
+                                    className="block px-4 py-2 hover:bg-gray-300 text-green-400"
+                                >
+                                    Paid
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    onClick={() => handleFilterChange("Not Paid")}
+                                    href="#"
+                                    className="block px-4 py-2 hover:bg-gray-300 text-red-400"
+                                >
+                                    Not Paid
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    onClick={() => handleFilterChange("Pending")}
+                                    href="#"
+                                    className="block px-4 py-2 hover:bg-gray-300 text-yellow-400"
+                                >
+                                    Pending
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    onClick={() => handleFilterChange("Active")}
+                                    href="#"
+                                    className="block px-4 py-2 hover:bg-gray-300 text-green-400"
+                                >
+                                    Active
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    onClick={() => handleFilterChange("Inactive")}
+                                    href="#"
+                                    className="block px-4 py-2 hover:bg-gray-300 text-red-400"
+                                >
+                                    Inactive
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                )}
+            </div>
 
 
 
@@ -253,7 +253,7 @@ const SubscriptionTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => 
                                 <td className="px-6 py-4"><Skeleton className="h-4 w-20" /></td>
                             </tr>
                         ))
-                        : filteredCustomers.map((customer) => (
+                        : paginatedCustomers.map((customer) => (
                             <tr
                                 key={customer._id}
                                 onClick={() => handleRowClick(customer)}
@@ -273,28 +273,27 @@ const SubscriptionTable: React.FC<CustomersTableProps> = ({ shouldRefresh }) => 
                                 <td className="px-6 py-4">
                                     <span
                                         className={`px-2 py-1 rounded ${customer.currentPlan
-                                                ? "bg-green-500 text-white"
-                                                : "bg-red-500 text-white"
+                                            ? "bg-green-500 text-white"
+                                            : "bg-red-500 text-white"
                                             }`}
                                     >
                                         {customer.currentPlan ? "Active" : "Inactive"}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4">
-                                    {/* {customer.currentPlan?.paymentStatus || "N/A"} */}
                                     <span
                                         className={`px-2 py-1 rounded ${customer.currentPlan?.paymentStatus
-                                                ? "bg-green-500 text-white"
-                                                : "bg-red-500 text-white"
+                                            ? "bg-green-500 text-white"
+                                            : "bg-red-500 text-white"
                                             }`}
                                     >
                                         {customer.currentPlan?.paymentStatus || "N/A"}
                                     </span>
                                 </td>
-
                             </tr>
                         ))}
                 </tbody>
+
             </table>
 
             {/* Pagination Controls */}
