@@ -241,7 +241,7 @@ export function ViewEmployeeDialog({ visible, onClose, selectedEmployee, onEmplo
                 <SelectContent>
                   <SelectItem value="Admin">Admin</SelectItem>
                   <SelectItem value="Reception">Reception</SelectItem>
-                  <SelectItem value="Trainer">Trainer</SelectItem>
+                
                 </SelectContent>
               </Select>
             </div>
@@ -275,7 +275,7 @@ export function ViewEmployeeDialog({ visible, onClose, selectedEmployee, onEmplo
             type="button"
             onClick={handleSubmit}
             disabled={loading} // Disable button while loading
-            className="relative"
+            className="relative py-2 px-6 text-sm font-medium text-white bg-yellow-500 text-white hover:bg-yellow-600 border-blue-500 rounded-md"
           >
             {loading && (
               <Loader size="35px" className="animate-spin" />
