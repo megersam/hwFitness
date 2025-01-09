@@ -18,8 +18,8 @@ export function middleware(req: NextRequest) {
     "/Admin/Home",
     "/Admin/Plan",
     "/Admin/Price",
-     "/Employee"
-    ];
+    "/Employee"
+  ];
 
   // If user is not logged in and accesses protected routes, redirect to login
   if (protectedRoutes.some(route => req.nextUrl.pathname.startsWith(route)) && !user) {
@@ -36,13 +36,29 @@ export function middleware(req: NextRequest) {
     }
   }
 
+  // If user role is not Admin and tries to access Admin pages, redirect to unauthorized page
+  if (req.nextUrl.pathname.startsWith("/Admin") && user && user.role !== "Admin") {
+    return NextResponse.redirect(new URL("/unauthorized", req.url));
+  }
+
+  // If user role is not Reception and tries to access Employee pages, redirect to unauthorized page
+  if (req.nextUrl.pathname.startsWith("/Employee") && user && user.role !== "Reception") {
+    return NextResponse.redirect(new URL("/unauthorized", req.url));
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/Admin", "/Employee", "/unauthorized", "/Login", "/Admin/customers",
+  matcher: [
+    "/Admin", 
+    "/Employee", 
+    "/unauthorized", 
+    "/Login", 
+    "/Admin/customers",
     "/Admin/employee",
     "/Admin/Home",
     "/Admin/Plan",
-    "/Admin/Price"], // Define protected routes
+    "/Admin/Price"
+  ], // Define protected routes
 };
