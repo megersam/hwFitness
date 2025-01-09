@@ -179,8 +179,8 @@ export function AddEmployeeDialog({ visible, onClose }: AddEmployeeProps) {
                   <SelectValue placeholder="Select Role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="admin">Admin</SelectItem> 
-                  <SelectItem value="reception">Reception</SelectItem>
+                  <SelectItem value="Admin">Admin</SelectItem> 
+                  <SelectItem value="Reception">Reception</SelectItem>
                 </SelectContent>
               </Select>
             </div>
