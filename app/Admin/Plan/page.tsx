@@ -30,7 +30,7 @@ const PlansPage = () => {
       <div className="mt-4 sm:mt-0 sm:ml-4">
         <Button 
          onClick={handleAddPlanClick}
-        className="flex items-center space-x-2">
+        className="flex items-center space-x-2 bg-yellow-500 text-white hover:bg-yellow-600">
           <Plus size={16} />
           <span>Add Plan</span>
         </Button>

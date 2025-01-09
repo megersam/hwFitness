@@ -300,7 +300,7 @@ const PlansTable: React.FC<PlanTableProps> = ({ shouldRefresh }) => {
                     disabled={currentPage === 1}
                     className={`px-4 py-2 text-sm font-medium rounded-lg ${currentPage === 1
                         ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                        : "bg-blue-500 text-white hover:bg-blue-600"
+                        : "bg-yellow-500 text-white hover:bg-yellow-600"
                         }`}
                 >
                     Previous
@@ -313,7 +313,7 @@ const PlansTable: React.FC<PlanTableProps> = ({ shouldRefresh }) => {
                     disabled={currentPage === totalPages}
                     className={`px-4 py-2 text-sm font-medium rounded-lg ${currentPage === totalPages
                         ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                        : "bg-blue-500 text-white hover:bg-blue-600"
+                        : "bg-yellow-500 text-white hover:bg-yellow-600"
                         }`}
                 >
                     Next

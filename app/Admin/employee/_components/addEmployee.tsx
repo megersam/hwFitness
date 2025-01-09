@@ -217,7 +217,7 @@ export function AddEmployeeDialog({ visible, onClose }: AddEmployeeProps) {
             <Button onClick={handleCancel} variant="outline" className="w-full sm:w-auto">
               Cancel
             </Button>
-            <Button type="submit" className="w-full sm:w-auto" disabled={loading}>
+            <Button type="submit" className="w-full sm:w-auto  bg-yellow-500 text-white hover:bg-yellow-600" disabled={loading}>
               {loading ? <Loader className="animate-spin" size={20} /> : "Add Employee"}
             </Button>
           </DialogFooter>

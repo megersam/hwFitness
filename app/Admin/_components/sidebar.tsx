@@ -136,7 +136,7 @@ export function AdminSideBar() {
                     <SidebarMenuItem>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <SidebarMenuButton className="flex items-center gap-3 text-base font-medium text-white">
+                                <SidebarMenuButton className="flex items-center gap-3 text-base font-medium text-white rounded-md transition hover:bg-yellow-500 hover:text-black">
                                     <User2 className="w-6 h-6" />{" "}
                                     {user?.firstName} {user?.middleName} {user?.lastName}
                                     <ChevronUp className="ml-auto w-5 h-5" />

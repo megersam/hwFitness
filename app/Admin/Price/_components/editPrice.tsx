@@ -173,7 +173,7 @@ export const EditPriceDialog: React.FC<EditPriceDialogProps> = ({ price, onClose
                         type="button"
                         onClick={handleSave}
                         disabled={loading}
-                        className="relative"
+                        className="relative bg-yellow-500 hover:bg-yellow-600 text-white"
                     >
                         {loading && <Loader size="35px" className="animate-spin" />}
                         {loading ? 'Updating...' : 'Update'}

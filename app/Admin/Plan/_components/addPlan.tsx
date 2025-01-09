@@ -241,6 +241,7 @@ export function AddPlanDialog({ visible, onClose, onPlanAdded }: AddPlanProps) {
                     <Button
                         onClick={handleSave}
                         disabled={loading}
+                        className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
                         type="submit">
                         {loading && (
                             <Loader size="35px" className="animate-spin" />

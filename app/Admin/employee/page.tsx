@@ -97,7 +97,8 @@ const EmployeePage = () => {
           className="w-full sm:w-[80px] md:w-[140px] lg:w-[600px]"
         />
         <div className="mt-4 sm:mt-0 sm:ml-4">
-          <Button onClick={handleAddEmployeeClick} className="flex items-center space-x-2">
+          <Button onClick={handleAddEmployeeClick} 
+          className="flex items-center space-x-2 bg-yellow-500 text-white hover:bg-yellow-600">
             <Plus size={16} />
             <span>Add Employee</span>
           </Button>

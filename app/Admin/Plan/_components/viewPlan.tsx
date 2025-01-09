@@ -239,7 +239,7 @@ export const ViewPlanDialog: React.FC<ViewPlanProps> = ({ plan, onClose, refresh
                     <Button 
                         onClick={handleSave}
                         disabled={isSaving}
-                        className={`bg-blue-500 ${isSaving ? "cursor-not-allowed opacity-75" : ""} w-32 h-12 flex items-center justify-center`}>
+                        className={`bg-yellow-500 hover:bg-yellow-600 ${isSaving ? "cursor-not-allowed opacity-75" : ""} w-32 h-12 flex items-center justify-center`}>
                         {isSaving ? <Loader className="animate-spin w-4 h-4" /> : "Update"}
                     </Button>
                 </DialogFooter>

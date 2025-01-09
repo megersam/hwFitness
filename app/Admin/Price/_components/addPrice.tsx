@@ -51,7 +51,7 @@ export function AddPriceDialog({ visible, onClose, onPriceAdded  }: AddPriceProp
 
   return (
     <Dialog open={visible} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px]  ">
         <DialogHeader>
           <DialogTitle>Add Price</DialogTitle>
         </DialogHeader>
@@ -77,7 +77,7 @@ export function AddPriceDialog({ visible, onClose, onPriceAdded  }: AddPriceProp
             type="button"
             onClick={handleSave}
             disabled={loading} // Disable button while loading
-            className="relative"
+            className="relative bg-yellow-500 text-white hover:bg-yellow-600"
           >
             {loading && (
               <Loader size="35px" className="animate-spin" />
