@@ -174,7 +174,7 @@ export async function PUT(
     );
 
     if (!updatedCustomer) {
-      return NextResponse.json({ error: "Plan not found" }, { status: 404 });
+      return NextResponse.json({ error: "Customer not found" }, { status: 404 });
     }
 
     return NextResponse.json(updatedCustomer);

@@ -4,7 +4,11 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 interface Subscription {
   _id: string;
@@ -26,7 +30,9 @@ interface Customer {
 export function PaymentStatus() {
   const [loading, setLoading] = useState(true);
   const [pendingCustomers, setPendingCustomers] = useState<Customer[]>([]);
-
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [paymentStatus, setPaymentStatus] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false); // Dialog visibility state
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -45,7 +51,7 @@ export function PaymentStatus() {
             .filter(
               (customer: { currentPlan: { paymentStatus: string; }; }) =>
                 customer.currentPlan && customer.currentPlan.paymentStatus === "Pending"
-            ); // Filter customers with a current plan and paymentStatus = "Pending"
+            );
 
           setPendingCustomers(filteredCustomers);
         } else {
@@ -61,6 +67,47 @@ export function PaymentStatus() {
     fetchData();
   }, []);
 
+  const handleUpdatePaymentStatus = async () => {
+    if (!selectedCustomer || !selectedCustomer.currentPlan) return;
+
+    const subscriptionId = selectedCustomer.currentPlan._id;
+    console.log("Updating subscription ID:", subscriptionId);
+    try {
+      const response = await fetch(`/api/subscriptions/${subscriptionId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          paymentStatus,
+        }),
+      });
+
+      if (response.ok) {
+        const updatedCustomer = await response.json();
+        console.log("Updated Customer:", updatedCustomer);
+        toast.success("Payment status updated successfully!");
+
+        setIsDialogOpen(false); // Close the dialog
+        // Update the UI
+        setPendingCustomers((prev) =>
+          prev.filter((customer) => customer.currentPlan?._id !== subscriptionId)
+        );
+        setSelectedCustomer(null);
+        
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to update payment status:", errorData.error);
+        toast.error("Failed to update payment status. Please try again.");
+        setIsDialogOpen(false); // Close the dialog
+      }
+    } catch (error) {
+      console.error("Error updating payment status:", error); 
+      toast.error("An error occurred while updating payment status.");
+      setIsDialogOpen(false); // Close the dialog
+    }
+  };
+
   if (loading) {
     return <p>Loading...</p>;
   }
@@ -72,33 +119,94 @@ export function PaymentStatus() {
   return (
     <Card className="h-[400px] p-4 overflow-y-auto w-[450px] bg-[#1E1E20] text-white rounded-md border-none">
       {pendingCustomers.map((item, index) => {
-        // Extract initials
         const initials = `${item.firstName[0]}${item.lastName[0]}`;
 
         return (
-          <div
-            key={index}
-            className="flex items-center space-y-4 mb-4 bg-[#1E1E20] p-4 rounded-md"
+          <Dialog key={index}
+          open={isDialogOpen} // Bind dialog state
+          onOpenChange={(open) => setIsDialogOpen(open)}
           >
-            {/* Avatar */}
-            <Avatar className="h-9 w-9 ml-4">
-              <AvatarImage src={item.image} alt={`${item.firstName} ${item.lastName}`} />
-              <AvatarFallback>{initials}</AvatarFallback>
-            </Avatar>
+            <DialogTrigger asChild>
+              <div
+                onClick={() => {
+                  setSelectedCustomer(item);
+                  setPaymentStatus("Pending");
+                  setIsDialogOpen(true); // Open the dialog
+                }}
+                className="cursor-pointer flex items-center space-y-4 mb-4 bg-[#1E1E20] p-4 rounded-md"
+              >
+                <Avatar className="h-9 w-9 ml-4">
+                  <AvatarImage src={item.image} alt={`${item.firstName} ${item.lastName}`} />
+                  <AvatarFallback>{initials}</AvatarFallback>
+                </Avatar>
 
-            {/* User Info */}
-            <div className="ml-4 space-y-1">
-              <p className="text-sm font-medium leading-none">
-                {item.firstName} {item.lastName}
-              </p>
-              <p className="text-sm text-gray-400">{item.phoneNumber}</p>
-            </div>
+                <div className="ml-4 space-y-1">
+                  <p className="text-sm font-medium leading-none">
+                    {item.firstName} {item.lastName}
+                  </p>
+                  <p className="text-sm text-gray-400">{item.phoneNumber}</p>
+                </div>
 
-            {/* Payment Status */}
-            <div className="ml-auto font-medium text-sm text-yellow-500" style={{ minWidth: "80px", textAlign: "left" }}>
-              Pending Payment
-            </div>
-          </div>
+                <div className="ml-auto font-medium text-sm text-yellow-500" style={{ minWidth: "80px", textAlign: "left" }}>
+                  Pending Payment
+                </div>
+              </div>
+            </DialogTrigger>
+
+            {/* Dialog Content */}
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle className="text-lg font-semibold">Customer Details</DialogTitle>
+                <DialogDescription>
+                  <div className="flex flex-col items-center mb-4">
+                    <Avatar className="h-16 w-16 mb-2">
+                      <AvatarImage src={selectedCustomer?.image} alt={`${selectedCustomer?.firstName} ${selectedCustomer?.lastName}`} />
+                      <AvatarFallback>
+                        {selectedCustomer?.firstName[0]}
+                        {selectedCustomer?.lastName[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <p className="text-center font-medium text-lg">{selectedCustomer?.firstName} {selectedCustomer?.middleName} {selectedCustomer?.lastName}</p>
+                  </div>
+
+                  <p className="mb-2">
+                    <strong>Customer ID:</strong> {selectedCustomer?._id}
+                  </p>
+                  <p className="mb-2">
+                    <strong>Subscription ID:</strong> {selectedCustomer?.currentPlan?._id}
+                  </p>
+                  <p className="mb-4">
+                    <strong>Phone Number:</strong> {selectedCustomer?.phoneNumber}
+                  </p>
+                  <p className="mb-4">
+                    <strong>Payment Status:</strong> {selectedCustomer?.currentPlan?.paymentStatus}
+                  </p>
+
+                  <div className="mb-4">
+                    <strong>Update Payment Status:</strong>
+                    <Select
+                      onValueChange={(value) => setPaymentStatus(value)}
+                      defaultValue=""
+                    >
+                      <SelectTrigger className="w-full mt-2  text-black border border-gray-600 rounded-md">
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Paid">Paid</SelectItem> 
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <Button
+                    onClick={handleUpdatePaymentStatus}
+                    className="w-full bg-primary hover:bg-primary text-white py-2 rounded-md"
+                  >
+                    Update Payment Status
+                  </Button>
+                </DialogDescription>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
         );
       })}
     </Card>

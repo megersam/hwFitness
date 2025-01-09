@@ -76,3 +76,34 @@ export async function GET(
     );
   }
 }
+
+
+
+
+export async function PUT(
+  req: NextRequest, 
+  context: { params: Promise<{ id: string }> } // Params is now a Promise
+): Promise<NextResponse> {
+  const params = await context.params; // Await the params
+  const { id } = params;
+
+  await connectDB();
+
+  const body = await req.json(); // Parse the request body
+
+  try {
+    const updateSubscription = await SubscriptionModel.findByIdAndUpdate(
+      id,
+      { $set: body },
+      { new: true } // Return the updated document
+    );
+
+    if (!updateSubscription) {
+      return NextResponse.json({ error: "subscription not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(updateSubscription);
+  } catch (error) {
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
