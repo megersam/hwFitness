@@ -6,10 +6,9 @@ import SubscriptionModel from '@/Models/subscriptionModel';
 
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  context: { params: { id: string } }
 ): Promise<NextResponse> {
-  const params = await context.params;
-  const { id } = params;
+  const { id } = context.params;
 
   await connectDB();
 
@@ -39,6 +38,7 @@ export async function GET(
 
     let subscriptionStatus = 'Inactive';
     let statusColor = 'red';
+    let paymentStatus = '';
 
     if (activeSubscription) {
       // If subscription is active, set status to Active
@@ -49,6 +49,9 @@ export async function GET(
         subscriptionStatus = 'Active';
         statusColor = 'green';
       }
+
+      // Get the payment status from the active subscription
+      paymentStatus = activeSubscription.paymentStatus;
     }
 
     // Build the subscription details section with the status
@@ -57,6 +60,7 @@ export async function GET(
           <p><strong>Start Date:</strong> ${activeSubscription.startDate.toDateString()}</p>
           <p><strong>End Date:</strong> ${activeSubscription.endDate.toDateString()}</p>
           <p><strong>Status:</strong> <span style="color: ${statusColor};">${subscriptionStatus}</span></p>
+          <p><strong>Payment Status:</strong> <span style="color: ${statusColor};">${paymentStatus}</span></p>
         `
       : `
           <p>No active subscription</p>
@@ -141,6 +145,7 @@ export async function GET(
 
     return new NextResponse(htmlContent, { headers: { 'Content-Type': 'text/html' } });
   } catch (error) {
+    console.error(error);
     return new NextResponse(
       `<html><body><h1>Internal Server Error</h1></body></html>`,
       { status: 500, headers: { 'Content-Type': 'text/html' } }
