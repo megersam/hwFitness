@@ -22,36 +22,7 @@ const ReceptionAdminPage = () => {
       }
     };
 
-    // Fetch Total Paid
-    const fetchTotalPaid = async () => {
-      try {
-        const response = await fetch("/api/subscriptions");
-        const data = await response.json();
-
-        if (!data?.customers) {
-          console.error("No customer data found");
-          return;
-        }
-
-        const totalPaidAmount = data.customers.reduce((acc: number, customer: any) => {
-          customer.currentPlans.forEach((sub: any) => {
-            if (sub.paymentStatus === "Paid") {
-              acc += sub.selectedPlanPrice;
-            }
-          });
-          customer.recentPlans.forEach((sub: any) => {
-            if (sub.paymentStatus === "Paid") {
-              acc += sub.selectedPlanPrice;
-            }
-          });
-          return acc;
-        }, 0);
-
-        setTotalPaid(totalPaidAmount || 0);
-      } catch (error) {
-        console.error("Error fetching total paid:", error);
-      }
-    };
+  
 
     // Fetch Inactive Users
     const fetchInactiveUsers = async () => {
@@ -77,7 +48,7 @@ const ReceptionAdminPage = () => {
     };
 
     fetchTotalCustomers();
-    fetchTotalPaid();
+  
     fetchInactiveUsers();
   }, []);
 
@@ -87,9 +58,7 @@ const ReceptionAdminPage = () => {
         <div className="md:flex-1">
           <SmallCard title="Total Customers" balance={totalCustomers} iconType="users" />
         </div>
-        <div className="md:flex-1">
-          <SmallCard title="Total Paid" balance={totalPaid} iconType="wallet" />
-        </div>
+        
         <div className="md:flex-1">
           <SmallCard title="Inactive Users" balance={inactiveUsers} iconType="zap" />
         </div>

@@ -48,7 +48,7 @@ const items = [
     
     {
         title: "Subscription",
-        url: "/Reception/SubscriptionAdmin",
+        url: "/Reception/subscription",
         icon: Calendar,
     },
 ];
