@@ -4,13 +4,9 @@ import CustomerModel from '@/Models/customerModel';
 import SubscriptionModel from '@/Models/subscriptionModel';
 
 
-export async function GET(
-  req: NextRequest,
-  context: { params: { id: string } }
-): Promise<NextResponse> {
-  const { id } = context.params;
+export async function GET( req: NextRequest, context: { params: Promise<{ id: string }> } ): Promise<NextResponse> { const params = await context.params; const { id } = params;
 
-  await connectDB();
+await connectDB();
 
   try {
     // Fetch customer details
