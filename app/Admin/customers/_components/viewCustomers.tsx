@@ -269,6 +269,7 @@ const ViewCustomerDialog: React.FC<ViewCustomerDialogProps> = ({ isOpen, onClose
                     {/* Button Positioned Below */}
                     <Button
                         type="button"
+                        className='bg-yellow-500 text-white hover:bg-yellow-600'
                         onClick={downloadQRCode}
                     >
                         <Download size={24} className="ml-2" />
@@ -293,7 +294,7 @@ const ViewCustomerDialog: React.FC<ViewCustomerDialogProps> = ({ isOpen, onClose
                         type="button"
                         onClick={handleSubmit}
                         disabled={loading}
-                        className="relative"
+                        className="relative bg-yellow-500 text-white hover:bg-yellow-600"
                     >
                         {loading && (
                             <Loader size="35px" className="animate-spin absolute left-4" />

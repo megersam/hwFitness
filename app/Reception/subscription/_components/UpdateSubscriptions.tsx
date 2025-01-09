@@ -379,7 +379,9 @@ const UpdateSubscriptions: React.FC<UpdateSubscriptionDialogProps> = ({ isOpen, 
                                 </select>
                             </div>
                             
-                            <Button onClick={handleSubmit} type="submit">
+                            <Button 
+                            className="bg-yellow-500 text-white hover:bg-yellow-600"
+                            onClick={handleSubmit} type="submit">
                                 {loading && (
                                     <Loader size="35px" className="animate-spin" />
                                 )}

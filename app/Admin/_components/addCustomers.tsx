@@ -350,7 +350,11 @@ export function AddCustomerDialog({ visible, onClose, onCustomerAdded }: AddComp
         </div>
 
         <DialogFooter>
-          <Button onClick={handleSubmit} type="submit">
+          <Button 
+          onClick={handleSubmit} 
+          type="submit"
+          className="bg-yellow-500 text-white hover:bg-yellow-600"
+          >
             {loading && (
               <Loader size="35px" className="animate-spin" />
             )}
