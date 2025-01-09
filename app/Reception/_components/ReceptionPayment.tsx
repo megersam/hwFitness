@@ -118,98 +118,30 @@ import {
   
     return (
       <Card className="h-[400px] p-4 overflow-y-auto w-[450px] bg-[#1E1E20] text-white rounded-md border-none">
-        {pendingCustomers.map((item, index) => {
-          const initials = `${item.firstName[0]}${item.lastName[0]}`;
-  
-          return (
-            <Dialog key={index}
-            open={isDialogOpen} // Bind dialog state
-            onOpenChange={(open) => setIsDialogOpen(open)}
-            >
-              <DialogTrigger asChild>
-                <div
-                  onClick={() => {
-                    setSelectedCustomer(item);
-                    setPaymentStatus("Pending");
-                    setIsDialogOpen(true); // Open the dialog
-                  }}
-                  className="cursor-pointer flex items-center space-y-4 mb-4 bg-[#1E1E20] p-4 rounded-md"
-                >
-                  <Avatar className="h-9 w-9 ml-4">
-                    <AvatarImage src={item.image} alt={`${item.firstName} ${item.lastName}`} />
-                    <AvatarFallback>{initials}</AvatarFallback>
-                  </Avatar>
-  
-                  <div className="ml-4 space-y-1">
-                    <p className="text-sm font-medium leading-none">
-                      {item.firstName} {item.lastName}
-                    </p>
-                    <p className="text-sm text-gray-400">{item.phoneNumber}</p>
-                  </div>
-  
-                  <div className="ml-auto font-medium text-sm text-yellow-500" style={{ minWidth: "80px", textAlign: "left" }}>
-                    Pending Payment
-                  </div>
-                </div>
-              </DialogTrigger>
-  
-              {/* Dialog Content */}
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle className="text-lg font-semibold">Customer Details</DialogTitle>
-                  <DialogDescription>
-                    <div className="flex flex-col items-center mb-4">
-                      <Avatar className="h-16 w-16 mb-2">
-                        <AvatarImage src={selectedCustomer?.image} alt={`${selectedCustomer?.firstName} ${selectedCustomer?.lastName}`} />
-                        <AvatarFallback>
-                          {selectedCustomer?.firstName[0]}
-                          {selectedCustomer?.lastName[0]}
-                        </AvatarFallback>
-                      </Avatar>
-                      <p className="text-center font-medium text-lg">{selectedCustomer?.firstName} {selectedCustomer?.middleName} {selectedCustomer?.lastName}</p>
-                    </div>
-  
-                    <p className="mb-2">
-                      <strong>Customer ID:</strong> {selectedCustomer?._id}
-                    </p>
-                    <p className="mb-2">
-                      <strong>Subscription ID:</strong> {selectedCustomer?.currentPlan?._id}
-                    </p>
-                    <p className="mb-4">
-                      <strong>Phone Number:</strong> {selectedCustomer?.phoneNumber}
-                    </p>
-                    <p className="mb-4">
-                      <strong>Payment Status:</strong> {selectedCustomer?.currentPlan?.paymentStatus}
-                    </p>
-  
-                    <div className="mb-4">
-                      <strong>Update Payment Status:</strong>
-                      <Select
-                        onValueChange={(value) => setPaymentStatus(value)}
-                        defaultValue=""
-                      >
-                        <SelectTrigger className="w-full mt-2  text-black border border-gray-600 rounded-md">
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Paid">Paid</SelectItem> 
-                        </SelectContent>
-                      </Select>
-                    </div>
-  
-                    <Button
-                      onClick={handleUpdatePaymentStatus}
-                      className="w-full bg-primary hover:bg-primary text-white py-2 rounded-md"
-                    >
-                      Update Payment Status
-                    </Button>
-                  </DialogDescription>
-                </DialogHeader>
-              </DialogContent>
-            </Dialog>
-          );
-        })}
-      </Card>
+      {pendingCustomers.map((item, index) => {
+        const initials = `${item.firstName[0]}${item.lastName[0]}`;
+
+        return (
+          <div key={index} className="flex items-center space-y-4 mb-4 bg-[#1E1E20] p-4 rounded-md">
+            <Avatar className="h-9 w-9 ml-4">
+              <AvatarImage src={item.image} alt={`${item.firstName} ${item.lastName}`} />
+              <AvatarFallback>{initials}</AvatarFallback>
+            </Avatar>
+
+            <div className="ml-4 space-y-1">
+              <p className="text-sm font-medium leading-none">
+                {item.firstName} {item.lastName}
+              </p>
+              <p className="text-sm text-gray-400">{item.phoneNumber}</p>
+            </div>
+
+            <div className="ml-auto font-medium text-sm text-yellow-500" style={{ minWidth: "80px", textAlign: "left" }}>
+              {item.currentPlan ? item.currentPlan.paymentStatus : "No Plan"}
+            </div>
+          </div>
+        );
+      })}
+    </Card>
     );
   }
   

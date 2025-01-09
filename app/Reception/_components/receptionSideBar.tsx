@@ -42,7 +42,7 @@ const items = [
     },
     {
         title: "Customers",
-        url: "/Reception/customers",
+        url: "/Reception/customer",
         icon: PersonStanding,
     },
     
