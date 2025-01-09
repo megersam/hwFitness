@@ -1,11 +1,12 @@
-import React from 'react';
-import { SmallCard } from '../_components/smallCard';
-import withAuth from '@/lib/withAuth';
+import React from 'react';  
 
 const DashboardHomePage = () => {
   return (
+    // <div>
+    //   <SmallCard />
+    // </div>
     <div>
-      <SmallCard />
+      <h1>Dashboard Home Page</h1>
     </div>
   );
 };

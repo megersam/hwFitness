@@ -1,121 +1,54 @@
 "use client"
 
-import { Bar, BarChart, Line, LineChart } from "recharts";
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Currency, DollarSign, Subscript, User } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Wallet, User, Users, Zap } from "lucide-react";
 
-// ChartConfig type definition
-interface ChartConfig {
-  revenue: {
-    label: string;
-    color: string;
-  };
-  subscription: {
-    label: string;
-    color: string;
-  };
+interface SmallCardProps {
+  balance: number;
+  title: string;
+  iconType: "wallet" | "user" | "users" | "zap"; // New prop for icon
 }
 
-// ChartContainer component
-interface ChartContainerProps {
-  config: ChartConfig;
-  className?: string;
-  children: React.ReactNode;
-}
+export function SmallCard({ balance, title, iconType }: SmallCardProps) {
+  let IconComponent;
+  let formattedBalance = balance;
 
-const ChartContainer: React.FC<ChartContainerProps> = ({ config, className, children }) => {
-  return (
-    <div className={className}>
-      {/* You can use the config properties here if needed */}
-      {children}
-    </div>
-  );
-};
-
-// Sample data
-const data = [
-  {
-    revenue: 10400,
-    subscription: 240,
-  },
-  {
-    revenue: 14405,
-    subscription: 300,
-  },
-  {
-    revenue: 9400,
-    subscription: 200,
+  // Determine icon and format the balance
+  switch (iconType) {
+    case "wallet":
+      IconComponent = Wallet;
+      break;
+    case "user":
+      IconComponent = User;
+      break;
+    case "users":
+      IconComponent = Users;
+      break;
+    case "zap":
+      IconComponent = Zap;
+      break;
+    default:
+      IconComponent = Wallet;
   }
-];
 
-// Chart config
-const chartConfig = {
-  revenue: {
-    label: "Revenue",
-    color: "primary",
-  },
-  subscription: {
-    label: "Subscriptions",
-    color: "hsl(var(--primary))",
-  },
-} satisfies ChartConfig;
+  // For Total Customers and Inactive Users, show integer values without .00
+  if (title === "Total Customers" || title === "Inactive Users") {
+    formattedBalance = Math.floor(balance); // Round down to integer
+  }
 
-export function SmallCard() {
   return (
-    <div className="grid gap-8 sm:grid-cols-3 xl:grid-cols-3 py-10">
-    {/* First card */}
-    <Card className="h-[100px] bg-yellow-500 text-white border-none shadow-none"> {/* Ensure no border or shadow */}
-      <CardHeader className="flex justify-center items-center py-1">
-        <CardTitle className="text-center text-sm font-normal text-lg">
-          Total Revenue
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="pb-0 flex items-center justify-between">
-        {/* Icon on the left */}
-        <div className="flex-shrink-0">
-          <DollarSign size={40} className="text-white" /> {/* Icon color is white */}
+    <Card className="bg-yellow-400 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow w-full">
+      <div className="flex items-start gap-3">
+        <div className="bg-white p-2 rounded-full">
+          <IconComponent className="w-5 h-5 text-yellow-400" />
         </div>
-        {/* Data on the right */}
-        <div className="text-lg font-normal">15,231.89</div>
-      </CardContent>
-    </Card>
-  
-    {/* Second card */}
-    <Card className="h-[100px] bg-yellow-500 text-white border-none shadow-none"> {/* Ensure no border or shadow */}
-      <CardHeader className="flex justify-center items-center py-1">
-        <CardTitle className="text-center text-sm font-normal text-lg">
-          Total Customers
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="pb-0 flex items-center justify-between">
-        {/* Icon on the left */}
-        <div className="flex-shrink-0">
-          <User size={40} className="text-white" /> {/* Icon color is white */}
+        <div className="flex flex-col">
+          <p className="text-sm font-medium text-yellow-900/70">{title}</p>
+          <p className="text-2xl font-bold text-yellow-900">
+            {title === "Total Paid" ? `$${formattedBalance.toFixed(2)}` : formattedBalance}
+          </p>
         </div>
-        {/* Data on the right */}
-        <div className="text-lg font-normal">30</div>
-      </CardContent>
+      </div>
     </Card>
-  
-    {/* Third card */}
-    <Card className="h-[100px] bg-yellow-500 text-white border-none shadow-none"> {/* Ensure no border or shadow */}
-      <CardHeader className="flex justify-center items-center py-1">
-        <CardTitle className="text-center text-sm font-normal text-lg">
-          Expired Subscriptions
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="pb-0 flex items-center justify-between">
-        {/* Icon on the left */}
-        <div className="flex-shrink-0">
-          <Subscript size={40} className="text-white" /> {/* Icon color is white */}
-        </div>
-        {/* Data on the right */}
-        <div className="text-lg font-normal">89</div>
-      </CardContent>
-    </Card>
-  </div>
-  
-
   );
 }
