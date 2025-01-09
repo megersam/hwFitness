@@ -15,7 +15,7 @@ export default async function Home() {
       if (user.role === "Admin") {
         redirect("/Admin");
       } else if (user.role === "Reception") {
-        redirect("/Employee");
+        redirect("/Reception");
       }
     } else {
       redirect("/Login");

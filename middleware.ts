@@ -18,7 +18,8 @@ export function middleware(req: NextRequest) {
     "/Admin/Home",
     "/Admin/Plan",
     "/Admin/Price",
-    "/Employee"
+    "/Employee",
+    "/Reception",
   ];
 
   // If user is not logged in and accesses protected routes, redirect to login
@@ -32,7 +33,7 @@ export function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL("/Admin", req.url));
     }
     if (user.role === "Reception") {
-      return NextResponse.redirect(new URL("/Employee", req.url));
+      return NextResponse.redirect(new URL("/Reception", req.url));
     }
   }
 
@@ -42,7 +43,7 @@ export function middleware(req: NextRequest) {
   }
 
   // If user role is not Reception and tries to access Employee pages, redirect to unauthorized page
-  if (req.nextUrl.pathname.startsWith("/Employee") && user && user.role !== "Reception") {
+  if (req.nextUrl.pathname.startsWith("/Reception") && user && user.role !== "Reception") {
     return NextResponse.redirect(new URL("/unauthorized", req.url));
   }
 
@@ -59,6 +60,7 @@ export const config = {
     "/Admin/employee",
     "/Admin/Home",
     "/Admin/Plan",
-    "/Admin/Price"
+    "/Admin/Price",
+    "/Reception",
   ], // Define protected routes
 };

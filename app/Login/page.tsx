@@ -43,7 +43,7 @@ export default function LoginPage() {
       if (data.role === 'Admin') {
         window.location.href = '/Admin';
       } else if (data.role === 'Reception') {
-        window.location.href = '/Employee';
+        window.location.href = '/Reception';
       }
   
       toast.success('Login successful');
