@@ -52,8 +52,7 @@ export function ViewEmployeeDialog({ visible, onClose, selectedEmployee, onEmplo
     sex: '',
     phoneNumber: '',
     role: '',
-    email: '',
-    password: '',
+    email: '', 
     status: '',
   });
 
@@ -68,7 +67,7 @@ export function ViewEmployeeDialog({ visible, onClose, selectedEmployee, onEmplo
         phoneNumber: selectedEmployee.phoneNumber,
         role: selectedEmployee.role,
         email: selectedEmployee.email,
-        password: '',
+       
         status: selectedEmployee.status ? 'Active' : 'Inactive',
       });
     }
@@ -116,8 +115,7 @@ export function ViewEmployeeDialog({ visible, onClose, selectedEmployee, onEmplo
       sex: '',
       phoneNumber: '',
       role: '',
-      email: '',
-      password: '',
+      email: '', 
       status: '',
     });
     onClose();
